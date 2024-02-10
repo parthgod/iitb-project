@@ -12,7 +12,7 @@ export const GET = async () => {
   }
 };
 
-export const POST = async (req: any) => {
+export const POST = async (req: Request) => {
   const { defaultFields, additionalFields } = await req.json();
   try {
     await connectToDatabase();

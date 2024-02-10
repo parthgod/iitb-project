@@ -13,10 +13,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Image from "next/image";
+import { noImageUrl } from "@/lib/constants";
+import { IDefaultParamSchema } from "@/models/defaultParams";
+import { IVendor } from "@/models/vendor";
+import { FaRegEdit } from "react-icons/fa";
+import { MdOutlineDelete } from "react-icons/md";
 
 interface TableProps {
-  columns: any;
-  data: any;
+  columns: IDefaultParamSchema[];
+  data: IVendor[];
   handleDelete: Function;
 }
 
@@ -27,7 +33,7 @@ const Table = ({ columns, data, handleDelete }: TableProps) => {
   return (
     <div>
       <table
-        className="border-2 border-collapse border-black"
+        className="border-2 border-collapse border-black w-[98%]"
         ref={tableRef}
       >
         <thead>
@@ -52,20 +58,41 @@ const Table = ({ columns, data, handleDelete }: TableProps) => {
                     key={i}
                     className="border-2 border-black p-3"
                   >
-                    {item?.[column.field] || item?.additionalFields?.[column.field] || "null"}
+                    {column.type === "text" || column.type === "number"
+                      ? item?.[column.field] || item?.additionalFields?.[column.field] || "null"
+                      : ""}
+                    {column.type === "image" ? (
+                      <Image
+                        src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
+                        alt="image"
+                        width={120}
+                        height={120}
+                        className="object-cover"
+                      />
+                    ) : (
+                      ""
+                    )}
                   </td>
                 ))}
                 <td className="border-2 border-black p-3">
                   <div className="flex justify-start items-center gap-2">
                     <Button
-                      variant="secondary"
+                      variant="default"
                       onClick={() => router.push(`/vendor/${item?.vendorId}`)}
+                      className="flex justify-center items-center gap-2"
                     >
+                      <FaRegEdit />
                       Edit
                     </Button>
                     <Dialog>
                       <DialogTrigger>
-                        <Button variant="destructive">Delete</Button>
+                        <Button
+                          variant="destructive"
+                          className="flex justify-center items-center gap-2"
+                        >
+                          <MdOutlineDelete className="scale-125" />
+                          Delete
+                        </Button>
                       </DialogTrigger>
                       <DialogContent className="flex flex-col justify-center items-center">
                         <DialogHeader>

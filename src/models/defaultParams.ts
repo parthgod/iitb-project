@@ -1,5 +1,15 @@
 import { Schema, model, models } from "mongoose";
 
+export interface IVendorColumn {
+  field: string;
+  title: string;
+  type: string;
+  isDefault: boolean;
+}
+
+export interface IDefaultParamSchema {
+  vendorColumns: IVendorColumn[];
+}
 const defaultParamSchema = new Schema({
   vendorColumns: {
     type: Array,

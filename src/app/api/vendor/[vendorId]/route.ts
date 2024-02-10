@@ -15,7 +15,7 @@ export const GET = async (req: Request, { params }: { params: { vendorId: String
   }
 };
 
-export const PATCH = async (req: any, { params }: { params: { vendorId: String } }) => {
+export const PATCH = async (req: Request, { params }: { params: { vendorId: String } }) => {
   const { defaultFields, additionalFields } = await req.json();
   const { vendorId } = params;
   console.log(vendorId);
@@ -32,7 +32,7 @@ export const PATCH = async (req: any, { params }: { params: { vendorId: String }
   }
 };
 
-export const DELETE = async (req: any, { params }: { params: { vendorId: String } }) => {
+export const DELETE = async (req: Request, { params }: { params: { vendorId: String } }) => {
   const { vendorId } = params;
   try {
     await connectToDatabase();

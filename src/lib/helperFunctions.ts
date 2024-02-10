@@ -1,6 +1,12 @@
 export const convertField = (input: string): string => {
-  const withoutSpaces = input.toLowerCase().replace(/\s/g, "");
-  const firstChar = withoutSpaces.charAt(0).toLowerCase();
-  const result = firstChar + withoutSpaces.slice(1);
+  const words = input.split(" ");
+  const firstWord = words[0].toLowerCase();
+  const restOfTheWords = words
+    .slice(1)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("");
+  const result = firstWord + restOfTheWords;
   return result;
 };
+
+export const convertFileToUrl = (file: File) => URL.createObjectURL(file);

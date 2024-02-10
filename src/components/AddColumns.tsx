@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "./ui/input";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: "Name of field must be atleast 2 characters" }),
@@ -48,6 +49,7 @@ const AddColumns = () => {
       });
       if (response.ok) {
         location.reload();
+        toast.success(`New column ${data.name} added successfully`);
       }
     } catch (error) {
       console.log(error);
@@ -55,7 +57,7 @@ const AddColumns = () => {
   };
 
   return (
-    <div>
+    <div className="flex gap-5">
       <Button
         variant={"destructive"}
         onClick={dummy}

@@ -1,6 +1,8 @@
 "use client";
 
 import VendorForm from "@/components/VendorForm";
+import { IDefaultParamSchema } from "@/models/defaultParams";
+import { IVendor } from "@/models/vendor";
 import { useEffect, useState } from "react";
 
 interface EditVendorProps {
@@ -12,7 +14,7 @@ interface EditVendorProps {
 const EditVendor = ({ params }: EditVendorProps) => {
   const { vendorId } = params;
   const [vendorDetails, setVendorDetails] = useState<any>({});
-  const [defaultParams, setDefaultParams] = useState<any>([]);
+  const [defaultParams, setDefaultParams] = useState<IDefaultParamSchema[]>([]);
   const [defaultValues, setDefaultValues] = useState({});
   const [isMounted, setIsMounted] = useState(false);
 

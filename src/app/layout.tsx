@@ -1,9 +1,8 @@
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import Sidebar from "@/components/Sidebar";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="flex bg-sky-50">
+        <NextTopLoader />
+        <Sidebar />
+        <div className="p-3 pt-10 pl-10 w-screen h-screen overflow-auto">{children}</div>
+      </body>
       <Toaster
         position="top-center"
         richColors

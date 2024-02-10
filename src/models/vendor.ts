@@ -1,5 +1,11 @@
 import { Schema, model, models } from "mongoose";
 
+export interface IVendor extends Document {
+  vendorId: string;
+  name: string;
+  additionalFields: Record<string, any>;
+}
+
 const vendorSchema = new Schema({
   vendorId: {
     type: String,

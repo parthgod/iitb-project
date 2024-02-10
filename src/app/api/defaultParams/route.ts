@@ -1,7 +1,7 @@
-import DefaultParam from "@/models/defaultParams";
+import DefaultParam, { IDefaultParamSchema } from "@/models/defaultParams";
 import { connectToDatabase } from "@/utils/database";
 
-export const POST = async (req: any) => {
+export const POST = async (req: Request) => {
   try {
     await connectToDatabase();
     const newDefaultParams = new DefaultParam();
@@ -24,19 +24,19 @@ export const GET = async () => {
   }
 };
 
-export const PATCH = async (req: any) => {
+export const PATCH = async (req: Request) => {
   const { columnName, columnType, columnField } = await req.json();
   console.log(columnName, columnType);
   try {
     await connectToDatabase();
-    const oldParams: any = await DefaultParam.find();
-    const newColumns: Object = {
+    const oldParams: IDefaultParamSchema[] = await DefaultParam.find();
+    const newColumns = {
       field: columnField,
       title: columnName,
       type: columnType,
       isDefault: false,
     };
-    const newParams: any = oldParams[0];
+    const newParams = oldParams[0];
     newParams.vendorColumns.push(newColumns);
     console.log(newParams);
     const newDefaultParams = await DefaultParam.findByIdAndUpdate(newParams._id, {

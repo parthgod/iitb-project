@@ -3,14 +3,15 @@
 import AddColumns from "@/components/AddColumns";
 import Table from "@/components/Table";
 import { Button } from "@/components/ui/button";
+import { IVendor } from "@/models/vendor";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Home() {
-  const [vendors, setVendors] = useState([]);
-  const [isMounted, setIsMounted] = useState(false);
+  const [vendors, setVendors] = useState<IVendor[]>([]);
   const [defaultParams, setDefaultParams] = useState<any>([]);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   const fetchVendors = async () => {
@@ -54,10 +55,12 @@ export default function Home() {
   if (!isMounted) return null;
 
   return (
-    <main className="flex min-h-screen flex-col gap-3 items-center p-24">
-      <h1>List of vendors</h1>
-      <Button onClick={() => router.push("/create/vendor")}>Create vendor</Button>
-      <AddColumns />
+    <main className="flex flex-col gap-3 w-full">
+      <h1 className="text-4xl font-bold">List of vendors</h1>
+      <div className="flex gap-5">
+        <Button onClick={() => router.push("/create/vendor")}>Create vendor</Button>
+        <AddColumns />
+      </div>
       {defaultParams.length && (
         <Table
           columns={defaultParams[0].vendorColumns}

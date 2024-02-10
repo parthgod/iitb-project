@@ -8,14 +8,17 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useUploadThing } from "@/lib/uploadthing";
+import { useState } from "react";
+import { FileUploader } from "./FileUploader";
+import { IDefaultParamSchema } from "@/models/defaultParams";
 
 interface VendorFormProps {
   vendorFields: any;
   vendorDetails?: any;
 }
 
-const generateFormSchema = (fields: any) => {
+const generateFormSchema = (fields: IDefaultParamSchema[]) => {
   const schema: any = {};
 
   fields.map((field: any) => {
@@ -26,7 +29,12 @@ const generateFormSchema = (fields: any) => {
 };
 
 const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
+  const [files, setFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
+
+  const { startUpload } = useUploadThing("imageUploader");
 
   const FormSchema = generateFormSchema(vendorFields);
 
@@ -36,6 +44,29 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    setIsLoading(true);
+    let uploadedImageUrl: any = {};
+    vendorFields.map((item: any) => {
+      if (item.type === "image") {
+        uploadedImageUrl[item.field] = data[item.field];
+      }
+    });
+    console.log(uploadedImageUrl);
+
+    if (files.length > 0) {
+      console.log(files);
+      files.forEach((file) => {
+        console.log(file);
+      });
+      const uploadPromises = files.map((file: any) => startUpload(file));
+      const images: any = await Promise.all(uploadPromises);
+      console.log(images);
+      Object.keys(uploadedImageUrl).map((item: any, ind: any) => {
+        data[item] = images[ind][0].url;
+      });
+      console.log(data);
+    }
+
     const defaultFields: any = {};
     const additionalFields: any = {};
     console.log(data);
@@ -67,6 +98,7 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -74,30 +106,82 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8"
+          className="flex flex-col gap-5 justify-between h-[90vh] pr-5"
         >
-          {vendorFields.map((item: any, ind: any) => (
-            <FormField
-              key={ind}
-              control={form.control}
-              name={item?.field}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{item?.title}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={item?.title}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button type="submit">Submit</Button>
+          <div className="grid grid-cols-2 gap-5">
+            {vendorFields.map((item: any, ind: any) => {
+              if (item.type === "text")
+                return (
+                  <FormField
+                    key={ind}
+                    control={form.control}
+                    name={item?.field}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{item?.title}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={item?.title}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                );
+              if (item.type === "image")
+                return (
+                  <FormField
+                    key={ind}
+                    control={form.control}
+                    name={item?.field}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{item?.title}</FormLabel>
+                        <FormControl>
+                          <FileUploader
+                            onFieldChange={field.onChange}
+                            imageUrl={field.value}
+                            setFiles={setFiles}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                );
+            })}
+          </div>
+          <div className="flex gap-5 py-3">
+            <Button
+              type="submit"
+              className="w-1/3"
+            >
+              Submit
+            </Button>
+            <Button
+              type="button"
+              className="w-1/3"
+              variant="destructive"
+              onClick={() => router.back()}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </Form>
+      {isLoading && (
+        <div className="z-10 absolute top-0 left-0 flex flex-col justify-center items-center w-screen h-screen bg-black bg-opacity-50">
+          <div className="loader">
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
+          </div>
+          <p className="mt-12 text-3xl font-bold text-gray-100">Submitting...</p>
+        </div>
+      )}
     </div>
   );
 };
