@@ -1,5 +1,5 @@
 import FormSkeleton from "@/components/FormSkeleton";
-import VendorForm from "@/components/VendorForm";
+import CreateForm from "@/components/CreateForm";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getVendorById } from "@/lib/actions/vendor.actions";
 import { Suspense } from "react";
@@ -29,16 +29,13 @@ const EditVendor = async ({ params }: EditVendorProps) => {
   const { data: vendorDetails } = (await getVendorById(vendorId)) as any;
 
   const defaultValues = calculateDefaultValues(vendorDetails, defaultParams);
-  console.log(vendorDetails);
-
-  if (!Object.keys(defaultValues).length || !Object.keys(vendorDetails).length || !defaultParams.length)
-    return <FormSkeleton />;
 
   return (
     <Suspense fallback={<FormSkeleton />}>
-      <VendorForm
-        vendorFields={defaultParams[0].vendorColumns}
-        vendorDetails={defaultValues}
+      <CreateForm
+        formFields={defaultParams[0].vendorColumns}
+        formDetails={defaultValues}
+        type="Vendor"
       />
     </Suspense>
   );

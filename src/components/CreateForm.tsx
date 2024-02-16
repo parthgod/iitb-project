@@ -1,26 +1,28 @@
 "use client";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useUploadThing } from "@/lib/uploadthing";
-import { useState } from "react";
-import { FileUploader } from "./FileUploader";
-import { IDefaultParamSchema, IVendorColumn } from "@/lib/database/models/defaultParams";
+import { createProduct, updateProduct } from "@/lib/actions/product.actions";
 import { createVendor, updateVendor } from "@/lib/actions/vendor.actions";
-import { revalidatePath } from "next/cache";
+import { createWarehouse, updateWarehouse } from "@/lib/actions/warehouse.actions";
+import { IColumn } from "@/lib/database/models/defaultParams";
+import { useUploadThing } from "@/lib/uploadthing";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { FileUploader } from "./FileUploader";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
-interface VendorFormProps {
-  vendorFields: IVendorColumn[];
-  vendorDetails?: any;
+interface CreateFormProps {
+  formFields: IColumn[];
+  formDetails?: any;
+  type: "Vendor" | "Warehouse" | "Product";
 }
 
-const generateFormSchema = (fields: IVendorColumn[]) => {
+const generateFormSchema = (fields: IColumn[]) => {
   const schema: any = {};
 
   fields.map((field) => {
@@ -30,7 +32,7 @@ const generateFormSchema = (fields: IVendorColumn[]) => {
   return z.object(schema);
 };
 
-const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
+const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,17 +40,17 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
 
   const { startUpload } = useUploadThing("imageUploader");
 
-  const FormSchema = generateFormSchema(vendorFields);
+  const FormSchema = generateFormSchema(formFields);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: vendorDetails,
+    defaultValues: formDetails,
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     let uploadedImageUrl: any = {};
-    vendorFields.map((item) => {
+    formFields.map((item) => {
       if (item.type === "image") {
         uploadedImageUrl[item.field] = data[item.field];
       }
@@ -72,9 +74,9 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
     const defaultFields: any = {};
     const additionalFields: any = {};
     console.log(data);
-    console.log(vendorFields);
+    console.log(formFields);
     Object.keys(data).map((item) => {
-      const isDefault = vendorFields.find((field) => field.field === item)?.isDefault;
+      const isDefault = formFields.find((field) => field.field === item)?.isDefault;
       console.log(isDefault);
       if (isDefault) defaultFields[item] = data[item];
       else additionalFields[item] = data[item];
@@ -87,17 +89,47 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
         defaultFields: defaultFields,
         additionalFields: additionalFields,
       };
-      if (vendorDetails) {
-        response = await updateVendor(req, vendorDetails._id);
+      if (formDetails) {
+        switch (type) {
+          case "Vendor":
+            response = await updateVendor(req, formDetails._id);
+            break;
+          case "Product":
+            response = await updateProduct(req, formDetails._id);
+            break;
+          case "Warehouse":
+            response = await updateWarehouse(req, formDetails._id);
+            break;
+
+          default:
+            break;
+        }
       } else {
-        response = await createVendor(req);
+        switch (type) {
+          case "Vendor":
+            response = await createVendor(req);
+            break;
+          case "Product":
+            response = await createProduct(req);
+            break;
+          case "Warehouse":
+            response = await createWarehouse(req);
+            break;
+
+          default:
+            break;
+        }
       }
       if (response?.status === 409) {
-        toast.error(`Vendor with Vendor ID:${data?.vendorId} already exists`);
+        toast.error(
+          `${type} with ${type} ID: ${
+            type === "Vendor" ? data?.vendorId : type === "Warehouse" ? data?.warehouseId : data.productId
+          } already exists`
+        );
       } else if (response?.status === 200) {
-        toast.success(vendorDetails ? "Vendor edited successfully" : "New vendor created successfully");
-        router.push("/");
+        router.push(`/${type.toLowerCase()}s`);
         router.refresh();
+        toast.success(formDetails ? `${type} edited successfully` : `New ${type.toLowerCase()} created successfully`);
       }
     } catch (error) {
       console.log(error);
@@ -113,7 +145,7 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
           className="flex flex-col gap-5 justify-between h-[90vh] pr-5"
         >
           <div className="grid grid-cols-2 gap-5">
-            {vendorFields.map((item, ind: number) => {
+            {formFields.map((item, ind: number) => {
               if (item.type === "text" || item.type === "number")
                 return (
                   <FormField
@@ -177,7 +209,7 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
           </div>
         </form>
       </Form>
-      {isLoading && (
+      {isLoading ? (
         <div className="z-10 absolute top-0 left-0 flex flex-col justify-center items-center w-screen h-screen bg-black bg-opacity-50">
           <div className="loader">
             <div className="circle"></div>
@@ -187,9 +219,11 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
           </div>
           <p className="mt-12 text-3xl font-bold text-gray-100">Submitting...</p>
         </div>
+      ) : (
+        ""
       )}
     </div>
   );
 };
 
-export default VendorForm;
+export default CreateForm;

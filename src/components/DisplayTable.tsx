@@ -2,7 +2,7 @@
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { noImageUrl } from "@/lib/constants";
-import { IVendorColumn } from "@/lib/database/models/defaultParams";
+import { IColumn } from "@/lib/database/models/defaultParams";
 import { IVendor } from "@/lib/database/models/vendor";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,11 +12,12 @@ import { MdEdit } from "react-icons/md";
 import DeleteConfirmation from "./DeleteConfirmation";
 
 interface TableProps {
-  columns: IVendorColumn[];
-  data: IVendor[];
+  columns: IColumn[];
+  data: any;
+  type: "Vendor" | "Warehouse" | "Product";
 }
 
-const DisplayTable = ({ columns, data }: TableProps) => {
+const DisplayTable = ({ columns, data, type }: TableProps) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
   const tableRef = useRef(null);
@@ -48,7 +49,7 @@ const DisplayTable = ({ columns, data }: TableProps) => {
       className="w-[99%] shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]"
       ref={tableRef}
     >
-      <TableCaption>A list of your vendors</TableCaption>
+      <TableCaption>{sortedData.length ? "" : `No ${type.toLowerCase()}s found`}</TableCaption>
       <TableHeader>
         <TableRow className="bg-slate-100">
           {columns.map((item, ind: number) => (
@@ -92,7 +93,11 @@ const DisplayTable = ({ columns, data }: TableProps) => {
               ))}
               <TableCell>
                 <div className="flex justify-start items-center gap-4">
-                  <Link href={`/vendor/${item?.vendorId}`}>
+                  <Link
+                    href={`/${type.toLowerCase()}s/${
+                      type === "Vendor" ? item?.vendorId : type === "Product" ? item?.productId : item?.warehouseId
+                    }`}
+                  >
                     <div
                       title="Edit"
                       className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
@@ -100,7 +105,10 @@ const DisplayTable = ({ columns, data }: TableProps) => {
                       <MdEdit className="text-xl" />
                     </div>
                   </Link>
-                  <DeleteConfirmation id={item._id} />
+                  <DeleteConfirmation
+                    id={item._id}
+                    type={type}
+                  />
                 </div>
               </TableCell>
             </TableRow>

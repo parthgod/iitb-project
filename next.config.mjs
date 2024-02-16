@@ -9,6 +9,13 @@ const nextConfig = {
       },
     ],
   },
+  redirects: async () => [
+    {
+      source: "/",
+      destination: "/vendors",
+      permanent: true,
+    },
+  ],
 };
 
 export default nextConfig;

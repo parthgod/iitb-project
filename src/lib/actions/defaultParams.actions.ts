@@ -25,7 +25,7 @@ export const createDefaultParams = async () => {
   }
 };
 
-export const updateDefaultParams = async (columnDetails: any) => {
+export const updateDefaultParams = async (columnDetails: any, itemColumnName: any) => {
   const { columnName, columnType, columnField } = columnDetails;
   try {
     await connectToDatabase();
@@ -37,9 +37,26 @@ export const updateDefaultParams = async (columnDetails: any) => {
       isDefault: false,
     };
     const newParams = oldParams[0];
-    newParams.vendorColumns.push(newColumns);
+    switch (itemColumnName) {
+      case "/vendors":
+        newParams.vendorColumns.push(newColumns);
+        break;
+
+      case "/products":
+        newParams.productColumns.push(newColumns);
+        break;
+
+      case "/warehouses":
+        newParams.warehouseColumns.push(newColumns);
+        break;
+
+      default:
+        break;
+    }
     const newDefaultParams = await DefaultParam.findByIdAndUpdate(newParams._id, {
       vendorColumns: newParams.vendorColumns,
+      productColumns: newParams.productColumns,
+      warehouseColumns: newParams.warehouseColumns,
     });
     return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
   } catch (error) {

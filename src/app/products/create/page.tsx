@@ -1,16 +1,19 @@
 import FormSkeleton from "@/components/FormSkeleton";
-import VendorForm from "@/components/VendorForm";
+import CreateForm from "@/components/CreateForm";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
 
-const CreateVendor = async () => {
+const CreateProduct = async () => {
   const { data: defaultParams } = (await getDefaultParams()) as any;
 
   return (
     <Suspense fallback={<FormSkeleton />}>
-      <VendorForm vendorFields={defaultParams[0].vendorColumns} />;
+      <CreateForm
+        formFields={defaultParams[0].productColumns}
+        type="Product"
+      />
     </Suspense>
   );
 };
 
-export default CreateVendor;
+export default CreateProduct;
