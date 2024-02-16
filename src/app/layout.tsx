@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex bg-sky-50">
+      <body className="flex">
         <NextTopLoader />
         <Sidebar />
         <div className="p-3 pt-10 pl-10 w-screen h-screen overflow-auto">{children}</div>

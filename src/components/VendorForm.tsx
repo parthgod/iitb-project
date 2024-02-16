@@ -11,17 +11,19 @@ import { toast } from "sonner";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useState } from "react";
 import { FileUploader } from "./FileUploader";
-import { IDefaultParamSchema } from "@/models/defaultParams";
+import { IDefaultParamSchema, IVendorColumn } from "@/lib/database/models/defaultParams";
+import { createVendor, updateVendor } from "@/lib/actions/vendor.actions";
+import { revalidatePath } from "next/cache";
 
 interface VendorFormProps {
-  vendorFields: any;
+  vendorFields: IVendorColumn[];
   vendorDetails?: any;
 }
 
-const generateFormSchema = (fields: IDefaultParamSchema[]) => {
+const generateFormSchema = (fields: IVendorColumn[]) => {
   const schema: any = {};
 
-  fields.map((field: any) => {
+  fields.map((field) => {
     schema[field.field] = z.string();
   });
 
@@ -46,7 +48,7 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     let uploadedImageUrl: any = {};
-    vendorFields.map((item: any) => {
+    vendorFields.map((item) => {
       if (item.type === "image") {
         uploadedImageUrl[item.field] = data[item.field];
       }
@@ -72,7 +74,7 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
     console.log(data);
     console.log(vendorFields);
     Object.keys(data).map((item) => {
-      const isDefault = vendorFields.find((field: any) => field.field === item)?.isDefault;
+      const isDefault = vendorFields.find((field) => field.field === item)?.isDefault;
       console.log(isDefault);
       if (isDefault) defaultFields[item] = data[item];
       else additionalFields[item] = data[item];
@@ -80,20 +82,22 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
     console.log(defaultFields);
     console.log(additionalFields);
     try {
-      const response = await fetch(`/api/vendor${vendorDetails ? "/" + vendorDetails._id : ""}`, {
-        method: vendorDetails ? "PATCH" : "POST",
-        body: JSON.stringify({
-          defaultFields: defaultFields,
-          additionalFields: additionalFields,
-        }),
-      });
-      console.log(response.status);
-      if (response.status === 409) {
-        toast.error(`Vendor with Vendor ID:${data?.vendorId} already exists`);
+      let response;
+      let req = {
+        defaultFields: defaultFields,
+        additionalFields: additionalFields,
+      };
+      if (vendorDetails) {
+        response = await updateVendor(req, vendorDetails._id);
+      } else {
+        response = await createVendor(req);
       }
-      if (response.ok) {
+      if (response?.status === 409) {
+        toast.error(`Vendor with Vendor ID:${data?.vendorId} already exists`);
+      } else if (response?.status === 200) {
         toast.success(vendorDetails ? "Vendor edited successfully" : "New vendor created successfully");
         router.push("/");
+        router.refresh();
       }
     } catch (error) {
       console.log(error);
@@ -109,8 +113,8 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
           className="flex flex-col gap-5 justify-between h-[90vh] pr-5"
         >
           <div className="grid grid-cols-2 gap-5">
-            {vendorFields.map((item: any, ind: any) => {
-              if (item.type === "text")
+            {vendorFields.map((item, ind: number) => {
+              if (item.type === "text" || item.type === "number")
                 return (
                   <FormField
                     key={ind}
@@ -123,6 +127,8 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
                           <Input
                             placeholder={item?.title}
                             {...field}
+                            type={item.type}
+                            className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
                           />
                         </FormControl>
                         <FormMessage />
@@ -130,7 +136,7 @@ const VendorForm = ({ vendorFields, vendorDetails }: VendorFormProps) => {
                     )}
                   />
                 );
-              if (item.type === "image")
+              else if (item.type === "image")
                 return (
                   <FormField
                     key={ind}

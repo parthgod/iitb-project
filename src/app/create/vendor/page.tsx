@@ -1,29 +1,16 @@
-"use client";
-
+import FormSkeleton from "@/components/FormSkeleton";
 import VendorForm from "@/components/VendorForm";
-import { IDefaultParamSchema } from "@/models/defaultParams";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
+import { Suspense } from "react";
 
-const CreateVendor = () => {
-  const [defaultParams, setDefaultParams] = useState<IDefaultParamSchema[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
-  const router = useRouter();
+const CreateVendor = async () => {
+  const { data: defaultParams } = (await getDefaultParams()) as any;
 
-  useEffect(() => {
-    const getDefaultParams = async () => {
-      const response = await fetch("/api/defaultParams");
-      const data = await response.json();
-      setDefaultParams(data);
-      console.log(data);
-    };
-    setIsMounted(true);
-    getDefaultParams();
-  }, []);
-
-  if (isMounted && defaultParams.length) {
-    return <VendorForm vendorFields={defaultParams[0].vendorColumns} />;
-  }
+  return (
+    <Suspense fallback={<FormSkeleton />}>
+      <VendorForm vendorFields={defaultParams[0].vendorColumns} />;
+    </Suspense>
+  );
 };
 
 export default CreateVendor;
