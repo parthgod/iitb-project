@@ -1,6 +1,6 @@
 import { Schema, model, models } from "mongoose";
 
-export interface IVendorColumn {
+export interface IColumn {
   field: string;
   title: string;
   type: string;
@@ -8,8 +8,9 @@ export interface IVendorColumn {
 }
 
 export interface IDefaultParamSchema {
-  vendorColumns: IVendorColumn[];
+  vendorColumns: IColumn[];
 }
+
 const defaultParamSchema = new Schema({
   vendorColumns: {
     type: Array,
@@ -17,6 +18,40 @@ const defaultParamSchema = new Schema({
       {
         field: "vendorId",
         title: "Vendor ID",
+        type: "text",
+        isDefault: true,
+      },
+      {
+        field: "name",
+        title: "Name",
+        type: "text",
+        isDefault: true,
+      },
+    ],
+  },
+  productColumns: {
+    type: Array,
+    default: [
+      {
+        field: "productId",
+        title: "Product ID",
+        type: "text",
+        isDefault: true,
+      },
+      {
+        field: "name",
+        title: "Name",
+        type: "text",
+        isDefault: true,
+      },
+    ],
+  },
+  warehouseColumns: {
+    type: Array,
+    default: [
+      {
+        field: "warehouseId",
+        title: "Warehouse ID",
         type: "text",
         isDefault: true,
       },

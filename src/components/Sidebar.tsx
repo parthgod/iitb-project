@@ -1,36 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { BsPeopleFill } from "react-icons/bs";
-import { LuWarehouse } from "react-icons/lu";
-import { MdOutlineInventory2, MdOutlineStoreMallDirectory } from "react-icons/md";
-import { TbTruckDelivery } from "react-icons/tb";
+import { LuCodesandbox, LuWarehouse } from "react-icons/lu";
+import { MdOutlineStoreMallDirectory } from "react-icons/md";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const router = useRouter();
   const pathname = usePathname();
   const sideMenu = [
     {
       name: "Vendors",
-      route: "/",
+      route: "/vendors",
       addUrl: "/create/vendor",
       icon: <MdOutlineStoreMallDirectory />,
     },
-    // {
-    //   name: "Warehouses",
-    //   route: "/warehouses",
-    //   addUrl: "/warehouses/new",
-    //   icon: <LuWarehouse />,
-    // },
-    // {
-    //   name: "Customers",
-    //   route: "/customers",
-    //   addUrl: "/customers/new",
-    //   icon: <BsPeopleFill />,
-    // },
+    {
+      name: "Products",
+      route: "/products",
+      addUrl: "/customers/new",
+      icon: <LuCodesandbox />,
+    },
+    {
+      name: "Warehouses",
+      route: "/warehouses",
+      addUrl: "/warehouses/new",
+      icon: <LuWarehouse />,
+    },
   ];
 
   const toggleSidebar = () => {

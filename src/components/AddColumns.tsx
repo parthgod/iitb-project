@@ -11,6 +11,7 @@ import { z } from "zod";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
 import { createDefaultParams, updateDefaultParams } from "@/lib/actions/defaultParams.actions";
+import { usePathname } from "next/navigation";
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: "Name of field must be atleast 2 characters" }),
@@ -20,6 +21,8 @@ const FormSchema = z.object({
 });
 
 const AddColumns = () => {
+  const pathname = usePathname();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -37,11 +40,14 @@ const AddColumns = () => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const response = await updateDefaultParams({
-        columnName: data.name,
-        columnType: data.type,
-        columnField: convertField(data.name),
-      });
+      const response = await updateDefaultParams(
+        {
+          columnName: data.name,
+          columnType: data.type,
+          columnField: convertField(data.name),
+        },
+        pathname
+      );
       if (response?.status === 200) {
         location.reload();
         toast.success(`New column ${data.name} added successfully`);
