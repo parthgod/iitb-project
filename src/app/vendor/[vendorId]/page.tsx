@@ -1,9 +1,8 @@
-"use client";
-
+import FormSkeleton from "@/components/FormSkeleton";
 import VendorForm from "@/components/VendorForm";
-import { IDefaultParamSchema } from "@/models/defaultParams";
-import { IVendor } from "@/models/vendor";
-import { useEffect, useState } from "react";
+import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
+import { getVendorById } from "@/lib/actions/vendor.actions";
+import { Suspense } from "react";
 
 interface EditVendorProps {
   params: {
@@ -11,56 +10,38 @@ interface EditVendorProps {
   };
 }
 
-const EditVendor = ({ params }: EditVendorProps) => {
+const calculateDefaultValues = (vendorDetails: any, defaultParams: any): any => {
+  if (Object.keys(vendorDetails).length && defaultParams.length) {
+    const values: any = {};
+    defaultParams?.[0].vendorColumns.forEach((item: any) => {
+      values[item.field] = vendorDetails?.[item.field] || vendorDetails?.additionalFields?.[item.field] || "";
+    });
+    values["_id"] = vendorDetails._id;
+    return values;
+  }
+  return {};
+};
+
+const EditVendor = async ({ params }: EditVendorProps) => {
   const { vendorId } = params;
-  const [vendorDetails, setVendorDetails] = useState<any>({});
-  const [defaultParams, setDefaultParams] = useState<IDefaultParamSchema[]>([]);
-  const [defaultValues, setDefaultValues] = useState({});
-  const [isMounted, setIsMounted] = useState(false);
 
-  const fetchVendorDetails = async () => {
-    console.log(`/api/vendor/${vendorId}`);
-    const response = await fetch(`/api/vendor/${vendorId}`);
-    if (response.status === 200) {
-      const data = await response.json();
-      setVendorDetails(data);
-      // console.log(data);
-    }
-  };
+  const { data: defaultParams } = (await getDefaultParams()) as any;
+  const { data: vendorDetails } = (await getVendorById(vendorId)) as any;
 
-  const getDefaultParams = async () => {
-    const response = await fetch("/api/defaultParams");
-    const data = await response.json();
-    setDefaultParams(data);
-    // console.log(data);
-  };
+  const defaultValues = calculateDefaultValues(vendorDetails, defaultParams);
+  console.log(vendorDetails);
 
-  useEffect(() => {
-    setIsMounted(true);
-    getDefaultParams();
-    fetchVendorDetails();
-  }, []);
+  if (!Object.keys(defaultValues).length || !Object.keys(vendorDetails).length || !defaultParams.length)
+    return <FormSkeleton />;
 
-  useEffect(() => {
-    if (Object.keys(vendorDetails).length && defaultParams.length) {
-      const values: any = {};
-      defaultParams?.[0].vendorColumns.map((item: any) => {
-        values[item.field] = vendorDetails?.[item.field] || vendorDetails?.additionalFields?.[item.field] || "";
-      });
-      values["_id"] = vendorDetails._id;
-      console.log(values);
-      setDefaultValues(values);
-    }
-  }, [vendorDetails, defaultParams]);
-
-  if (isMounted && Object.keys(defaultValues).length) {
-    return (
+  return (
+    <Suspense fallback={<FormSkeleton />}>
       <VendorForm
         vendorFields={defaultParams[0].vendorColumns}
         vendorDetails={defaultValues}
       />
-    );
-  }
+    </Suspense>
+  );
 };
 
 export default EditVendor;

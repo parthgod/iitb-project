@@ -1,72 +1,44 @@
-"use client";
-
 import AddColumns from "@/components/AddColumns";
-import Table from "@/components/Table";
+import RequestChange from "@/components/RequestChange";
+import DisplayTable from "@/components/DisplayTable";
+import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
-import { IVendor } from "@/models/vendor";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
+import { getAllVendors } from "@/lib/actions/vendor.actions";
+import Link from "next/link";
+import Search from "@/components/Search";
 
-export default function Home() {
-  const [vendors, setVendors] = useState<IVendor[]>([]);
-  const [defaultParams, setDefaultParams] = useState<any>([]);
-  const [isMounted, setIsMounted] = useState(false);
-  const router = useRouter();
+export default async function Home({ searchParams }: any) {
+  const searchTerm = searchParams.query || "";
+  const { data: defaultParams } = (await getDefaultParams()) as any;
+  const { data: vendors } = (await getAllVendors()) as any;
 
-  const fetchVendors = async () => {
-    const response = await fetch("/api/vendor");
-    if (response.ok) {
-      const data = await response.json();
-      setVendors(data);
-      console.log(data);
-    }
-  };
-
-  const getDefaultParams = async () => {
-    const response = await fetch("/api/defaultParams");
-    if (response.ok) {
-      const data = await response.json();
-      setDefaultParams(data);
-      console.log(data);
-    }
-  };
-
-  const handleDelete = async (id: String) => {
-    try {
-      const response = await fetch(`/api/vendor/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        toast.success("Vendor deleted successfully");
-        location.reload();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    setIsMounted(true);
-    getDefaultParams();
-    fetchVendors();
-  }, []);
-
-  if (!isMounted) return null;
+  const filteredVendors = searchTerm
+    ? vendors.filter((item: any) => {
+        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+      })
+    : vendors;
 
   return (
     <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold">List of vendors</h1>
-      <div className="flex gap-5">
-        <Button onClick={() => router.push("/create/vendor")}>Create vendor</Button>
-        <AddColumns />
+      <h1 className="text-4xl font-bold">Vendors</h1>
+      <div className="flex justify-between items-center gap-5">
+        <Search />
+        <div className="flex gap-5">
+          <Link href="/create/vendor">
+            <Button>Create vendor</Button>
+          </Link>
+          <AddColumns />
+          <RequestChange />
+        </div>
       </div>
-      {defaultParams.length && (
-        <Table
+      {defaultParams.length ? (
+        <DisplayTable
           columns={defaultParams[0].vendorColumns}
-          data={vendors}
-          handleDelete={handleDelete}
+          data={filteredVendors}
         />
+      ) : (
+        <TableSkeleton />
       )}
     </main>
   );

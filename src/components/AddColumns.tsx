@@ -1,15 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { convertField } from "@/lib/helperFunctions";
+import { convertField } from "@/utils/helperFunctions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
+import { createDefaultParams, updateDefaultParams } from "@/lib/actions/defaultParams.actions";
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: "Name of field must be atleast 2 characters" }),
@@ -25,11 +26,8 @@ const AddColumns = () => {
 
   const dummy = async () => {
     try {
-      const response = await fetch("/api/defaultParams", {
-        method: "POST",
-      });
-      console.log(response.ok);
-      if (response.ok) {
+      const response = await createDefaultParams();
+      if (response?.status === 200) {
         location.reload();
       }
     } catch (error) {
@@ -39,15 +37,12 @@ const AddColumns = () => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const response = await fetch("/api/defaultParams", {
-        method: "PATCH",
-        body: JSON.stringify({
-          columnName: data.name,
-          columnType: data.type,
-          columnField: convertField(data.name),
-        }),
+      const response = await updateDefaultParams({
+        columnName: data.name,
+        columnType: data.type,
+        columnField: convertField(data.name),
       });
-      if (response.ok) {
+      if (response?.status === 200) {
         location.reload();
         toast.success(`New column ${data.name} added successfully`);
       }
@@ -58,16 +53,14 @@ const AddColumns = () => {
 
   return (
     <div className="flex gap-5">
-      <Button
+      {/* <Button
         variant={"destructive"}
         onClick={dummy}
       >
         Add new column
-      </Button>
+      </Button> */}
       <Dialog>
-        <DialogTrigger>
-          <Button>Add column</Button>
-        </DialogTrigger>
+        <DialogTrigger className={buttonVariants()}>Add column</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="font-bold text-center">Add a new column</DialogTitle>

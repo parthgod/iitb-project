@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsPeopleFill } from "react-icons/bs";
@@ -59,36 +60,25 @@ const Sidebar = () => {
         <div className="bar bar--3"></div>
       </label>
       <div
-        className={`pt-4 w-full transition-all duration-300 ease-in-out flex flex-col gap-5 justify-start items-start overflow-hidden`}
+        className={`pt-4 w-full transition-all duration-300 ease-in-out flex flex-col gap-5 justify-start items-start overflow-hidden h-[90vh]`}
       >
         {sideMenu?.map((item: any, ind: any) => (
-          <div
-            className="text-xl w-full h-full flex flex-col"
+          <Link
+            className="text-xl w-full h-fit flex flex-col"
             key={ind}
-            onClick={() => router.push(item?.route)}
+            href={item?.route}
           >
             <div
-              className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-color w-full duration-300 p-1 pl-2 ease-in-out active:text-lg ${
+              className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-color w-full duration-300 p-2 pl-2 ease-in-out active:text-lg ${
                 pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
               }`}
             >
-              <div>{item?.icon}</div>
+              <div title={item.name}>{item?.icon}</div>
               <div className={`flex pr-1 justify-between items-center w-full ${isOpen ? "opacity-100" : "opacity-0"}`}>
                 {item?.name}
-                {item?.addUrl && (
-                  <div
-                    className="opacity-0 hover:text-gray-700 group-hover:opacity-100 text-3xl"
-                    onClick={(e) => {
-                      router.push(item?.addUrl);
-                      e.stopPropagation();
-                    }}
-                  >
-                    +
-                  </div>
-                )}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
