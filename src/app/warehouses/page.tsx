@@ -7,6 +7,7 @@ import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import Link from "next/link";
 import Search from "@/components/Search";
 import { getAllWarehouses } from "@/lib/actions/warehouse.actions";
+import DownloadTable from "@/components/DownloadTable";
 
 const Warehouses = async ({ searchParams }: any) => {
   const searchTerm = searchParams.query || "";
@@ -33,11 +34,18 @@ const Warehouses = async ({ searchParams }: any) => {
         </div>
       </div>
       {defaultParams.length ? (
-        <DisplayTable
-          columns={defaultParams[0].warehouseColumns}
-          data={filteredwarehouses}
-          type="Warehouse"
-        />
+        <>
+          <DisplayTable
+            columns={defaultParams[0].warehouseColumns}
+            data={filteredwarehouses}
+            type="Warehouse"
+          />
+          <DownloadTable
+            columns={defaultParams[0].warehouseColumns}
+            data={filteredwarehouses}
+            type="Warehouse"
+          />
+        </>
       ) : (
         <TableSkeleton />
       )}

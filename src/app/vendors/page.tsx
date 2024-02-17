@@ -7,6 +7,7 @@ import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllVendors } from "@/lib/actions/vendor.actions";
 import Link from "next/link";
 import Search from "@/components/Search";
+import DownloadTable from "@/components/DownloadTable";
 
 const Vendors = async ({ searchParams }: any) => {
   const searchTerm = searchParams.query || "";
@@ -33,11 +34,18 @@ const Vendors = async ({ searchParams }: any) => {
         </div>
       </div>
       {defaultParams.length ? (
-        <DisplayTable
-          columns={defaultParams[0].vendorColumns}
-          data={filteredVendors}
-          type="Vendor"
-        />
+        <>
+          <DisplayTable
+            columns={defaultParams[0].vendorColumns}
+            data={filteredVendors}
+            type="Vendor"
+          />
+          {/* <DownloadTable
+            columns={defaultParams[0].vendorColumns}
+            data={filteredVendors}
+            type="Vendor"
+          /> */}
+        </>
       ) : (
         <TableSkeleton />
       )}
