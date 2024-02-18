@@ -1,8 +1,9 @@
 import { Schema, model, models } from "mongoose";
 
-const requestSchema = new Schema({
+const changesSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   message: {
@@ -11,6 +12,6 @@ const requestSchema = new Schema({
   },
 });
 
-const Request = models.Request || model("Request", requestSchema);
+const Changes = models.Changes || model("Changes", changesSchema);
 
-export default Request;
+export default Changes;

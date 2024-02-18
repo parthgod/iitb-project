@@ -1,23 +1,41 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Textarea } from "./ui/textarea";
+import { useSession } from "next-auth/react";
+import { createRequest } from "@/lib/actions/requests.actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   message: z.string(),
 });
 
 const RequestChange = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      const response = await createRequest({ userId: session?.user.id, message: data.message });
+      console.log(response);
+      if (response?.status === 200) {
+        toast.success("Request sent successfully");
+        // location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Action could not be completed. Please try again");
+    }
     console.log(data.message);
   };
 
@@ -51,7 +69,9 @@ const RequestChange = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Submit</Button>
+              <DialogClose>
+                <Button type="submit">Submit</Button>
+              </DialogClose>
             </form>
           </Form>
         </DialogContent>
