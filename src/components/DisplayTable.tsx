@@ -3,17 +3,18 @@
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { noImageUrl } from "@/lib/constants";
 import { IColumn } from "@/lib/database/models/defaultParams";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import { MdEdit } from "react-icons/md";
-import DeleteConfirmation from "./DeleteConfirmation";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
-import { Button } from "./ui/button";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import * as XLSX from "xlsx/xlsx.mjs";
+import DeleteConfirmation from "./DeleteConfirmation";
+import { Button } from "./ui/button";
 
 interface TableProps {
   columns: IColumn[];
@@ -26,6 +27,8 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
   const iconRef = useRef<HTMLInputElement>(null);
+
+  const { data: session } = useSession();
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -62,21 +65,21 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
   };
 
   const downloadPDF = async (type: any) => {
-    const input = tableRef.current;
-    const tempInput = input;
+    const input: any = tableRef.current;
+    const tempInput: any = input.cloneNode(true);
 
     if (tempInput && tempInput.rows.length > 0) {
-      // Convert HTMLCollection to an array
       const rowsArray = Array.from(tempInput.rows);
 
       rowsArray.forEach((row: any) => {
         const lastCell = row.lastChild;
 
-        if (lastCell) {
-          row.removeChild(lastCell);
+        if (session?.user.isAdmin) {
+          if (lastCell) {
+            row.removeChild(lastCell);
+          }
         }
 
-        // Remove the div with id "sort_icons" from each cell in the row
         const sortIconsDivs = row.querySelectorAll("#sort_icons");
         sortIconsDivs.forEach((div: any) => {
           if (div.parentNode) {
@@ -87,7 +90,12 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     }
 
     try {
-      const canvas = await html2canvas(tempInput!);
+      tempInput.id = "clonedTable";
+      tempInput.style.position = "absolute";
+      tempInput.style.left = "-9999px";
+      tempInput.style.top = "-9999px";
+      document.body.appendChild(tempInput);
+      const canvas = await html2canvas(document.getElementById("clonedTable")!);
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -98,7 +106,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
       const height = (canvas.height * width) / canvas.width;
       pdf.addImage(imgData, "PNG", 0, 0, width, height);
       pdf.save(`${type}.pdf`);
-      location.reload();
+      document.body.removeChild(tempInput);
     } catch (error) {
       console.error("Error generating PDF:", error);
     }
@@ -154,17 +162,21 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                 </div>
               </TableHead>
             ))}
-            <TableHead className="flex justify-between items-center">
-              <div>Actions</div>
-              <div
-                id="icon"
-                ref={iconRef}
-                className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer"
-                // onClick={toggleButtons}
-              >
-                <PiDotsThreeVerticalBold />
-              </div>
-            </TableHead>
+            {session?.user.isAdmin ? (
+              <TableHead className="flex justify-between items-center">
+                <div>Actions</div>
+                <div
+                  id="icon"
+                  ref={iconRef}
+                  className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer"
+                  // onClick={toggleButtons}
+                >
+                  <PiDotsThreeVerticalBold />
+                </div>
+              </TableHead>
+            ) : (
+              ""
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -189,26 +201,30 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                     )}
                   </TableCell>
                 ))}
-                <TableCell>
-                  <div className="flex justify-start items-center gap-4">
-                    <Link
-                      href={`/${type.toLowerCase()}s/${
-                        type === "Vendor" ? item?.vendorId : type === "Product" ? item?.productId : item?.warehouseId
-                      }`}
-                    >
-                      <div
-                        title="Edit"
-                        className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
+                {session?.user.isAdmin ? (
+                  <TableCell>
+                    <div className="flex justify-start items-center gap-4">
+                      <Link
+                        href={`/${type.toLowerCase()}s/${
+                          type === "Vendor" ? item?.vendorId : type === "Product" ? item?.productId : item?.warehouseId
+                        }`}
                       >
-                        <MdEdit className="text-xl" />
-                      </div>
-                    </Link>
-                    <DeleteConfirmation
-                      id={item._id}
-                      type={type}
-                    />
-                  </div>
-                </TableCell>
+                        <div
+                          title="Edit"
+                          className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
+                        >
+                          <MdEdit className="text-xl" />
+                        </div>
+                      </Link>
+                      <DeleteConfirmation
+                        id={item._id}
+                        type={type}
+                      />
+                    </div>
+                  </TableCell>
+                ) : (
+                  ""
+                )}
               </TableRow>
             );
           })}

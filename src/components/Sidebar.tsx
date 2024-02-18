@@ -1,14 +1,19 @@
 "use client";
 
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { LuCodesandbox, LuWarehouse } from "react-icons/lu";
 import { MdOutlineStoreMallDirectory } from "react-icons/md";
+import { GrDocumentUser } from "react-icons/gr";
+import { Button } from "./ui/button";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();
+  const { data: session } = useSession();
+
   const sideMenu = [
     {
       name: "Vendors",
@@ -27,6 +32,11 @@ const Sidebar = () => {
       route: "/warehouses",
       addUrl: "/warehouses/new",
       icon: <LuWarehouse />,
+    },
+    {
+      name: "Requests",
+      route: "/requests",
+      icon: <GrDocumentUser />,
     },
   ];
 
@@ -59,24 +69,55 @@ const Sidebar = () => {
       <div
         className={`pt-4 w-full transition-all duration-300 ease-in-out flex flex-col gap-5 justify-start items-start overflow-hidden h-[90vh]`}
       >
-        {sideMenu?.map((item: any, ind: any) => (
-          <Link
-            className="text-xl w-full h-fit flex flex-col"
-            key={ind}
-            href={item?.route}
-          >
-            <div
-              className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-color w-full duration-300 p-2 pl-2 ease-in-out active:text-lg ${
-                pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
-              }`}
+        {sideMenu?.map((item: any, ind: any) => {
+          if (item.name === "Requests") {
+            if (session?.user.isAdmin)
+              return (
+                <Link
+                  className="text-xl w-full h-fit flex flex-col"
+                  key={ind}
+                  href={item?.route}
+                >
+                  <div
+                    className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-color w-full duration-300 p-2 pl-2 ease-in-out active:text-lg ${
+                      pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
+                    }`}
+                  >
+                    <div title={item.name}>{item?.icon}</div>
+                    <div
+                      className={`flex pr-1 justify-between items-center w-full ${
+                        isOpen ? "opacity-100" : "opacity-0"
+                      }`}
+                    >
+                      {item?.name}
+                    </div>
+                  </div>
+                </Link>
+              );
+            else return null;
+          }
+
+          return (
+            <Link
+              className="text-xl w-full h-fit flex flex-col"
+              key={ind}
+              href={item?.route}
             >
-              <div title={item.name}>{item?.icon}</div>
-              <div className={`flex pr-1 justify-between items-center w-full ${isOpen ? "opacity-100" : "opacity-0"}`}>
-                {item?.name}
+              <div
+                className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-color w-full duration-300 p-2 pl-2 ease-in-out active:text-lg ${
+                  pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
+                }`}
+              >
+                <div title={item.name}>{item?.icon}</div>
+                <div
+                  className={`flex pr-1 justify-between items-center w-full ${isOpen ? "opacity-100" : "opacity-0"}`}
+                >
+                  {item?.name}
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

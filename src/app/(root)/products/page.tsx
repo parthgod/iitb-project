@@ -1,3 +1,4 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import AddColumns from "@/components/AddColumns";
 import DisplayTable from "@/components/DisplayTable";
 import RequestChange from "@/components/RequestChange";
@@ -6,12 +7,15 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllProducts } from "@/lib/actions/product.actions";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const Products = async ({ searchParams }: any) => {
   const searchTerm = searchParams.query || "";
   const { data: defaultParams } = (await getDefaultParams()) as any;
   const { data: products } = (await getAllProducts()) as any;
+
+  const session = await getServerSession(authOptions);
 
   const filteredProducts = searchTerm
     ? products.filter((item: any) => {
@@ -25,11 +29,13 @@ const Products = async ({ searchParams }: any) => {
       <div className="flex justify-between items-center gap-5">
         <Search />
         <div className="flex gap-5">
-          <Link href="/products/create">
-            <Button>Create Product</Button>
-          </Link>
-          <AddColumns />
-          <RequestChange />
+          {session?.user?.isAdmin && (
+            <Link href="/products/create">
+              <Button>Create vendor</Button>
+            </Link>
+          )}
+          {session?.user.isAdmin && <AddColumns />}
+          {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>
       {defaultParams.length ? (

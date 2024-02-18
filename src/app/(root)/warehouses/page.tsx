@@ -8,11 +8,15 @@ import Link from "next/link";
 import Search from "@/components/Search";
 import { getAllWarehouses } from "@/lib/actions/warehouse.actions";
 import DownloadTable from "@/components/DownloadTable";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const Warehouses = async ({ searchParams }: any) => {
   const searchTerm = searchParams.query || "";
   const { data: defaultParams } = (await getDefaultParams()) as any;
   const { data: warehouses } = (await getAllWarehouses()) as any;
+
+  const session = await getServerSession(authOptions);
 
   const filteredwarehouses = searchTerm
     ? warehouses.filter((item: any) => {
@@ -26,11 +30,13 @@ const Warehouses = async ({ searchParams }: any) => {
       <div className="flex justify-between items-center gap-5">
         <Search />
         <div className="flex gap-5">
-          <Link href="/warehouses/create">
-            <Button>Create Warehouse</Button>
-          </Link>
-          <AddColumns />
-          <RequestChange />
+          {session?.user?.isAdmin && (
+            <Link href="/warehouses/create">
+              <Button>Create vendor</Button>
+            </Link>
+          )}
+          {session?.user.isAdmin && <AddColumns />}
+          {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>
       {defaultParams.length ? (
