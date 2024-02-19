@@ -13,7 +13,6 @@ export const middleware = async (req: NextRequest) => {
   if (!token) return NextResponse.redirect(new URL("/login", req.url));
 
   const isAdmin = token.role === "admin";
-  // console.log(isAdmin);
 
   if (!isAdmin && pathname.startsWith("/vendors/")) return NextResponse.redirect(new URL("/", req.url));
 

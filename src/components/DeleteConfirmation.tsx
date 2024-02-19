@@ -31,7 +31,7 @@ const DeleteConfirmation = ({ id, type }: { id: string; type: "Vendor" | "Wareho
           <MdDelete className="text-gray-500 text-xl" />
         </div>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-white">
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>

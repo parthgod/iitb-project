@@ -17,7 +17,6 @@ const Vendors = async ({ searchParams }: any) => {
   const { data: vendors } = (await getAllVendors()) as any;
 
   const session = await getServerSession(authOptions);
-  // console.log(session);
 
   const filteredVendors = searchTerm
     ? vendors.filter((item: any) => {
@@ -28,7 +27,7 @@ const Vendors = async ({ searchParams }: any) => {
   return (
     <main className="flex flex-col gap-3 w-full">
       <h1 className="text-4xl font-bold">Vendors</h1>
-      <div className="flex justify-between items-center gap-5">
+      <div className="flex justify-between items-center gap-5 mb-2">
         <Search />
         <div className="flex gap-5">
           {session?.user?.isAdmin && (
@@ -41,18 +40,11 @@ const Vendors = async ({ searchParams }: any) => {
         </div>
       </div>
       {defaultParams.length ? (
-        <>
-          <DisplayTable
-            columns={defaultParams[0].vendorColumns}
-            data={filteredVendors}
-            type="Vendor"
-          />
-          {/* <DownloadTable
-            columns={defaultParams[0].vendorColumns}
-            data={filteredVendors}
-            type="Vendor"
-          /> */}
-        </>
+        <DisplayTable
+          columns={defaultParams[0].vendorColumns}
+          data={filteredVendors}
+          type="Vendor"
+        />
       ) : (
         <TableSkeleton />
       )}

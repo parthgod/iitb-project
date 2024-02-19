@@ -67,7 +67,7 @@ const AddColumns = () => {
       </Button> */}
       <Dialog>
         <DialogTrigger className={buttonVariants()}>Add column</DialogTrigger>
-        <DialogContent>
+        <DialogContent className="bg-white">
           <DialogHeader>
             <DialogTitle className="font-bold text-center">Add a new column</DialogTitle>
           </DialogHeader>

@@ -16,6 +16,23 @@ import { FileUploader } from "./FileUploader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
+const mockData = [
+  { vendorId: "01HQ0VB61529H5MJQJ3MX3APVM", name: "Greenholt, Tromp and Will", test: "Clean Force Hand Sanitizer" },
+  { vendorId: "01HQ0VB617YAKBQ61VMWM0YEAD", name: "Langosh and Sons", test: "Pecan Pollen" },
+  {
+    vendorId: "01HQ0VB618Y49NRR65ENFGS5B4",
+    name: "Koelpin and Sons",
+    test: "Bupivacaine Hydrochloride and Epinephrine",
+  },
+  { vendorId: "01HQ0VB619XT4WCMZJXWFRG5Y4", name: "Reichel Inc", test: "CellCept" },
+  { vendorId: "01HQ0VB61AEYKDTS70JBNCVPMX", name: "Dare, Lesch and Strosin", test: "Amoebatox" },
+  { vendorId: "01HQ0VB61AK0WF0WPGPEHY0GVX", name: "Sauer, Spinka and Lynch", test: "ASPIRIN" },
+  { vendorId: "01HQ0VB61B7Q4C5P4B5X327RX4", name: "Conn, Gibson and Oberbrunner", test: "Olanzapine" },
+  { vendorId: "01HQ0VB61C85M7RV5HZHW4B78M", name: "Kessler, O'Conner and Buckridge", test: "Rite Aid Sunscreen" },
+  { vendorId: "01HQ0VB61DHEHTS0Y2YE71KR5W", name: "Rodriguez LLC", test: "Envirokleen Instant Hand Sanitizer" },
+  { vendorId: "01HQ0VB61E82PBK05FWJCBYKYP", name: "Beatty, Streich and Shields", test: "Famotidine" },
+];
+
 interface CreateFormProps {
   formFields: IColumn[];
   formDetails?: any;
@@ -55,34 +72,22 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         uploadedImageUrl[item.field] = data[item.field];
       }
     });
-    console.log(uploadedImageUrl);
 
     if (files.length > 0) {
-      console.log(files);
-      files.forEach((file) => {
-        console.log(file);
-      });
       const uploadPromises = files.map((file: any) => startUpload(file));
       const images: any = await Promise.all(uploadPromises);
-      console.log(images);
       Object.keys(uploadedImageUrl).map((item: any, ind: any) => {
         data[item] = images[ind][0].url;
       });
-      console.log(data);
     }
 
     const defaultFields: any = {};
     const additionalFields: any = {};
-    console.log(data);
-    console.log(formFields);
     Object.keys(data).map((item) => {
       const isDefault = formFields.find((field) => field.field === item)?.isDefault;
-      console.log(isDefault);
       if (isDefault) defaultFields[item] = data[item];
       else additionalFields[item] = data[item];
     });
-    console.log(defaultFields);
-    console.log(additionalFields);
     try {
       let response;
       let req = {
@@ -144,68 +149,71 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-5 justify-between h-[90vh] pr-5"
         >
-          <div className="grid grid-cols-2 gap-5">
-            {formFields.map((item, ind: number) => {
-              if (item.type === "text" || item.type === "number")
-                return (
-                  <FormField
-                    key={ind}
-                    control={form.control}
-                    name={item?.field}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{item?.title}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={item?.title}
-                            {...field}
-                            type={item.type}
-                            className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                );
-              else if (item.type === "image")
-                return (
-                  <FormField
-                    key={ind}
-                    control={form.control}
-                    name={item?.field}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{item?.title}</FormLabel>
-                        <FormControl>
-                          <FileUploader
-                            onFieldChange={field.onChange}
-                            imageUrl={field.value}
-                            setFiles={setFiles}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                );
-            })}
-          </div>
-          <div className="flex gap-5 py-3">
-            <Button
-              type="submit"
-              className="w-1/3"
-            >
-              Submit
-            </Button>
-            <Button
-              type="button"
-              className="w-1/3"
-              variant="destructive"
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
+          <div className="flex flex-col gap-5">
+            <p className="font-bold text-3xl">Create new {type.toLowerCase()}</p>
+            <div className="grid grid-cols-2 gap-5">
+              {formFields.map((item, ind: number) => {
+                if (item.type === "text" || item.type === "number")
+                  return (
+                    <FormField
+                      key={ind}
+                      control={form.control}
+                      name={item?.field}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{item?.title}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={item?.title}
+                              {...field}
+                              type={item.type}
+                              className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  );
+                else if (item.type === "image")
+                  return (
+                    <FormField
+                      key={ind}
+                      control={form.control}
+                      name={item?.field}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{item?.title}</FormLabel>
+                          <FormControl>
+                            <FileUploader
+                              onFieldChange={field.onChange}
+                              imageUrl={field.value}
+                              setFiles={setFiles}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  );
+              })}
+            </div>
+            <div className="flex gap-5 py-3">
+              <Button
+                type="submit"
+                className="w-1/3"
+              >
+                Submit
+              </Button>
+              <Button
+                type="button"
+                className="w-1/3"
+                variant="destructive"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </form>
       </Form>

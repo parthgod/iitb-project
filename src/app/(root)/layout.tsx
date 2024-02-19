@@ -1,14 +1,12 @@
-import { Toaster } from "sonner";
-import type { Metadata } from "next";
-import "../globals.css";
-import Sidebar from "@/components/Sidebar";
-import NextTopLoader from "nextjs-toploader";
-import ToasterContext from "@/context/ToasterContext";
-import SessionProvider from "@/context/AuthContext";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
+import SessionProvider from "@/context/AuthContext";
+import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "sonner";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import "../globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,12 +28,13 @@ export default async function RootLayout({
           <Sidebar />
           <div className="p-3 pt-10 pl-10 w-screen h-screen overflow-auto">{children}</div>
           <Navbar />
-          <ToasterContext />
         </SessionProvider>
       </body>
       <Toaster
         position="top-center"
         richColors
+        closeButton={true}
+        duration={4000}
       />
     </html>
   );

@@ -1,6 +1,6 @@
 import NextTopLoader from "nextjs-toploader";
 import "../globals.css";
-import ToasterContext from "@/context/ToasterContext";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "Next.js",
@@ -12,7 +12,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en">
       <body>
         <NextTopLoader />
-        <ToasterContext />
+        <Toaster
+          position="top-center"
+          richColors
+          closeButton={true}
+          duration={4000}
+        />
         {children}
       </body>
     </html>

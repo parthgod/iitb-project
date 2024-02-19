@@ -15,6 +15,7 @@ import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import * as XLSX from "xlsx/xlsx.mjs";
 import DeleteConfirmation from "./DeleteConfirmation";
 import { Button } from "./ui/button";
+import { FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
 
 interface TableProps {
   columns: IColumn[];
@@ -58,7 +59,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
       const buttons = document.getElementById("buttons");
       if (buttons) {
         buttons.style.top = `${iconRect.bottom}px`;
-        buttons.style.left = `${iconRect.left - 100}px`;
+        buttons.style.left = `${iconRect.left - 180}px`;
         buttons.classList.toggle("invisible");
       }
     }
@@ -116,7 +117,6 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     var elt: any = tableRef.current;
     const tempInput = elt.cloneNode(true);
     if (tempInput && tempInput.rows.length > 0) {
-      // Convert HTMLCollection to an array
       const rowsArray = Array.from(tempInput.rows);
 
       rowsArray.forEach((row: any) => {
@@ -132,16 +132,29 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
   }
 
   return (
-    <>
+    <div>
       <div
         id="buttons"
-        className="flex justify-center items-center gap-3"
+        className="flex flex-col justify-start items-start absolute bg-white z-10 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-sm overflow-hidden invisible"
       >
-        <Button onClick={() => fnExportToExcel(type)}>Export excel</Button>
-        <Button onClick={() => downloadPDF(type)}>Export PDF</Button>
+        <p
+          onClick={() => fnExportToExcel(type)}
+          className="p-4 cursor-pointer flex justify-start items-center gap-2 text-[#217149] w-full hover:bg-[#dcdcdc] transition-colors duration-300 ease-in-out border-b-[1px] border-gray-300"
+        >
+          <FaRegFileExcel className="text-[#008744]" />
+          Export as excel (.xlsx)
+        </p>
+        <p
+          onClick={() => downloadPDF(type)}
+          className="p-4 cursor-pointer flex justify-start items-center gap-2 text-[#a13931] w-full hover:bg-[#dcdcdc] transition-colors duration-300 ease-in-out"
+        >
+          <FaRegFilePdf className="text-[#d62d20]" />
+          Export as PDF (.pdf)
+        </p>
       </div>
+      {/* <div className="h-[50vh] overflow-hidden"> */}
       <Table
-        className="w-[99%] shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]"
+        className=""
         ref={tableRef}
         id="tbl_exporttable_to_xls"
       >
@@ -169,7 +182,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                   id="icon"
                   ref={iconRef}
                   className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer"
-                  // onClick={toggleButtons}
+                  onClick={toggleButtons}
                 >
                   <PiDotsThreeVerticalBold />
                 </div>
@@ -230,7 +243,8 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
           })}
         </TableBody>
       </Table>
-    </>
+      {/* </div> */}
+    </div>
   );
 };
 

@@ -1,15 +1,15 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface IUserRegister {
   email: string;
@@ -17,7 +17,6 @@ interface IUserRegister {
 }
 
 export default function LoginForm() {
-  // To redirect user use use router
   const router = useRouter();
 
   const {
@@ -49,7 +48,7 @@ export default function LoginForm() {
 
   const handleSubmitForm = async (data: IUserRegister) => {
     // toast loading
-    const toastLoading = toast.loading("processing...");
+    const toastLoading = toast.loading("Processing...");
     try {
       const response = await signIn("credentials", {
         email: data.email,
@@ -57,22 +56,18 @@ export default function LoginForm() {
         redirect: false,
       });
 
-      // console.log("response", response);
-      toast.success("Successfully signed in");
-      router.push("/");
+      if (response?.status === 401) return toast.error("Incorrect email or password. Please try again");
 
-      // toast success
+      if (response?.status === 404) return toast.error("Email does not exist. Please use another email");
+
+      toast.success("Successfully signed in");
+      toast.loading("Please wait while you are being redirected...", { position: "bottom-right", closeButton: false });
+      router.push("/");
     } catch (error: any) {
-      // toast error
       toast.error("Failed!", error?.message);
     } finally {
-      // toast close
       toast.dismiss(toastLoading);
     }
-  };
-
-  const redirectToRegister = () => {
-    window.location.href = "http://localhost:3000/register";
   };
 
   return (
@@ -119,7 +114,4 @@ export default function LoginForm() {
       </form>
     </>
   );
-}
-function useNavigate() {
-  throw new Error("Function not implemented.");
 }

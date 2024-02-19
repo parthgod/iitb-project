@@ -27,12 +27,12 @@ const Warehouses = async ({ searchParams }: any) => {
   return (
     <main className="flex flex-col gap-3 w-full">
       <h1 className="text-4xl font-bold">Warehouses</h1>
-      <div className="flex justify-between items-center gap-5">
+      <div className="flex justify-between items-center gap-5 mb-2">
         <Search />
         <div className="flex gap-5">
           {session?.user?.isAdmin && (
             <Link href="/warehouses/create">
-              <Button>Create vendor</Button>
+              <Button>Create warehouse</Button>
             </Link>
           )}
           {session?.user.isAdmin && <AddColumns />}

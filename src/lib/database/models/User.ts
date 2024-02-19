@@ -14,7 +14,6 @@ const UserSchema = new Schema(
     },
     password: {
       type: String,
-      //   required: [true, "Password must be provided"],
     },
     isAdmin: {
       type: Boolean,
