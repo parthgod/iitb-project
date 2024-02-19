@@ -6,9 +6,9 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface IUserRegister {
   name: string;
@@ -51,14 +51,19 @@ export default function RegistrationForm() {
 
   const handleSubmitForm = async (data: IUserRegister) => {
     // toast loading
-    const toastLoading = toast.loading("processing...");
+    const toastLoading = toast.loading("Processing...");
     try {
       const response = await axios.post("/api/users/register", data);
-      console.log("response", response);
+      if (response.status === 400) {
+        toast.error("User already exists. Try logging in instead");
+        return;
+      }
       toast.success("User registration completed successfully");
       router.push("/");
     } catch (error: any) {
-      toast.error("Failed!", error?.message);
+      console.log(error);
+      if (error.response.status) return toast.error("User already exists. Try logging in instead");
+      return toast.error("Failed!", error?.message);
     } finally {
       toast.dismiss(toastLoading);
     }

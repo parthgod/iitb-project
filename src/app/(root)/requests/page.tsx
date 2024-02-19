@@ -8,7 +8,7 @@ const RequestsPage = async () => {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-4xl font-bold">User Requests</h1>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 h-[80vh] overflow-auto">
         {changes.data.map((change: any) => (
           <Card className="w-[98%]">
             <CardHeader>

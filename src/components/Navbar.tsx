@@ -4,9 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { pfp } from "@/lib/constants";
 import { signOut, useSession } from "next-auth/react";
 import { CiLogout } from "react-icons/ci";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const { data: session } = useSession();
+  console.log(session);
 
   return (
     <div className="absolute right-7 top-5">
@@ -18,7 +20,7 @@ const Navbar = () => {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-lg">{session.user.name}</p>
+              <p className="text-base">{session.user.name}</p>
               <p className="text-xs text-gray-500">{session.user.email}</p>
             </div>
           </div>
@@ -28,6 +30,7 @@ const Navbar = () => {
             title="Logout"
             onClick={() => {
               signOut();
+              toast.loading("Logging out...");
             }}
           />
         </div>

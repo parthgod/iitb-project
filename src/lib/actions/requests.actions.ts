@@ -18,11 +18,12 @@ export const getAllRequests = async () => {
 export const createRequest = async (req: any) => {
   const { userId, message } = req;
   const id = new ObjectId(userId);
-  console.log(req);
   try {
     await connectToDatabase();
     const newRequest = new Changes({ user: id, message: message });
     await newRequest.save();
     return { data: JSON.parse(JSON.stringify(newRequest)), status: 200 };
-  } catch (error) {}
+  } catch (error) {
+    handleError(error);
+  }
 };
