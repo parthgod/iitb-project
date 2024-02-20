@@ -7,11 +7,11 @@ import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import Link from "next/link";
 import Search from "@/components/Search";
 import { getAllWarehouses } from "@/lib/actions/warehouse.actions";
-import DownloadTable from "@/components/DownloadTable";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { IWarehouse } from "@/lib/database/models/warehouse";
 
-const Warehouses = async ({ searchParams }: any) => {
+const Warehouses = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
   const { data: defaultParams } = (await getDefaultParams()) as any;
   const { data: warehouses } = (await getAllWarehouses()) as any;
@@ -19,7 +19,7 @@ const Warehouses = async ({ searchParams }: any) => {
   const session = await getServerSession(authOptions);
 
   const filteredwarehouses = searchTerm
-    ? warehouses.filter((item: any) => {
+    ? warehouses.filter((item: IWarehouse) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : warehouses;
@@ -40,18 +40,11 @@ const Warehouses = async ({ searchParams }: any) => {
         </div>
       </div>
       {defaultParams.length ? (
-        <>
-          <DisplayTable
-            columns={defaultParams[0].warehouseColumns}
-            data={filteredwarehouses}
-            type="Warehouse"
-          />
-          <DownloadTable
-            columns={defaultParams[0].warehouseColumns}
-            data={filteredwarehouses}
-            type="Warehouse"
-          />
-        </>
+        <DisplayTable
+          columns={defaultParams[0].warehouseColumns}
+          data={filteredwarehouses}
+          type="Warehouse"
+        />
       ) : (
         <TableSkeleton />
       )}

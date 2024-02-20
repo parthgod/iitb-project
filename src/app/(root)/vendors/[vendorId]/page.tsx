@@ -3,6 +3,8 @@ import CreateForm from "@/components/CreateForm";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getVendorById } from "@/lib/actions/vendor.actions";
 import { Suspense } from "react";
+import { IVendor } from "@/lib/database/models/vendor";
+import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 
 interface EditVendorProps {
   params: {
@@ -10,10 +12,10 @@ interface EditVendorProps {
   };
 }
 
-const calculateDefaultValues = (vendorDetails: any, defaultParams: any): any => {
+const calculateDefaultValues = (vendorDetails: IVendor, defaultParams: IDefaultParamSchema[]) => {
   if (Object.keys(vendorDetails).length && defaultParams.length) {
     const values: any = {};
-    defaultParams?.[0].vendorColumns.forEach((item: any) => {
+    defaultParams?.[0].vendorColumns.forEach((item) => {
       values[item.field] = vendorDetails?.[item.field] || vendorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = vendorDetails._id;

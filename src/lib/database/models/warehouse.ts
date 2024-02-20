@@ -4,6 +4,8 @@ export interface IWarehouse extends Document {
   warehouseId: string;
   name: string;
   additionalFields: Record<string, any>;
+  [key: string]: any;
+  _id: string;
 }
 
 const warehouseSchema = new Schema({

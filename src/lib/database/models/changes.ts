@@ -1,4 +1,10 @@
+import { ObjectId } from "mongodb";
 import { Schema, model, models } from "mongoose";
+
+export interface IChange {
+  user: ObjectId;
+  message: string;
+}
 
 const changesSchema = new Schema({
   user: {

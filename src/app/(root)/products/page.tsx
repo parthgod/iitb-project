@@ -7,10 +7,11 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllProducts } from "@/lib/actions/product.actions";
+import { IProduct } from "@/lib/database/models/product";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-const Products = async ({ searchParams }: any) => {
+const Products = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
   const { data: defaultParams } = (await getDefaultParams()) as any;
   const { data: products } = (await getAllProducts()) as any;
@@ -18,7 +19,7 @@ const Products = async ({ searchParams }: any) => {
   const session = await getServerSession(authOptions);
 
   const filteredProducts = searchTerm
-    ? products.filter((item: any) => {
+    ? products.filter((item: IProduct) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : products;
