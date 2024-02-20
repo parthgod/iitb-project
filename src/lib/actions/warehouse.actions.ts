@@ -57,7 +57,7 @@ export const updateWarehouse = async (req: any, warehouseId: any) => {
   }
 };
 
-export const deleteWarehouse = async (warehouseId: any, path: any) => {
+export const deleteWarehouse = async (warehouseId: string, path: string) => {
   try {
     await connectToDatabase();
     const response = await Warehouse.findByIdAndDelete(warehouseId);

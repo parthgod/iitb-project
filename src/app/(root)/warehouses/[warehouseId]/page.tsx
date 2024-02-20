@@ -3,6 +3,8 @@ import CreateForm from "@/components/CreateForm";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getWarehouseById } from "@/lib/actions/warehouse.actions";
 import { Suspense } from "react";
+import { IWarehouse } from "@/lib/database/models/warehouse";
+import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 
 interface EditWarehouseProps {
   params: {
@@ -10,10 +12,10 @@ interface EditWarehouseProps {
   };
 }
 
-const calculateDefaultValues = (warehouseDetails: any, defaultParams: any): any => {
+const calculateDefaultValues = (warehouseDetails: IWarehouse, defaultParams: IDefaultParamSchema[]) => {
   if (Object.keys(warehouseDetails).length && defaultParams.length) {
     const values: any = {};
-    defaultParams?.[0].warehouseColumns.forEach((item: any) => {
+    defaultParams?.[0].warehouseColumns.forEach((item) => {
       values[item.field] = warehouseDetails?.[item.field] || warehouseDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = warehouseDetails._id;

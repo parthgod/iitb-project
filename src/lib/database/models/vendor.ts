@@ -4,6 +4,7 @@ export interface IVendor extends Document {
   vendorId: string;
   name: string;
   additionalFields: Record<string, any>;
+  [key: string]: any;
 }
 
 const vendorSchema = new Schema({

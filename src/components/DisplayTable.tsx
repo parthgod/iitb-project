@@ -65,9 +65,9 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     }
   };
 
-  const downloadPDF = async (type: any) => {
-    const input: any = tableRef.current;
-    const tempInput: any = input.cloneNode(true);
+  const downloadPDF = async (type: string) => {
+    const input = tableRef.current;
+    const tempInput: any = input!.cloneNode(true);
 
     if (tempInput && tempInput.rows.length > 0) {
       const rowsArray = Array.from(tempInput.rows);

@@ -9,6 +9,8 @@ export interface IColumn {
 
 export interface IDefaultParamSchema {
   vendorColumns: IColumn[];
+  productColumns: IColumn[];
+  warehouseColumns: IColumn[];
 }
 
 const defaultParamSchema = new Schema({

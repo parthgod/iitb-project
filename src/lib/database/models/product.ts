@@ -1,9 +1,11 @@
 import { Schema, model, models } from "mongoose";
 
 export interface IProduct extends Document {
+  _id: string;
   productId: string;
   name: string;
   additionalFields: Record<string, any>;
+  [key: string]: any;
 }
 
 const productSchema = new Schema({

@@ -7,11 +7,11 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllVendors } from "@/lib/actions/vendor.actions";
+import { IVendor } from "@/lib/database/models/vendor";
 import { getServerSession } from "next-auth";
-import { getToken } from "next-auth/jwt";
 import Link from "next/link";
 
-const Vendors = async ({ searchParams }: any) => {
+const Vendors = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
   const { data: defaultParams } = (await getDefaultParams()) as any;
   const { data: vendors } = (await getAllVendors()) as any;
@@ -19,7 +19,7 @@ const Vendors = async ({ searchParams }: any) => {
   const session = await getServerSession(authOptions);
 
   const filteredVendors = searchTerm
-    ? vendors.filter((item: any) => {
+    ? vendors.filter((item: IVendor) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : vendors;

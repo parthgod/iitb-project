@@ -3,6 +3,8 @@ import CreateForm from "@/components/CreateForm";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getProductById } from "@/lib/actions/product.actions";
 import { Suspense } from "react";
+import { IProduct } from "@/lib/database/models/product";
+import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 
 interface EditProductProps {
   params: {
@@ -10,10 +12,10 @@ interface EditProductProps {
   };
 }
 
-const calculateDefaultValues = (productDetails: any, defaultParams: any): any => {
+const calculateDefaultValues = (productDetails: IProduct, defaultParams: IDefaultParamSchema[]) => {
   if (Object.keys(productDetails).length && defaultParams.length) {
     const values: any = {};
-    defaultParams?.[0].productColumns.forEach((item: any) => {
+    defaultParams?.[0].productColumns.forEach((item) => {
       values[item.field] = productDetails?.[item.field] || productDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = productDetails._id;
