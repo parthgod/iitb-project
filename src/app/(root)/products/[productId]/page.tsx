@@ -33,13 +33,16 @@ const EditProduct = async ({ params }: EditProductProps) => {
   const defaultValues = calculateDefaultValues(productDetails, defaultParams);
 
   return (
-    <Suspense fallback={<FormSkeleton />}>
-      <CreateForm
-        formFields={defaultParams[0].productColumns}
-        formDetails={defaultValues}
-        type="Product"
-      />
-    </Suspense>
+    <div className="flex flex-col gap-5">
+      <p className="font-bold text-3xl">Edit product</p>
+      <Suspense fallback={<FormSkeleton />}>
+        <CreateForm
+          formFields={defaultParams[0].productColumns}
+          formDetails={defaultValues}
+          type="Product"
+        />
+      </Suspense>
+    </div>
   );
 };
 

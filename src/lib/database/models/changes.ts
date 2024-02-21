@@ -16,6 +16,10 @@ const changesSchema = new Schema({
     type: String,
     required: true,
   },
+  date: {
+    type: Date,
+    required: true,
+  },
 });
 
 const Changes = models.Changes || model("Changes", changesSchema);

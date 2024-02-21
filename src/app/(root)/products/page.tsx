@@ -30,11 +30,9 @@ const Products = async ({ searchParams }: { searchParams: { query: string } }) =
       <div className="flex justify-between items-center gap-5 mb-2">
         <Search />
         <div className="flex gap-5">
-          {session?.user?.isAdmin && (
-            <Link href="/products/create">
-              <Button>Create product</Button>
-            </Link>
-          )}
+          <Link href="/products/create">
+            <Button>Create product</Button>
+          </Link>
           {session?.user.isAdmin && <AddColumns />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>

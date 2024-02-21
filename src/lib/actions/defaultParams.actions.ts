@@ -25,7 +25,7 @@ export const createDefaultParams = async () => {
   }
 };
 
-export const updateDefaultParams = async (columnDetails: any, itemColumnName: any) => {
+export const updateDefaultParams = async (columnDetails: any, itemColumnName: string) => {
   const { columnName, columnType, columnField } = columnDetails;
   try {
     await connectToDatabase();

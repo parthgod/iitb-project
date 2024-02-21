@@ -29,13 +29,13 @@ export default async function RootLayout({
           <div className="p-3 pt-10 pl-10 w-screen h-screen overflow-auto">{children}</div>
           <Navbar />
         </SessionProvider>
+        <Toaster
+          position="top-center"
+          richColors
+          closeButton={true}
+          duration={4000}
+        />
       </body>
-      <Toaster
-        position="top-center"
-        richColors
-        closeButton={true}
-        duration={4000}
-      />
     </html>
   );
 }

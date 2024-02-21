@@ -1,13 +1,12 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { GrDocumentUser } from "react-icons/gr";
 import { LuCodesandbox, LuWarehouse } from "react-icons/lu";
 import { MdOutlineStoreMallDirectory } from "react-icons/md";
-import { GrDocumentUser } from "react-icons/gr";
-import { Button } from "./ui/button";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -69,7 +68,7 @@ const Sidebar = () => {
       <div
         className={`pt-4 w-full transition-all duration-300 ease-in-out flex flex-col gap-5 justify-start items-start overflow-hidden h-[90vh]`}
       >
-        {sideMenu?.map((item: any, ind: any) => {
+        {sideMenu?.map((item: any, ind: number) => {
           if (item.name === "Requests") {
             if (session?.user.isAdmin)
               return (
@@ -79,7 +78,7 @@ const Sidebar = () => {
                   href={item?.route}
                 >
                   <div
-                    className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-color w-full duration-300 p-2 pl-2 ease-in-out active:text-lg ${
+                    className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black p-2 pl-2 active:text-lg ${
                       pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
                     }`}
                   >
@@ -104,7 +103,7 @@ const Sidebar = () => {
               href={item?.route}
             >
               <div
-                className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-color w-full duration-300 p-2 pl-2 ease-in-out active:text-lg ${
+                className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-[color] w-full duration-300 p-2 pl-2 ease-in-out active:text-lg ${
                   pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
                 }`}
               >
