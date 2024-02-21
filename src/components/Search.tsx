@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "./ui/input";
 import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
+import { IoCloseOutline } from "react-icons/io5";
 
 const Search = ({ placeholder = "Search ..." }: { placeholder?: string }) => {
   const [query, setQuery] = useState("");
@@ -44,10 +45,19 @@ const Search = ({ placeholder = "Search ..." }: { placeholder?: string }) => {
       />
       <Input
         type="text"
+        value={query}
         placeholder={placeholder}
         onChange={(e) => setQuery(e.target.value)}
         className="border-0 bg-gray-100 outline-offset-0 placeholder:text-grey-500 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
       />
+      {query && (
+        <div
+          className="cursor-pointer hover:bg-gray-300 p-1 text-xl rounded-full"
+          onClick={() => setQuery("")}
+        >
+          <IoCloseOutline />
+        </div>
+      )}
     </div>
   );
 };

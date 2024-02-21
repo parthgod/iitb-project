@@ -33,13 +33,16 @@ const EditWarehouse = async ({ params }: EditWarehouseProps) => {
   const defaultValues = calculateDefaultValues(warehouseDetails, defaultParams);
 
   return (
-    <Suspense fallback={<FormSkeleton />}>
-      <CreateForm
-        formFields={defaultParams[0].warehouseColumns}
-        formDetails={defaultValues}
-        type="Warehouse"
-      />
-    </Suspense>
+    <div className="flex flex-col gap-5">
+      <p className="font-bold text-3xl">Edit warehouse</p>
+      <Suspense fallback={<FormSkeleton />}>
+        <CreateForm
+          formFields={defaultParams[0].warehouseColumns}
+          formDetails={defaultValues}
+          type="Warehouse"
+        />
+      </Suspense>
+    </div>
   );
 };
 

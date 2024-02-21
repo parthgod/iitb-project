@@ -8,7 +8,6 @@ import { toast } from "sonner";
 
 const Navbar = () => {
   const { data: session } = useSession();
-  console.log(session);
 
   return (
     <div className="absolute right-7 top-5">

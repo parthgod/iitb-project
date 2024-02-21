@@ -33,7 +33,6 @@ const RequestChange = () => {
       console.log(error);
       toast.error("Action could not be completed. Please try again");
     }
-    console.log(data.message);
   };
 
   return (

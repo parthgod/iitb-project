@@ -33,13 +33,16 @@ const EditVendor = async ({ params }: EditVendorProps) => {
   const defaultValues = calculateDefaultValues(vendorDetails, defaultParams);
 
   return (
-    <Suspense fallback={<FormSkeleton />}>
-      <CreateForm
-        formFields={defaultParams[0].vendorColumns}
-        formDetails={defaultValues}
-        type="Vendor"
-      />
-    </Suspense>
+    <div className="flex flex-col gap-5">
+      <p className="font-bold text-3xl">Edit vendor</p>
+      <Suspense fallback={<FormSkeleton />}>
+        <CreateForm
+          formFields={defaultParams[0].vendorColumns}
+          formDetails={defaultValues}
+          type="Vendor"
+        />
+      </Suspense>
+    </div>
   );
 };
 

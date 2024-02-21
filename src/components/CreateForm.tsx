@@ -143,80 +143,77 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   };
 
   return (
-    <div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-5 justify-between h-[90vh] pr-5"
-        >
-          <div className="flex flex-col gap-5">
-            <p className="font-bold text-3xl">Create new {type.toLowerCase()}</p>
-            <div className="grid grid-cols-2 gap-5">
-              {formFields.map((item, ind: number) => {
-                if (item.type === "text" || item.type === "number")
-                  return (
-                    <FormField
-                      key={ind}
-                      control={form.control}
-                      name={item?.field}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{item?.title}</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={item?.title}
-                              {...field}
-                              type={item.type}
-                              className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  );
-                else if (item.type === "image")
-                  return (
-                    <FormField
-                      key={ind}
-                      control={form.control}
-                      name={item?.field}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{item?.title}</FormLabel>
-                          <FormControl>
-                            <FileUploader
-                              onFieldChange={field.onChange}
-                              imageUrl={field.value}
-                              setFiles={setFiles}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  );
-              })}
-            </div>
-            <div className="flex gap-5 py-3">
-              <Button
-                type="submit"
-                className="w-1/3"
-              >
-                Submit
-              </Button>
-              <Button
-                type="button"
-                className="w-1/3"
-                variant="destructive"
-                onClick={() => router.back()}
-              >
-                Cancel
-              </Button>
-            </div>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-5 justify-between pr-5"
+      >
+        <div className="flex flex-col gap-5">
+          <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto">
+            {formFields.map((item, ind: number) => {
+              if (item.type === "text" || item.type === "number")
+                return (
+                  <FormField
+                    key={ind}
+                    control={form.control}
+                    name={item?.field}
+                    render={({ field }) => (
+                      <FormItem className="h-fit">
+                        <FormLabel>{item?.title}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={item?.title}
+                            {...field}
+                            type={item.type}
+                            className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                );
+              else if (item.type === "image")
+                return (
+                  <FormField
+                    key={ind}
+                    control={form.control}
+                    name={item?.field}
+                    render={({ field }) => (
+                      <FormItem className="h-fit">
+                        <FormLabel>{item?.title}</FormLabel>
+                        <FormControl>
+                          <FileUploader
+                            onFieldChange={field.onChange}
+                            imageUrl={field.value}
+                            setFiles={setFiles}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                );
+            })}
           </div>
-        </form>
-      </Form>
+          <div className="flex gap-5 py-3">
+            <Button
+              type="submit"
+              className="w-1/5"
+            >
+              Submit
+            </Button>
+            <Button
+              type="button"
+              className="w-1/5"
+              variant="destructive"
+              onClick={() => router.back()}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </form>
       {isLoading ? (
         <div className="z-10 absolute top-0 left-0 flex flex-col justify-center items-center w-screen h-screen bg-black bg-opacity-50">
           <div className="loader">
@@ -230,7 +227,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       ) : (
         ""
       )}
-    </div>
+    </Form>
   );
 };
 

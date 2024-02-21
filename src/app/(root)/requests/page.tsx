@@ -1,6 +1,7 @@
 import { getAllRequests } from "@/lib/actions/requests.actions";
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { convertDate } from "@/utils/helperFunctions";
 
 const RequestsPage = async () => {
   const changes: any = await getAllRequests();
@@ -12,7 +13,10 @@ const RequestsPage = async () => {
         {changes.data.map((change: any) => (
           <Card className="w-[98%]">
             <CardHeader>
-              <CardTitle className="text-lg">Request by {change?.user?.name}</CardTitle>
+              <div className="flex w-full justify-between items-center">
+                <CardTitle className="text-lg">Request by {change?.user?.name}</CardTitle>
+                <CardTitle className="text-md font-semibold text-gray-500">{convertDate(change?.date)}</CardTitle>
+              </div>
               <CardDescription className="text-sm">{change?.user?.email}</CardDescription>
             </CardHeader>
             <CardContent>

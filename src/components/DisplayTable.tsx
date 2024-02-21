@@ -10,16 +10,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
+import { FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import * as XLSX from "xlsx/xlsx.mjs";
 import DeleteConfirmation from "./DeleteConfirmation";
-import { Button } from "./ui/button";
-import { FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
+import { IVendor } from "@/lib/database/models/vendor";
+import { IProduct } from "@/lib/database/models/product";
+import { IWarehouse } from "@/lib/database/models/warehouse";
 
 interface TableProps {
   columns: IColumn[];
-  data: any;
+  data: IVendor[] | IProduct[] | IWarehouse[];
   type: "Vendor" | "Warehouse" | "Product";
 }
 
@@ -27,7 +29,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
-  const iconRef = useRef<HTMLInputElement>(null);
+  const iconRef = useRef<HTMLTableCellElement>(null);
 
   const { data: session } = useSession();
 
@@ -40,7 +42,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     }
   };
 
-  const sortedData = [...data].sort((a: any, b: any) => {
+  const sortedData = [...data].sort((a, b) => {
     if (!sortColumn) return 0;
 
     const valueA = a[sortColumn] || a.additionalFields?.[sortColumn];
@@ -61,6 +63,17 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
         buttons.style.top = `${iconRect.bottom}px`;
         buttons.style.left = `${iconRect.left - 180}px`;
         buttons.classList.toggle("invisible");
+
+        const bodyClickHandler = (event: any) => {
+          if (!buttons.contains(event.target) && !iconRef.current!.contains(event.target)) {
+            buttons.classList.add("invisible");
+            document.body.removeEventListener("click", bodyClickHandler);
+          }
+        };
+
+        document.body.removeEventListener("click", bodyClickHandler);
+
+        document.body.addEventListener("click", bodyClickHandler);
       }
     }
   };
@@ -72,17 +85,28 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     if (tempInput && tempInput.rows.length > 0) {
       const rowsArray = Array.from(tempInput.rows);
 
-      rowsArray.forEach((row: any) => {
-        const lastCell = row.lastChild;
-
-        if (session?.user.isAdmin) {
-          if (lastCell) {
-            row.removeChild(lastCell);
-          }
+      if (session?.user.isAdmin) {
+        const headerRowCount = tempInput.rows[0].cells.length;
+        if (headerRowCount > 0) {
+          tempInput.rows[0].deleteCell(headerRowCount - 1);
         }
 
+        for (let i = 0; i < tempInput.rows.length; i++) {
+          const lastCellIndex = tempInput.rows[i].cells.length - 1;
+          tempInput.rows[i].deleteCell(lastCellIndex);
+        }
+      }
+
+      rowsArray.forEach((row: any) => {
         const sortIconsDivs = row.querySelectorAll("#sort_icons");
         sortIconsDivs.forEach((div: any) => {
+          if (div.parentNode) {
+            div.parentNode.removeChild(div);
+          }
+        });
+
+        const exportIconsDivs = row.querySelectorAll("#icon");
+        exportIconsDivs.forEach((div: any) => {
           if (div.parentNode) {
             div.parentNode.removeChild(div);
           }
@@ -113,19 +137,21 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     }
   };
 
-  function fnExportToExcel(fn: any) {
+  function fnExportToExcel(fn: string) {
     var elt: any = tableRef.current;
     const tempInput = elt.cloneNode(true);
     if (tempInput && tempInput.rows.length > 0) {
-      const rowsArray = Array.from(tempInput.rows);
-
-      rowsArray.forEach((row: any) => {
-        const lastCell = row.lastChild;
-
-        if (lastCell) {
-          row.removeChild(lastCell);
+      if (session?.user.isAdmin) {
+        const headerRowCount = tempInput.rows[0].cells.length;
+        if (headerRowCount > 0) {
+          tempInput.rows[0].deleteCell(headerRowCount - 1);
         }
-      });
+
+        for (let i = 0; i < tempInput.rows.length; i++) {
+          const lastCellIndex = tempInput.rows[i].cells.length - 1;
+          tempInput.rows[i].deleteCell(lastCellIndex);
+        }
+      }
     }
     var wb = XLSX.utils.table_to_book(tempInput, { sheet: "sheet1" });
     XLSX.writeFile(wb, fn + "." + "xlsx");
@@ -152,7 +178,6 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
           Export as PDF (.pdf)
         </p>
       </div>
-      {/* <div className="h-[50vh] overflow-hidden"> */}
       <Table
         className=""
         ref={tableRef}
@@ -165,35 +190,32 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
               <TableHead key={ind}>
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   {item.title}
-                  <div id="sort_icons">
-                    <AiFillCaretUp onClick={() => handleSort(item.field)} />
-                    <AiFillCaretDown
-                      onClick={() => handleSort(item.field)}
-                      className="mt-[-6px]"
-                    />
-                  </div>
+                  {item.type !== "image" && (
+                    <div id="sort_icons">
+                      <AiFillCaretUp onClick={() => handleSort(item.field)} />
+                      <AiFillCaretDown
+                        onClick={() => handleSort(item.field)}
+                        className="mt-[-6px]"
+                      />
+                    </div>
+                  )}
                 </div>
               </TableHead>
             ))}
-            {session?.user.isAdmin ? (
-              <TableHead className="flex justify-between items-center">
-                <div>Actions</div>
-                <div
-                  id="icon"
-                  ref={iconRef}
-                  className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer"
-                  onClick={toggleButtons}
-                >
-                  <PiDotsThreeVerticalBold />
-                </div>
-              </TableHead>
-            ) : (
-              ""
-            )}
+            {session?.user.isAdmin ? <TableHead className="flex justify-between items-center">Actions</TableHead> : ""}
+
+            <TableCell
+              id="icon"
+              ref={iconRef}
+              className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer absolute right-2 top-2"
+              onClick={toggleButtons}
+            >
+              <PiDotsThreeVerticalBold />
+            </TableCell>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedData.map((item: any, ind: number) => {
+          {sortedData.map((item, ind: number) => {
             return (
               <TableRow key={ind}>
                 {columns.map((column, i: number) => (
