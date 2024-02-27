@@ -47,7 +47,6 @@ export default function LoginForm() {
   });
 
   const handleSubmitForm = async (data: IUserRegister) => {
-    // toast loading
     const toastLoading = toast.loading("Processing...");
     try {
       const response = await signIn("credentials", {
@@ -61,7 +60,10 @@ export default function LoginForm() {
       if (response?.status === 404) return toast.error("Email does not exist. Please use another email");
 
       toast.success("Successfully signed in");
-      toast.loading("Please wait while you are being redirected...", { position: "bottom-right", closeButton: false });
+      toast("Please wait while you are being redirected...", {
+        position: "bottom-right",
+        closeButton: false,
+      });
       router.push("/");
     } catch (error: any) {
       toast.error("Failed!", error?.message);

@@ -149,7 +149,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         className="flex flex-col gap-5 justify-between pr-5"
       >
         <div className="flex flex-col gap-5">
-          <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto">
+          <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto py-3">
             {formFields.map((item, ind: number) => {
               if (item.type === "text" || item.type === "number")
                 return (
@@ -165,7 +165,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                             placeholder={item?.title}
                             {...field}
                             type={item.type}
-                            className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                            className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                           />
                         </FormControl>
                         <FormMessage />
