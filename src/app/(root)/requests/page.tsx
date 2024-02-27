@@ -10,8 +10,11 @@ const RequestsPage = async () => {
     <div className="flex flex-col gap-6">
       <h1 className="text-4xl font-bold">User Requests</h1>
       <div className="flex flex-col gap-4 h-[80vh] overflow-auto">
-        {changes.data.map((change: any) => (
-          <Card className="w-[98%]">
+        {changes.data.map((change: any, i: number) => (
+          <Card
+            className="w-[98%]"
+            key={i}
+          >
             <CardHeader>
               <div className="flex w-full justify-between items-center">
                 <CardTitle className="text-lg">Request by {change?.user?.name}</CardTitle>
