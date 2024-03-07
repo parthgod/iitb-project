@@ -67,7 +67,7 @@ const DeleteConfirmation = ({ id, type }: DeleteConfirmationProps) => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-red-500"
+            className="bg-red-500 hover:bg-red-700"
             onClick={() =>
               startTransition(async () => {
                 switch (type) {

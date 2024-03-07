@@ -173,7 +173,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     <div>
       <div
         id="buttons"
-        className="flex flex-col justify-start items-start absolute bg-white z-10 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-sm overflow-hidden invisible"
+        className="flex flex-col justify-start items-start bg-white z-10 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-sm overflow-hidden"
       >
         <p
           onClick={() => fnExportToExcel(type)}
@@ -295,7 +295,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                           />
                         ) : (
                           item?.[column.field]?.[subItem.field] ||
-                          item?.[column.field]?.additionalFields?.[subItem.field] ||
+                          item?.additionalFields?.[column.field]?.[subItem.field] ||
                           "null"
                         )}
                       </TableCell>
