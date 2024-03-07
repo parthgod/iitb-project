@@ -8,7 +8,7 @@ import LoginProvider from "@/components/LoginProvider";
 export default async function LoginPage() {
   const session = await getServerSession();
   if (session) {
-    redirect("/vendors");
+    redirect("/");
   }
 
   return (

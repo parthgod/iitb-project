@@ -15,7 +15,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="h-screen w-screen overflow-hidden">
         <NextTopLoader />
         <div>{children}</div>
         <Toaster

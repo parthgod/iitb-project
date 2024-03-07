@@ -14,24 +14,14 @@ export const middleware = async (req: NextRequest) => {
 
   const isAdmin = token.role === "admin";
 
-  // if (!isAdmin && pathname !== "/vendors") return NextResponse.redirect(new URL("/", req.url));
-
-  // else if (!isAdmin && pathname !== "/vendors/create") return NextResponse.redirect(new URL("/", req.url));
-
-  // if (!isAdmin && pathname.startsWith("/warehouses/")) return NextResponse.redirect(new URL("/", req.url));
-
-  // if (!isAdmin && pathname.startsWith("/products/")) return NextResponse.redirect(new URL("/", req.url));
-
-  // if (!isAdmin && pathname === "/requests") return NextResponse.redirect(new URL("/", req.url));
-
   if (!isAdmin) {
     if (
-      pathname === "/vendors" ||
-      pathname === "/vendors/create" ||
-      pathname === "/warehouses" ||
-      pathname === "/warehouses/create" ||
-      pathname === "/products" ||
-      pathname === "/products/create"
+      pathname === "/bus" ||
+      pathname === "/bus/create" ||
+      pathname === "/excitationSystem" ||
+      pathname === "/excitationSystem/create" ||
+      pathname === "/generators" ||
+      pathname === "/generators/create"
     )
       return NextResponse.next();
     else return NextResponse.redirect(new URL("/", req.url));
@@ -41,5 +31,5 @@ export const middleware = async (req: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/vendors/:path*", "/warehouses/:path*", "/products/:path*", "/requests"],
+  matcher: ["/bus/:path*", "/excitationSystem/:path*", "/generators/:path*", "/requests"],
 };

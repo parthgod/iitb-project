@@ -1,9 +1,8 @@
 "use client";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { createProduct, updateProduct } from "@/lib/actions/product.actions";
-import { createVendor, updateVendor } from "@/lib/actions/vendor.actions";
-import { createWarehouse, updateWarehouse } from "@/lib/actions/warehouse.actions";
+import { createExcitationSystem, updateExcitationSystem } from "@/lib/actions/excitationSystem.actions";
+import { createBus, updateBus } from "@/lib/actions/bus.actions";
 import { IColumn } from "@/lib/database/models/defaultParams";
 import { useUploadThing } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,42 +14,56 @@ import { z } from "zod";
 import { FileUploader } from "./FileUploader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-
-const mockData = [
-  { vendorId: "01HQ0VB61529H5MJQJ3MX3APVM", name: "Greenholt, Tromp and Will", test: "Clean Force Hand Sanitizer" },
-  { vendorId: "01HQ0VB617YAKBQ61VMWM0YEAD", name: "Langosh and Sons", test: "Pecan Pollen" },
-  {
-    vendorId: "01HQ0VB618Y49NRR65ENFGS5B4",
-    name: "Koelpin and Sons",
-    test: "Bupivacaine Hydrochloride and Epinephrine",
-  },
-  { vendorId: "01HQ0VB619XT4WCMZJXWFRG5Y4", name: "Reichel Inc", test: "CellCept" },
-  { vendorId: "01HQ0VB61AEYKDTS70JBNCVPMX", name: "Dare, Lesch and Strosin", test: "Amoebatox" },
-  { vendorId: "01HQ0VB61AK0WF0WPGPEHY0GVX", name: "Sauer, Spinka and Lynch", test: "ASPIRIN" },
-  { vendorId: "01HQ0VB61B7Q4C5P4B5X327RX4", name: "Conn, Gibson and Oberbrunner", test: "Olanzapine" },
-  { vendorId: "01HQ0VB61C85M7RV5HZHW4B78M", name: "Kessler, O'Conner and Buckridge", test: "Rite Aid Sunscreen" },
-  { vendorId: "01HQ0VB61DHEHTS0Y2YE71KR5W", name: "Rodriguez LLC", test: "Envirokleen Instant Hand Sanitizer" },
-  { vendorId: "01HQ0VB61E82PBK05FWJCBYKYP", name: "Beatty, Streich and Shields", test: "Famotidine" },
-];
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "./ui/separator";
+import { createGenerator, updateGenerator } from "@/lib/actions/generator.actions";
+import { reverseUnslug } from "@/utils/helperFunctions";
+import { createLoad, updateLoad } from "@/lib/actions/load.actions";
+import { createSeriesCapacitor, updateSeriesCapacitor } from "@/lib/actions/seriesCapacitor.actions";
+import { createShuntCapacitor, updateShuntCapacitor } from "@/lib/actions/shuntCapacitor.actions";
+import { createShuntReactor, updateShuntReactor } from "@/lib/actions/shuntReactor.actions";
+import { createSingleLineDiagram, updateSingleLineDiagram } from "@/lib/actions/singleLineDiagram.actions";
+import {
+  createTransformersThreeWinding,
+  updateTransformersThreeWinding,
+} from "@/lib/actions/transformersThreeWinding.actions";
+import {
+  createTransformersTwoWinding,
+  updateTransformersTwoWinding,
+} from "@/lib/actions/transformersTwoWinding.actions";
+import { createTransmissionLine, updateTransmissionLine } from "@/lib/actions/transmissionLines.actions";
+import { createTurbineGovernor, updateTurbineGovernor } from "@/lib/actions/turbineGovernor.actions";
 interface CreateFormProps {
   formFields: IColumn[];
   formDetails?: any;
-  type: "Vendor" | "Warehouse" | "Product";
+  type:
+    | "excitationSystem"
+    | "bus"
+    | "generator"
+    | "load"
+    | "seriesCapacitor"
+    | "shuntCapacitor"
+    | "shuntReactor"
+    | "singleLineDiagram"
+    | "transformersThreeWinding"
+    | "transformersTwoWinding"
+    | "transmissionLine"
+    | "turbineGovernor";
 }
 
 const generateFormSchema = (fields: IColumn[]) => {
   const schema: any = {};
 
   fields.map((field) => {
-    schema[field.field] = z.string();
+    if (field.type === "subColumns") {
+      field.subColumns.map((subField: any) => (schema[subField.field] = z.string()));
+    } else schema[field.field] = z.string();
   });
-
   return z.object(schema);
 };
 
 const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
@@ -65,29 +78,50 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    console.log(data);
     setIsLoading(true);
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
       if (item.type === "image") {
         uploadedImageUrl[item.field] = data[item.field];
+      } else if (item.type === "subColumns") {
+        item.subColumns.map((subItem: any) => {
+          uploadedImageUrl[subItem.field] = data[subItem.field];
+        });
       }
     });
 
     if (files.length > 0) {
-      const uploadPromises = files.map((file: any) => startUpload(file));
-      const images: any = await Promise.all(uploadPromises);
-      Object.keys(uploadedImageUrl).map((item: any, ind: any) => {
-        data[item] = images[ind][0].url;
+      console.log(files);
+      console.log(uploadedImageUrl);
+      const uploadPromises = files.map((file: any) => startUpload(file.file));
+      const images: any = await Promise.all(
+        uploadPromises.map(async (promise: any, ind: number) => {
+          const result = await promise;
+          return { result, field: files[ind].field };
+        })
+      );
+      console.log(images);
+      images.map((image: any) => {
+        data[image.field] = image.result[0].url;
       });
     }
 
     const defaultFields: any = {};
     const additionalFields: any = {};
-    Object.keys(data).map((item) => {
-      const isDefault = formFields.find((field) => field.field === item)?.isDefault;
-      if (isDefault) defaultFields[item] = data[item];
-      else additionalFields[item] = data[item];
+    formFields.map((item) => {
+      if (item.isDefault) {
+        if (item.type === "subColumns") {
+          const temp: any = {};
+          item.subColumns.map((subItem: any) => {
+            temp[subItem.field] = data[subItem.field];
+          });
+          defaultFields[item.field] = temp;
+        } else defaultFields[item.field] = data[item.field];
+      } else additionalFields[item.field] = data[item.field];
     });
+    console.log(defaultFields);
+    console.log(additionalFields);
     try {
       let response;
       let req = {
@@ -96,14 +130,51 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       };
       if (formDetails) {
         switch (type) {
-          case "Vendor":
-            response = await updateVendor(req, formDetails._id);
+          case "bus":
+            response = await updateBus(req, formDetails._id);
             break;
-          case "Product":
-            response = await updateProduct(req, formDetails._id);
+          case "excitationSystem":
+            response = await updateExcitationSystem(req, formDetails._id);
             break;
-          case "Warehouse":
-            response = await updateWarehouse(req, formDetails._id);
+
+          case "generator":
+            response = await updateGenerator(req, formDetails._id);
+            break;
+
+          case "load":
+            response = await updateLoad(req, formDetails._id);
+            break;
+
+          case "seriesCapacitor":
+            response = await updateSeriesCapacitor(req, formDetails._id);
+            break;
+
+          case "shuntCapacitor":
+            response = await updateShuntCapacitor(req, formDetails._id);
+            break;
+
+          case "shuntReactor":
+            response = await updateShuntReactor(req, formDetails._id);
+            break;
+
+          case "singleLineDiagram":
+            response = await updateSingleLineDiagram(req, formDetails._id);
+            break;
+
+          case "transformersThreeWinding":
+            response = await updateTransformersThreeWinding(req, formDetails._id);
+            break;
+
+          case "transformersTwoWinding":
+            response = await updateTransformersTwoWinding(req, formDetails._id);
+            break;
+
+          case "transmissionLine":
+            response = await updateTransmissionLine(req, formDetails._id);
+            break;
+
+          case "turbineGovernor":
+            response = await updateTurbineGovernor(req, formDetails._id);
             break;
 
           default:
@@ -111,30 +182,66 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         }
       } else {
         switch (type) {
-          case "Vendor":
-            response = await createVendor(req);
+          case "bus":
+            response = await createBus(req);
             break;
-          case "Product":
-            response = await createProduct(req);
+          case "excitationSystem":
+            response = await createExcitationSystem(req);
             break;
-          case "Warehouse":
-            response = await createWarehouse(req);
+
+          case "generator":
+            response = await createGenerator(req);
+            break;
+
+          case "load":
+            response = await createLoad(req);
+            break;
+
+          case "seriesCapacitor":
+            response = await createSeriesCapacitor(req);
+            break;
+
+          case "shuntCapacitor":
+            response = await createShuntCapacitor(req);
+            break;
+
+          case "shuntReactor":
+            response = await createShuntReactor(req);
+            break;
+
+          case "singleLineDiagram":
+            response = await createSingleLineDiagram(req);
+            break;
+
+          case "transformersThreeWinding":
+            response = await createTransformersThreeWinding(req);
+            break;
+
+          case "transformersTwoWinding":
+            response = await createTransformersTwoWinding(req);
+            break;
+
+          case "transmissionLine":
+            response = await createTransmissionLine(req);
+            break;
+
+          case "turbineGovernor":
+            response = await createTurbineGovernor(req);
             break;
 
           default:
             break;
         }
       }
-      if (response?.status === 409) {
-        toast.error(
-          `${type} with ${type} ID: ${
-            type === "Vendor" ? data?.vendorId : type === "Warehouse" ? data?.warehouseId : data.productId
-          } already exists`
-        );
-      } else if (response?.status === 200) {
-        router.push(`/${type.toLowerCase()}s`);
+
+      if (response?.status === 200) {
+        router.push(`/${type}`);
         router.refresh();
-        toast.success(formDetails ? `${type} edited successfully` : `New ${type.toLowerCase()} created successfully`);
+        toast.success(
+          formDetails
+            ? `${reverseUnslug(type)} edited successfully`
+            : `New ${reverseUnslug(type).toLowerCase()} created successfully`
+        );
       }
     } catch (error) {
       console.log(error);
@@ -173,7 +280,79 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                     )}
                   />
                 );
-              else if (item.type === "image")
+              else if (item.type === "subColumns") {
+                return (
+                  <div
+                    key={ind}
+                    className="col-span-2 py-2"
+                  >
+                    {/* <Separator /> */}
+                    <p className="font-bold text-lg pt-2">{item.title}</p>
+                    <div className="grid grid-cols-2 gap-3 mb-5">
+                      {item.subColumns.map((subItem: any, i: number) => {
+                        if (subItem.type === "text" || subItem.type === "number")
+                          return (
+                            <FormField
+                              key={i}
+                              control={form.control}
+                              name={subItem?.field}
+                              render={({ field }) => (
+                                <FormItem className="h-fit">
+                                  <FormLabel>{subItem?.title}</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder={subItem?.title}
+                                      {...field}
+                                      type={subItem.type}
+                                      className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          );
+                      })}
+                    </div>
+                    <Separator />
+                  </div>
+                );
+              } else if (item.type === "dropdown") {
+                return (
+                  <FormField
+                    key={ind}
+                    control={form.control}
+                    name={item.field}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{item.title}</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+                              <SelectValue placeholder="Select a value" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {item.dropdownValues.map((selectValue: any, index: number) => (
+                              <SelectItem
+                                value={selectValue}
+                                key={index}
+                                className="select-item"
+                              >
+                                {selectValue}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                );
+              } else if (item.type === "image")
                 return (
                   <FormField
                     key={ind}
@@ -187,6 +366,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                             onFieldChange={field.onChange}
                             imageUrl={field.value}
                             setFiles={setFiles}
+                            field={item.field}
                           />
                         </FormControl>
                         <FormMessage />

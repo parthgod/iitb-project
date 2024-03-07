@@ -59,12 +59,12 @@ const AddColumns = () => {
 
   return (
     <div className="flex gap-5">
-      {/* <Button
+      <Button
         variant={"destructive"}
         onClick={dummy}
       >
         Add new column
-      </Button> */}
+      </Button>
       <Dialog>
         <DialogTrigger className={buttonVariants()}>Add column</DialogTrigger>
         <DialogContent className="bg-white">

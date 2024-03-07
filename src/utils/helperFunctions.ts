@@ -1,14 +1,25 @@
 import qs from "query-string";
-import fs from "fs";
 
 export const convertField = (input: string): string => {
-  const words = input.split(" ");
-  const firstWord = words[0].toLowerCase();
-  const restOfTheWords = words
-    .slice(1)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join("");
-  const result = firstWord + restOfTheWords;
+  const sanitizedInput = input.replace(/[^a-zA-Z0-9\s']/g, ""); // Remove special characters
+  const words = sanitizedInput.split(" ");
+  const updatedWords = words.map((word) => {
+    const baseWord = word.replace(/'$/, ""); // Remove trailing single quote if present
+    return baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
+  });
+
+  const firstWord = updatedWords[0].toLowerCase();
+  const restOfTheWords = updatedWords.slice(1).join("");
+
+  const result = firstWord + restOfTheWords + (sanitizedInput.endsWith("'") ? "Prime" : "");
+
+  return result;
+};
+
+export const reverseUnslug = (input: string): string => {
+  const words = input.match(/[A-Za-z0-9]+/g) || []; // Extract alphanumeric words
+  const result = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+
   return result;
 };
 

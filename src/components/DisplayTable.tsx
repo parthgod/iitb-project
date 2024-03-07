@@ -15,14 +15,26 @@ import { MdEdit } from "react-icons/md";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import * as XLSX from "xlsx/xlsx.mjs";
 import DeleteConfirmation from "./DeleteConfirmation";
-import { IVendor } from "@/lib/database/models/vendor";
-import { IProduct } from "@/lib/database/models/product";
-import { IWarehouse } from "@/lib/database/models/warehouse";
+import { IBus } from "@/lib/database/models/bus";
+import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
+import { convertField } from "@/utils/helperFunctions";
 
 interface TableProps {
   columns: IColumn[];
-  data: IVendor[] | IProduct[] | IWarehouse[];
-  type: "Vendor" | "Warehouse" | "Product";
+  data: IBus[] | IExcitationSystem[];
+  type:
+    | "Excitation System"
+    | "Bus"
+    | "Generator"
+    | "Load"
+    | "Series Capacitor"
+    | "Shunt Capacitor"
+    | "Shunt Reactor"
+    | "Single Line Diagram"
+    | "Transformers Three Winding"
+    | "Transformers Two Winding"
+    | "Transmission Line"
+    | "Turbine Governor";
 }
 
 const DisplayTable = ({ columns, data, type }: TableProps) => {
@@ -179,71 +191,137 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
         </p>
       </div>
       <Table
-        className=""
         ref={tableRef}
         id="tbl_exporttable_to_xls"
       >
-        <TableCaption>{sortedData.length ? "" : `No ${type.toLowerCase()}s found`}</TableCaption>
+        <TableCaption className="w-screen">{sortedData.length ? "" : `No ${type.toLowerCase()} found`}</TableCaption>
         <TableHeader>
           <TableRow className="bg-slate-100">
-            {columns.map((item, ind: number) => (
-              <TableHead key={ind}>
-                <div className="flex items-center gap-2 whitespace-nowrap">
+            {columns.map((item, ind: number) =>
+              item.type === "subColumns" ? (
+                <TableHead
+                  key={ind}
+                  colSpan={item.subColumns.length}
+                  className="border-[1px] border-gray-300 whitespace-nowrap text-center"
+                >
                   {item.title}
-                  {item.type !== "image" && (
-                    <div id="sort_icons">
-                      <AiFillCaretUp onClick={() => handleSort(item.field)} />
-                      <AiFillCaretDown
-                        onClick={() => handleSort(item.field)}
-                        className="mt-[-6px]"
-                      />
-                    </div>
-                  )}
-                </div>
+                </TableHead>
+              ) : (
+                <TableHead
+                  key={ind}
+                  rowSpan={2}
+                  className="border-[1px] border-gray-300"
+                >
+                  <div className="flex items-center gap-2 whitespace-nowrap">
+                    {item.title}
+                    {item.type !== "image" && (
+                      <div id="sort_icons">
+                        <AiFillCaretUp onClick={() => handleSort(item.field)} />
+                        <AiFillCaretDown
+                          onClick={() => handleSort(item.field)}
+                          className="mt-[-6px]"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </TableHead>
+              )
+            )}
+            {session?.user.isAdmin && (
+              <TableHead
+                className="border-[1px] border-gray-300"
+                rowSpan={2}
+              >
+                Actions
               </TableHead>
-            ))}
-            {session?.user.isAdmin ? <TableHead className="flex justify-between items-center">Actions</TableHead> : ""}
+            )}
 
-            <TableCell
+            {/* <TableCell
               id="icon"
               ref={iconRef}
               className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer absolute right-2 top-2"
               onClick={toggleButtons}
             >
               <PiDotsThreeVerticalBold />
-            </TableCell>
+            </TableCell> */}
+          </TableRow>
+          <TableRow>
+            {columns.map(
+              (item, i: number) =>
+                item.type === "subColumns" &&
+                item.subColumns.map((subCol: any, ind: number) => (
+                  <TableHead
+                    key={ind}
+                    className="bg-muted border-[1px] border-gray-300"
+                  >
+                    <div className="flex items-center gap-2 whitespace-nowrap">
+                      {subCol.title}
+                      {subCol.type !== "image" && (
+                        <div id="sort_icons">
+                          <AiFillCaretUp onClick={() => handleSort(item.field)} />
+                          <AiFillCaretDown
+                            onClick={() => handleSort(item.field)}
+                            className="mt-[-6px]"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </TableHead>
+                ))
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedData.map((item, ind: number) => {
             return (
               <TableRow key={ind}>
-                {columns.map((column, i: number) => (
-                  <TableCell key={i}>
-                    {column.type === "text" || column.type === "number"
-                      ? item?.[column.field] || item?.additionalFields?.[column.field] || "null"
-                      : ""}
-                    {column.type === "image" ? (
-                      <Image
-                        src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
-                        alt="image"
-                        width={120}
-                        height={120}
-                        className="object-cover"
-                      />
-                    ) : (
-                      ""
-                    )}
-                  </TableCell>
-                ))}
-                {session?.user.isAdmin ? (
-                  <TableCell>
-                    <div className="flex justify-start items-center gap-4">
-                      <Link
-                        href={`/${type.toLowerCase()}s/${
-                          type === "Vendor" ? item?.vendorId : type === "Product" ? item?.productId : item?.warehouseId
-                        }`}
+                {columns.map((column, i: number) => {
+                  if (column.type === "subColumns")
+                    return column.subColumns.map((subItem: any, i: number) => (
+                      <TableCell
+                        key={i + 100}
+                        className="border-[1px] border-gray-300"
                       >
+                        {subItem.type === "image" ? (
+                          <Image
+                            src={
+                              item?.[column.field]?.[subItem.field] ||
+                              item?.[column.field]?.additionalFields?.[subItem.field] ||
+                              noImageUrl
+                            }
+                            alt="image"
+                            width={120}
+                            height={120}
+                          />
+                        ) : (
+                          item?.[column.field]?.[subItem.field] ||
+                          item?.[column.field]?.additionalFields?.[subItem.field] ||
+                          "null"
+                        )}
+                      </TableCell>
+                    ));
+                  return (
+                    <TableCell
+                      key={i}
+                      className="border-[1px] border-gray-300"
+                    >
+                      {column.type === "image" ? (
+                        <Image
+                          src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
+                          alt="image"
+                          width={120}
+                          height={120}
+                        />
+                      ) : (
+                        item?.[column.field] || item?.additionalFields?.[column.field] || "null"
+                      )}
+                    </TableCell>
+                  );
+                })}
+                {session?.user.isAdmin ? (
+                  <TableCell className="border-[1px] border-gray-300">
+                    <div className="flex justify-start items-center gap-4">
+                      <Link href={`/${convertField(type)}/${item._id}`}>
                         <div
                           title="Edit"
                           className="text-gray-500 rounded-full hover:bg-gray-200 p-2"

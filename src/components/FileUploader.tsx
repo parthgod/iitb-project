@@ -10,12 +10,13 @@ import { convertFileToUrl } from "@/utils/helperFunctions";
 type FileUploaderProps = {
   onFieldChange: (url: string) => void;
   imageUrl: string;
-  setFiles: Dispatch<SetStateAction<File[]>>;
+  setFiles: any;
+  field: string;
 };
 
-export function FileUploader({ imageUrl, onFieldChange, setFiles }: FileUploaderProps) {
+export function FileUploader({ imageUrl, onFieldChange, setFiles, field }: FileUploaderProps) {
   const onDrop = useCallback((acceptedFiles: any) => {
-    setFiles((prev: any) => [...prev, acceptedFiles]);
+    setFiles((prev: any) => [...prev, { field: field, file: acceptedFiles }]);
     onFieldChange(convertFileToUrl(acceptedFiles[0]));
   }, []);
 
