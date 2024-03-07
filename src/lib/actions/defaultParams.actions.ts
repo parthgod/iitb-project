@@ -38,25 +38,20 @@ export const updateDefaultParams = async (columnDetails: any, itemColumnName: st
     };
     const newParams = oldParams[0];
     switch (itemColumnName) {
-      case "/vendors":
-        newParams.vendorColumns.push(newColumns);
+      case "/bus":
+        newParams.busColumns.push(newColumns);
         break;
 
-      case "/products":
-        newParams.productColumns.push(newColumns);
-        break;
-
-      case "/warehouses":
-        newParams.warehouseColumns.push(newColumns);
+      case "/excitationSystem":
+        newParams.excitationSystemColumns.push(newColumns);
         break;
 
       default:
         break;
     }
     const newDefaultParams = await DefaultParam.findByIdAndUpdate(newParams._id, {
-      vendorColumns: newParams.vendorColumns,
-      productColumns: newParams.productColumns,
-      warehouseColumns: newParams.warehouseColumns,
+      busColumns: newParams.busColumns,
+      excitationSystemColumns: newParams.excitationSystemColumns,
     });
     return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
   } catch (error) {
