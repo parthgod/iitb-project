@@ -56,8 +56,11 @@ const generateFormSchema = (fields: IColumn[]) => {
 
   fields.map((field) => {
     if (field.type === "subColumns") {
-      field.subColumns.map((subField: any) => (schema[subField.field] = z.string()));
-    } else schema[field.field] = z.string();
+      field.subColumns.map(
+        (subField: any) =>
+          (schema[subField.field] = z.string().min(1, { message: `${subField.title} cannot be empty` }))
+      );
+    } else schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
   });
   return z.object(schema);
 };
@@ -78,7 +81,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
     setIsLoading(true);
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
@@ -92,8 +94,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     });
 
     if (files.length > 0) {
-      console.log(files);
-      console.log(uploadedImageUrl);
       const uploadPromises = files.map((file: any) => startUpload(file.file));
       const images: any = await Promise.all(
         uploadPromises.map(async (promise: any, ind: number) => {
@@ -101,7 +101,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
           return { result, field: files[ind].field };
         })
       );
-      console.log(images);
       images.map((image: any) => {
         data[image.field] = image.result[0].url;
       });
@@ -118,10 +117,16 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
           });
           defaultFields[item.field] = temp;
         } else defaultFields[item.field] = data[item.field];
-      } else additionalFields[item.field] = data[item.field];
+      } else {
+        if (item.type === "subColumns") {
+          const temp: any = {};
+          item.subColumns.map((subItem: any) => {
+            temp[subItem.field] = data[subItem.field];
+          });
+          additionalFields[item.field] = temp;
+        } else additionalFields[item.field] = data[item.field];
+      }
     });
-    console.log(defaultFields);
-    console.log(additionalFields);
     try {
       let response;
       let req = {
@@ -305,6 +310,63 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                                       {...field}
                                       type={subItem.type}
                                       className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          );
+                        else if (subItem.type === "dropdown") {
+                          return (
+                            <FormField
+                              key={ind}
+                              control={form.control}
+                              name={subItem.field}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>{subItem.title}</FormLabel>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+                                        <SelectValue placeholder="Select a value" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {subItem.dropdownValues.map((selectValue: any, index: number) => (
+                                        <SelectItem
+                                          value={selectValue}
+                                          key={index}
+                                          className="select-item"
+                                        >
+                                          {selectValue}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          );
+                        } else if (subItem.type === "image")
+                          return (
+                            <FormField
+                              key={ind}
+                              control={form.control}
+                              name={subItem?.field}
+                              render={({ field }) => (
+                                <FormItem className="h-fit">
+                                  <FormLabel>{subItem?.title}</FormLabel>
+                                  <FormControl>
+                                    <FileUploader
+                                      onFieldChange={field.onChange}
+                                      imageUrl={field.value}
+                                      setFiles={setFiles}
+                                      field={subItem.field}
                                     />
                                   </FormControl>
                                   <FormMessage />
