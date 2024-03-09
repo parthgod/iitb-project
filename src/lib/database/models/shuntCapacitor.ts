@@ -10,10 +10,10 @@ const shuntCapacitorSchema = new Schema({
   busSectionFrom: {
     type: String,
   },
-  kV: {
+  kv: {
     type: String,
   },
-  MVA: {
+  mva: {
     type: String,
   },
   additionalFields: {

@@ -2,13 +2,12 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getTurbineGovernorById } from "@/lib/actions/turbineGovernor.actions";
-import { IBus } from "@/lib/database/models/bus";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 import { Suspense } from "react";
 
 interface EditTurbineGovernorProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDe
     const values: any = {};
     defaultParams?.[0].turbineGovernorColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               turbineGovernorDetails?.[item.field]?.[subItem.field] ||
               turbineGovernorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -37,8 +36,8 @@ const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDe
 const EditTurbineGovernor = async ({ params }: EditTurbineGovernorProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: turbineGovernorDetails } = (await getTurbineGovernorById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: turbineGovernorDetails } = await getTurbineGovernorById(id);
 
   const defaultValues = calculateDefaultValues(turbineGovernorDetails, defaultParams);
 

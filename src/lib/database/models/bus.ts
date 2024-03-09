@@ -1,12 +1,5 @@
 import { Schema, model, models } from "mongoose";
 
-export interface IBus extends Document {
-  vendorId: string;
-  name: string;
-  additionalFields: Record<string, any>;
-  [key: string]: any;
-}
-
 const busSchema = new Schema({
   busName: {
     type: String,

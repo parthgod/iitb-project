@@ -4,55 +4,55 @@ const transformersThreeWindingSchema = new Schema({
   deviceName: {
     type: String,
   },
-  busPrimaryFrom: {
+  busprimaryFrom: {
     type: String,
   },
-  busPrimarySectionFrom: {
+  busprimarySectionFrom: {
     type: String,
   },
-  busSecondaryTo: {
+  bussecondaryTo: {
     type: String,
   },
-  busSecondarySetionTo: {
+  busSectionSecondaryTo: {
     type: String,
   },
-  busTertiaryTo: {
+  bustertiaryTo: {
     type: String,
   },
-  busTertiarySectionTo: {
+  busSectionTertiaryTo: {
     type: String,
   },
-  MVA: {
+  mva: {
     type: String,
   },
-  kVPrimaryVoltage: {
+  kvprimaryVoltage: {
     type: String,
   },
-  kVSecondaryVoltage: {
+  kvsecondaryVoltage: {
     type: String,
   },
-  kVTertiaryVoltage: {
+  kvtertiaryVoltage: {
     type: String,
   },
-  PrimarySecondary: {
+  psprimarysecondary: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  PrimaryTertiary: {
+  ptprimarytertiary: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  SecondaryTertiary: {
+  stsecondarytertiary: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  tapPrimary: {
+  TapPrimary: {
     type: String,
   },
-  tapSecondary: {
+  TapSecondary: {
     type: String,
   },
-  tapTertiary: {
+  TapTertiary: {
     type: String,
   },
   primaryConnection: {

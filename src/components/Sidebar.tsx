@@ -1,5 +1,6 @@
 "use client";
 
+import { ISIdeMenu } from "@/utils/defaultTypes";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,7 +13,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const sideMenu = [
+  const sideMenu: ISIdeMenu[] = [
     {
       name: "Bus",
       route: "/bus",
@@ -109,7 +110,7 @@ const Sidebar = () => {
       <div
         className={`pt-4 w-full transition-all duration-300 ease-in-out flex flex-col gap-5 justify-start items-start scrollbar-hide overflow-x-hidden h-[90vh]`}
       >
-        {sideMenu?.map((item: any, ind: number) => {
+        {sideMenu?.map((item, ind: number) => {
           if (item.name === "Requests") {
             if (session?.user.isAdmin)
               return (

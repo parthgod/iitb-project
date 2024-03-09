@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllTransformersThreeWindings } from "@/lib/actions/transformersThreeWinding.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const TransformersThreeWinding = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: transformersThreeWindings } = (await getAllTransformersThreeWindings()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: transformersThreeWindings } = await getAllTransformersThreeWindings();
 
   const session = await getServerSession(authOptions);
 
   const filteredTransformersThreeWindings = searchTerm
-    ? transformersThreeWindings.filter((item: IExcitationSystem) => {
+    ? transformersThreeWindings.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : transformersThreeWindings;

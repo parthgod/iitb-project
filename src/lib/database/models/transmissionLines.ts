@@ -16,7 +16,7 @@ const transmissionLineSchema = new Schema({
   busTo: {
     type: String,
   },
-  busSetionTo: {
+  busSectionTo: {
     type: String,
   },
   positiveSequence: {
@@ -27,7 +27,7 @@ const transmissionLineSchema = new Schema({
     type: Schema.Types.Mixed,
     default: {},
   },
-  length: {
+  lengthKm: {
     type: String,
   },
   lineReactorFrom: {

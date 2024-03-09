@@ -2,7 +2,6 @@
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { noImageUrl } from "@/lib/constants";
-import { IColumn } from "@/lib/database/models/defaultParams";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useSession } from "next-auth/react";
@@ -15,9 +14,9 @@ import { MdEdit } from "react-icons/md";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import * as XLSX from "xlsx/xlsx.mjs";
 import DeleteConfirmation from "./DeleteConfirmation";
-import { IBus } from "@/lib/database/models/bus";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { convertField } from "@/utils/helperFunctions";
+import AddColumns from "./AddColumns";
+import { IBus, IColumn, IExcitationSystem } from "@/utils/defaultTypes";
 
 interface TableProps {
   columns: IColumn[];
@@ -67,28 +66,28 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     }
   });
 
-  const toggleButtons = () => {
-    if (iconRef.current) {
-      const iconRect = iconRef.current.getBoundingClientRect();
-      const buttons = document.getElementById("buttons");
-      if (buttons) {
-        buttons.style.top = `${iconRect.bottom}px`;
-        buttons.style.left = `${iconRect.left - 180}px`;
-        buttons.classList.toggle("invisible");
+  // const toggleButtons = () => {
+  //   if (iconRef.current) {
+  //     const iconRect = iconRef.current.getBoundingClientRect();
+  //     const buttons = document.getElementById("buttons");
+  //     if (buttons) {
+  //       buttons.style.top = `${iconRect.bottom}px`;
+  //       buttons.style.left = `${iconRect.left - 180}px`;
+  //       buttons.classList.toggle("invisible");
 
-        const bodyClickHandler = (event: any) => {
-          if (!buttons.contains(event.target) && !iconRef.current!.contains(event.target)) {
-            buttons.classList.add("invisible");
-            document.body.removeEventListener("click", bodyClickHandler);
-          }
-        };
+  //       const bodyClickHandler = (event: any) => {
+  //         if (!buttons.contains(event.target) && !iconRef.current!.contains(event.target)) {
+  //           buttons.classList.add("invisible");
+  //           document.body.removeEventListener("click", bodyClickHandler);
+  //         }
+  //       };
 
-        document.body.removeEventListener("click", bodyClickHandler);
+  //       document.body.removeEventListener("click", bodyClickHandler);
 
-        document.body.addEventListener("click", bodyClickHandler);
-      }
-    }
-  };
+  //       document.body.addEventListener("click", bodyClickHandler);
+  //     }
+  //   }
+  // };
 
   const downloadPDF = async (type: string) => {
     const input = tableRef.current;
@@ -98,10 +97,10 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
       const rowsArray = Array.from(tempInput.rows);
 
       if (session?.user.isAdmin) {
-        const headerRowCount = tempInput.rows[0].cells.length;
-        if (headerRowCount > 0) {
-          tempInput.rows[0].deleteCell(headerRowCount - 1);
-        }
+        // const headerRowCount = tempInput.rows[0].cells.length;
+        // if (headerRowCount > 0) {
+        //   tempInput.rows[0].deleteCell(headerRowCount - 1);
+        // }
 
         for (let i = 0; i < tempInput.rows.length; i++) {
           const lastCellIndex = tempInput.rows[i].cells.length - 1;
@@ -119,6 +118,13 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
 
         const exportIconsDivs = row.querySelectorAll("#icon");
         exportIconsDivs.forEach((div: any) => {
+          if (div.parentNode) {
+            div.parentNode.removeChild(div);
+          }
+        });
+
+        const editIcons = row.querySelectorAll("#edit-icons");
+        editIcons.forEach((div: any) => {
           if (div.parentNode) {
             div.parentNode.removeChild(div);
           }
@@ -154,10 +160,11 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     const tempInput = elt.cloneNode(true);
     if (tempInput && tempInput.rows.length > 0) {
       if (session?.user.isAdmin) {
-        const headerRowCount = tempInput.rows[0].cells.length;
-        if (headerRowCount > 0) {
-          tempInput.rows[0].deleteCell(headerRowCount - 1);
-        }
+        // const headerRowCount = tempInput.rows[0].cells.length;
+        // console.log(headerRowCount);
+        // if (headerRowCount > 0) {
+        //   tempInput.rows[0].deleteCell(headerRowCount - 1);
+        // }
 
         for (let i = 0; i < tempInput.rows.length; i++) {
           const lastCellIndex = tempInput.rows[i].cells.length - 1;
@@ -193,6 +200,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
       <Table
         ref={tableRef}
         id="tbl_exporttable_to_xls"
+        className="w-full"
       >
         <TableCaption className="w-screen">{sortedData.length ? "" : `No ${type.toLowerCase()} found`}</TableCaption>
         <TableHeader>
@@ -201,20 +209,24 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
               item.type === "subColumns" ? (
                 <TableHead
                   key={ind}
-                  colSpan={item.subColumns.length}
-                  className="border-[1px] border-gray-300 whitespace-nowrap text-center"
+                  colSpan={item.subColumns!.length}
+                  className="border-[1px] border-gray-300 whitespace-nowrap text-center group min-w-40"
                 >
-                  {item.title}
+                  <div className="flex items-center justify-center gap-2">
+                    {item.title}
+                    <AddColumns columnDetails={item} />
+                  </div>
                 </TableHead>
               ) : (
                 <TableHead
                   key={ind}
                   rowSpan={2}
-                  className="border-[1px] border-gray-300"
+                  className={`border-[1px] border-gray-300 group min-w-40`}
                 >
                   <div className="flex items-center gap-2 whitespace-nowrap">
                     {item.title}
-                    {item.type !== "image" && (
+                    {item.type === "dropdown" && <AddColumns columnDetails={item} />}
+                    {/* {item.type !== "image" && (
                       <div id="sort_icons">
                         <AiFillCaretUp onClick={() => handleSort(item.field)} />
                         <AiFillCaretDown
@@ -222,7 +234,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                           className="mt-[-6px]"
                         />
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </TableHead>
               )
@@ -249,14 +261,14 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
             {columns.map(
               (item, i: number) =>
                 item.type === "subColumns" &&
-                item.subColumns.map((subCol: any, ind: number) => (
+                item.subColumns!.map((subCol, ind: number) => (
                   <TableHead
                     key={ind}
                     className="bg-muted border-[1px] border-gray-300"
                   >
                     <div className="flex items-center gap-2 whitespace-nowrap">
                       {subCol.title}
-                      {subCol.type !== "image" && (
+                      {/* {subCol.type !== "image" && (
                         <div id="sort_icons">
                           <AiFillCaretUp onClick={() => handleSort(item.field)} />
                           <AiFillCaretDown
@@ -264,7 +276,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                             className="mt-[-6px]"
                           />
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </TableHead>
                 ))
@@ -277,21 +289,26 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
               <TableRow key={ind}>
                 {columns.map((column, i: number) => {
                   if (column.type === "subColumns")
-                    return column.subColumns.map((subItem: any, i: number) => (
+                    return column.subColumns!.map((subItem, i: number) => (
                       <TableCell
                         key={i + 100}
-                        className="border-[1px] border-gray-300"
+                        className={`border-[1px] border-gray-300 ${
+                          !item?.[column.field]?.[subItem.field] &&
+                          !item?.additionalFields?.[column.field]?.[subItem.field] &&
+                          "text-gray-400"
+                        }`}
                       >
                         {subItem.type === "image" ? (
                           <Image
                             src={
                               item?.[column.field]?.[subItem.field] ||
-                              item?.[column.field]?.additionalFields?.[subItem.field] ||
+                              item?.additionalFields?.[column.field]?.[subItem.field] ||
                               noImageUrl
                             }
                             alt="image"
                             width={120}
                             height={120}
+                            className="object-cover"
                           />
                         ) : (
                           item?.[column.field]?.[subItem.field] ||
@@ -303,7 +320,9 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                   return (
                     <TableCell
                       key={i}
-                      className="border-[1px] border-gray-300"
+                      className={`border-[1px] border-gray-300 ${
+                        !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
+                      }`}
                     >
                       {column.type === "image" ? (
                         <Image
@@ -311,6 +330,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                           alt="image"
                           width={120}
                           height={120}
+                          className="object-cover"
                         />
                       ) : (
                         item?.[column.field] || item?.additionalFields?.[column.field] || "null"
@@ -343,7 +363,6 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
           })}
         </TableBody>
       </Table>
-      {/* </div> */}
     </div>
   );
 };

@@ -2,13 +2,12 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getSingleLineDiagramById } from "@/lib/actions/singleLineDiagram.actions";
-import { IBus } from "@/lib/database/models/bus";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { Suspense } from "react";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 
 interface EditSingleLineDiagramProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (singleLineDiagramDetails: IBus, defaultParams: I
     const values: any = {};
     defaultParams?.[0].singleLineDiagramsColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               singleLineDiagramDetails?.[item.field]?.[subItem.field] ||
               singleLineDiagramDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -37,8 +36,8 @@ const calculateDefaultValues = (singleLineDiagramDetails: IBus, defaultParams: I
 const EditSingleLineDiagram = async ({ params }: EditSingleLineDiagramProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: singleLineDiagramDetails } = (await getSingleLineDiagramById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: singleLineDiagramDetails } = await getSingleLineDiagramById(id);
 
   const defaultValues = calculateDefaultValues(singleLineDiagramDetails, defaultParams);
 

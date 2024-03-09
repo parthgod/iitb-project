@@ -1,24 +1,11 @@
 import { Schema, model, models } from "mongoose";
 
-export interface IExcitationSystem extends Document {
-  _id: string;
-  deviceName: string;
-  AVRType: string;
-  generatorDeviceName: string;
-  AVRImage: string;
-  PSSImage: string;
-  UELImage: string;
-  OELImage: string;
-  additionalFields: Record<string, any>;
-  [key: string]: any;
-}
-
 const excitationSystemSchema = new Schema({
   deviceName: {
     type: String,
     required: true,
   },
-  AVRType: {
+  automaticVoltageRegulatorAVRType: {
     type: String,
     required: true,
   },
@@ -26,19 +13,19 @@ const excitationSystemSchema = new Schema({
     type: String,
     required: true,
   },
-  AVRImage: {
+  avrImage: {
     type: String,
     required: true,
   },
-  PSSImage: {
+  powerSystemStabilizerPSSImage: {
     type: String,
     required: true,
   },
-  UELImage: {
+  underExcitationLimiterUELImage: {
     type: String,
     required: true,
   },
-  OELImage: {
+  overExcitationLimiterOELImage: {
     type: String,
     required: true,
   },

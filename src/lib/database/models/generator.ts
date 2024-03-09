@@ -16,44 +16,44 @@ const generatorSchema = new Schema({
   rotor: {
     type: String,
   },
-  MW: {
+  mw: {
     type: String,
   },
-  MVA: {
+  mva: {
     type: String,
   },
-  Kv: {
+  kv: {
     type: String,
   },
-  synchronousReactance: {
+  synchronousReactancePu: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  transientReactance: {
+  transientReactancePu: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  subtransientReactance: {
+  subtransientReactancePu: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  transientOCTimeConstant: {
+  transientOCTimeConstantSeconds: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  subTransientOCTimeConstant: {
+  subtransientOCTimeConstantSeconds: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  StatorLeakageInductance: {
+  statorLeakageInductancePu: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  statorResistance: {
+  statorResistancePu: {
     type: Schema.Types.Mixed,
     default: {},
   },
-  inertia: {
+  inertiaMJMVA: {
     type: Schema.Types.Mixed,
     default: {},
   },

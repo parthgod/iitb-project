@@ -2,13 +2,12 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getSeriesCapacitorById } from "@/lib/actions/seriesCapacitor.actions";
-import { IBus } from "@/lib/database/models/bus";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { Suspense } from "react";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 
 interface EditSeriesCapacitorProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
     const values: any = {};
     defaultParams?.[0].seriesCapacitorColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               seriesCapacitorDetails?.[item.field]?.[subItem.field] ||
               seriesCapacitorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -37,8 +36,8 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
 const EditSeriesCapacitor = async ({ params }: EditSeriesCapacitorProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: seriesCapacitorDetails } = (await getSeriesCapacitorById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: seriesCapacitorDetails } = await getSeriesCapacitorById(id);
 
   const defaultValues = calculateDefaultValues(seriesCapacitorDetails, defaultParams);
 

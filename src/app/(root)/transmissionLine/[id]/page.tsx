@@ -2,13 +2,12 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getTransmissionLineById } from "@/lib/actions/transmissionLines.actions";
-import { IBus } from "@/lib/database/models/bus";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { Suspense } from "react";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 
 interface EditTransmissionLineProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
     const values: any = {};
     defaultParams?.[0].transmissionLinesColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               transmissionLineDetails?.[item.field]?.[subItem.field] ||
               transmissionLineDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -37,8 +36,8 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
 const EditTransmissionLine = async ({ params }: EditTransmissionLineProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: transmissionLineDetails } = (await getTransmissionLineById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: transmissionLineDetails } = await getTransmissionLineById(id);
 
   const defaultValues = calculateDefaultValues(transmissionLineDetails, defaultParams);
 

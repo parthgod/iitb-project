@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllSeriesCapacitors } from "@/lib/actions/seriesCapacitor.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const SeriesCapacitor = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: seriesCapacitors } = (await getAllSeriesCapacitors()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: seriesCapacitors } = await getAllSeriesCapacitors();
 
   const session = await getServerSession(authOptions);
 
   const filteredSeriesCapacitors = searchTerm
-    ? seriesCapacitors.filter((item: IExcitationSystem) => {
+    ? seriesCapacitors.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : seriesCapacitors;

@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllSingleLineDiagrams } from "@/lib/actions/singleLineDiagram.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const SingleLineDiagram = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: singleLineDiagrams } = (await getAllSingleLineDiagrams()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: singleLineDiagrams } = await getAllSingleLineDiagrams();
 
   const session = await getServerSession(authOptions);
 
   const filteredSingleLineDiagrams = searchTerm
-    ? singleLineDiagrams.filter((item: IExcitationSystem) => {
+    ? singleLineDiagrams.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : singleLineDiagrams;

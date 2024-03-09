@@ -1,16 +1,15 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllRequests } from "@/lib/actions/requests.actions";
-import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { convertDate } from "@/utils/helperFunctions";
 
 const RequestsPage = async () => {
-  const changes: any = await getAllRequests();
+  const changes = await getAllRequests();
 
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-4xl font-bold">User Requests</h1>
       <div className="flex flex-col gap-4 h-[80vh] overflow-auto">
-        {changes.data.map((change: any, i: number) => (
+        {changes.data.map((change, i: number) => (
           <Card
             className="w-[98%]"
             key={i}

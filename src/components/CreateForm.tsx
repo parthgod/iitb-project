@@ -1,23 +1,10 @@
 "use client";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { createExcitationSystem, updateExcitationSystem } from "@/lib/actions/excitationSystem.actions";
-import { createBus, updateBus } from "@/lib/actions/bus.actions";
-import { IColumn } from "@/lib/database/models/defaultParams";
-import { useUploadThing } from "@/lib/uploadthing";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { FileUploader } from "./FileUploader";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "./ui/separator";
+import { createBus, updateBus } from "@/lib/actions/bus.actions";
+import { createExcitationSystem, updateExcitationSystem } from "@/lib/actions/excitationSystem.actions";
 import { createGenerator, updateGenerator } from "@/lib/actions/generator.actions";
-import { reverseUnslug } from "@/utils/helperFunctions";
 import { createLoad, updateLoad } from "@/lib/actions/load.actions";
 import { createSeriesCapacitor, updateSeriesCapacitor } from "@/lib/actions/seriesCapacitor.actions";
 import { createShuntCapacitor, updateShuntCapacitor } from "@/lib/actions/shuntCapacitor.actions";
@@ -33,7 +20,26 @@ import {
 } from "@/lib/actions/transformersTwoWinding.actions";
 import { createTransmissionLine, updateTransmissionLine } from "@/lib/actions/transmissionLines.actions";
 import { createTurbineGovernor, updateTurbineGovernor } from "@/lib/actions/turbineGovernor.actions";
-interface CreateFormProps {
+import { useUploadThing } from "@/lib/uploadthing";
+import { IColumn } from "@/utils/defaultTypes";
+import { reverseUnslug } from "@/utils/helperFunctions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { FileUploader } from "./FileUploader";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Separator } from "./ui/separator";
+
+type IFiles = {
+  field: string;
+  file: File[];
+};
+
+type CreateFormProps = {
   formFields: IColumn[];
   formDetails?: any;
   type:
@@ -49,16 +55,15 @@ interface CreateFormProps {
     | "transformersTwoWinding"
     | "transmissionLine"
     | "turbineGovernor";
-}
+};
 
 const generateFormSchema = (fields: IColumn[]) => {
   const schema: any = {};
 
   fields.map((field) => {
     if (field.type === "subColumns") {
-      field.subColumns.map(
-        (subField: any) =>
-          (schema[subField.field] = z.string().min(1, { message: `${subField.title} cannot be empty` }))
+      field.subColumns!.map(
+        (subField) => (schema[subField.field] = z.string().min(1, { message: `${subField.title} cannot be empty` }))
       );
     } else schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
   });
@@ -66,7 +71,7 @@ const generateFormSchema = (fields: IColumn[]) => {
 };
 
 const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
-  const [files, setFiles] = useState<any>([]);
+  const [files, setFiles] = useState<IFiles[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
@@ -81,20 +86,21 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    // console.log(data);
     setIsLoading(true);
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
       if (item.type === "image") {
         uploadedImageUrl[item.field] = data[item.field];
       } else if (item.type === "subColumns") {
-        item.subColumns.map((subItem: any) => {
+        item.subColumns!.map((subItem) => {
           uploadedImageUrl[subItem.field] = data[subItem.field];
         });
       }
     });
 
     if (files.length > 0) {
-      const uploadPromises = files.map((file: any) => startUpload(file.file));
+      const uploadPromises = files.map((file) => startUpload(file.file));
       const images: any = await Promise.all(
         uploadPromises.map(async (promise: any, ind: number) => {
           const result = await promise;
@@ -112,7 +118,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       if (item.isDefault) {
         if (item.type === "subColumns") {
           const temp: any = {};
-          item.subColumns.map((subItem: any) => {
+          item.subColumns!.map((subItem) => {
             temp[subItem.field] = data[subItem.field];
           });
           defaultFields[item.field] = temp;
@@ -120,7 +126,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       } else {
         if (item.type === "subColumns") {
           const temp: any = {};
-          item.subColumns.map((subItem: any) => {
+          item.subColumns!.map((subItem) => {
             temp[subItem.field] = data[subItem.field];
           });
           additionalFields[item.field] = temp;
@@ -294,7 +300,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                     {/* <Separator /> */}
                     <p className="font-bold text-lg pt-2">{item.title}</p>
                     <div className="grid grid-cols-2 gap-3 mb-5">
-                      {item.subColumns.map((subItem: any, i: number) => {
+                      {item.subColumns!.map((subItem, i: number) => {
                         if (subItem.type === "text" || subItem.type === "number")
                           return (
                             <FormField
@@ -336,7 +342,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                                       </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                      {subItem.dropdownValues.map((selectValue: any, index: number) => (
+                                      {subItem.dropdownValues.map((selectValue: string, index: number) => (
                                         <SelectItem
                                           value={selectValue}
                                           key={index}
@@ -398,7 +404,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {item.dropdownValues.map((selectValue: any, index: number) => (
+                            {item.dropdownValues.map((selectValue: string, index: number) => (
                               <SelectItem
                                 value={selectValue}
                                 key={index}

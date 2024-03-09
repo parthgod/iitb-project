@@ -1,22 +1,26 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { convertField } from "@/utils/helperFunctions";
+import {
+  createDefaultParams,
+  editSpecificDefaultParam,
+  updateDefaultParams,
+} from "@/lib/actions/defaultParams.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { MdEdit } from "react-icons/md";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "./ui/input";
-import { toast } from "sonner";
-import { createDefaultParams, updateDefaultParams } from "@/lib/actions/defaultParams.actions";
-import { usePathname } from "next/navigation";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useEffect, useState } from "react";
-import { FaMinus } from "react-icons/fa";
-import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { Separator } from "./ui/separator";
+import { IColumn } from "@/utils/defaultTypes";
 
 // const SubcolumnSchema = z.object({
 //   title: z.string().optional(),
@@ -26,7 +30,7 @@ import { Separator } from "./ui/separator";
 // })
 
 const FormSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, { message: "Name cannot be empty" }),
   dropdownValues: z
     .array(
       z.object({
@@ -57,12 +61,34 @@ const FormSchema = z.object({
     .optional(),
 });
 
-const AddColumns = () => {
+const AddColumns = ({ columnDetails }: { columnDetails?: IColumn }) => {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+
+  let defaultValues = {};
+  if (columnDetails?.type === "dropdown") {
+    defaultValues = {
+      name: columnDetails?.title,
+      type: columnDetails?.type,
+      hasSubcolumns: "false",
+      dropdownValues: columnDetails?.dropdownValues.map((item: string) => ({ name: item })),
+    };
+  } else if (columnDetails?.type === "subColumns") {
+    defaultValues = {
+      name: columnDetails?.title,
+      type: columnDetails?.type,
+      hasSubcolumns: "true",
+      subcolumns: columnDetails?.subColumns!.map((item) => ({
+        title: item?.title,
+        type: item?.type,
+        dropdownValues:
+          item?.type === "dropdown" ? item?.dropdownValues.map((subitem: string) => ({ name: subitem })) : [],
+      })),
+    };
+  }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: defaultValues,
   });
 
   const { watch, setValue, getValues, setError } = form;
@@ -115,20 +141,16 @@ const AddColumns = () => {
   };
 
   useEffect(() => {
-    if (subcolumns?.length === 0 && hasSubcolumnsValue === "true") {
+    if (subcolumns?.length === 0 && hasSubcolumnsValue === "true" && !columnDetails) {
       setValue("subcolumns", [{ title: "", type: "", dropdownValues: [{ name: "" }] }]);
     }
   }, [subcolumns, setValue, hasSubcolumnsValue]);
 
   useEffect(() => {
-    if (dropdown === "dropdown") {
+    if (dropdown === "dropdown" && !columnDetails) {
       setValue("dropdownValues", [{ name: "" }]);
     }
   }, [dropdown, setValue]);
-
-  useEffect(() => {
-    form.reset();
-  }, [open, form]);
 
   const dummy = async () => {
     try {
@@ -141,7 +163,28 @@ const AddColumns = () => {
     }
   };
 
+  const handleSubcolumnNameChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const { value } = e.target;
+    console.log(subcolumns, value);
+    if (subcolumns!.length > 1)
+      for (let ind = 0; ind < subcolumns!.length; ind++) {
+        const item = subcolumns![ind];
+        if (value !== "" && item.title.toLowerCase() === value.toLowerCase() && ind !== index) {
+          console.log("object");
+          setError(
+            `subcolumns.${index}.title`,
+            {
+              message: `${value} sub-column name already exists. Please use a differnet name`,
+            },
+            { shouldFocus: true }
+          );
+          break;
+        } else form.clearErrors(`subcolumns.${index}.title`);
+      }
+  };
+
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    if (Object.keys(form.formState.errors).length !== 0) return;
     if (data.hasSubcolumns === "false") {
       if (!data.type) {
         setError("type", { message: "Required" }, { shouldFocus: true });
@@ -154,6 +197,20 @@ const AddColumns = () => {
         if (item.title === "") {
           setError(`subcolumns.${ind}.title`, { message: "Required" }, { shouldFocus: true });
           return;
+        } else {
+          const duplicate = data.subcolumns?.find(
+            (subItem, i) => subItem.title.toLowerCase() === item.title.toLowerCase() && i < ind
+          );
+          if (duplicate) {
+            setError(
+              `subcolumns.${ind}.title`,
+              {
+                message: `${duplicate.title} sub-column name already exists. Please use a differnet name`,
+              },
+              { shouldFocus: true }
+            );
+            return;
+          }
         }
         if (item.type === "") {
           setError(`subcolumns.${ind}.type`, { message: "Required" }, { shouldFocus: true });
@@ -186,10 +243,17 @@ const AddColumns = () => {
     }
     console.log(data);
     try {
-      const response = await updateDefaultParams(data, pathname);
-      if (response?.status === 200) {
+      let response;
+      if (columnDetails) response = await editSpecificDefaultParam(data, pathname, columnDetails.isDefault || false);
+      else response = await updateDefaultParams(data, pathname);
+      console.log(response);
+      if (response?.status === 409) {
+        toast.error(response.data + ". Try using a different name");
+      } else if (response?.status === 200) {
         location.reload();
-        toast.success(`New column ${data.name} added successfully`);
+        toast.success(
+          columnDetails ? `Column ${data.name} edited successfully` : `New column ${data.name} added successfully`
+        );
       }
     } catch (error) {
       console.log(error);
@@ -198,18 +262,24 @@ const AddColumns = () => {
 
   return (
     <div className="flex gap-5">
-      <Button
-        variant={"destructive"}
-        onClick={dummy}
-      >
-        Add new column
-      </Button>
-      <Dialog>
-        <DialogTrigger
-          className={buttonVariants()}
-          onClick={() => setOpen(true)}
+      {!columnDetails && (
+        <Button
+          variant={"destructive"}
+          onClick={dummy}
         >
-          Add column
+          Add new column
+        </Button>
+      )}
+      <Dialog>
+        <DialogTrigger className={!columnDetails ? buttonVariants() : ""}>
+          {columnDetails ? (
+            <MdEdit
+              id="edit-icons"
+              title={`Edit ${columnDetails.title}`}
+            />
+          ) : (
+            "Add column"
+          )}
         </DialogTrigger>
         <DialogContent className="bg-white max-h-[80vh] overflow-auto">
           <DialogHeader>
@@ -231,6 +301,7 @@ const AddColumns = () => {
                         placeholder="Name"
                         {...field}
                         className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                        disabled={!!columnDetails}
                       />
                     </FormControl>
                     <FormMessage />
@@ -248,6 +319,7 @@ const AddColumns = () => {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                         className="flex gap-10"
+                        disabled={!!columnDetails}
                       >
                         <FormItem className="flex items-center space-y-0 gap-2">
                           <FormControl>
@@ -278,6 +350,7 @@ const AddColumns = () => {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          disabled={!!columnDetails}
                         >
                           <FormControl>
                             <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
@@ -397,6 +470,7 @@ const AddColumns = () => {
                                   placeholder="Subcolumn Name"
                                   {...field}
                                   className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                                  onBlur={(e) => hasSubcolumnsValue === "true" && handleSubcolumnNameChange(e, index)}
                                 />
                               </FormControl>
                               <FormMessage />

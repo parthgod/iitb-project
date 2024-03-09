@@ -1,41 +1,18 @@
+import { convertField } from "@/utils/helperFunctions";
 import { Schema, model, models } from "mongoose";
-
-export interface IColumn {
-  field: string;
-  title: string;
-  type: string;
-  isDefault: boolean;
-  dropdownValues?: any;
-  subColumns?: any;
-}
-
-export interface IDefaultParamSchema {
-  busColumns: IColumn[];
-  excitationSystemColumns: IColumn[];
-  generatorColumns: IColumn[];
-  loadsColumns: IColumn[];
-  seriesCapacitorColumns: IColumn[];
-  shuntCapacitorColumns: IColumn[];
-  shuntReactorsColumns: IColumn[];
-  singleLineDiagramsColumns: IColumn[];
-  transformersThreeWindingColumns: IColumn[];
-  transformersTwoWindingColumns: IColumn[];
-  transmissionLinesColumns: IColumn[];
-  turbineGovernorColumns: IColumn[];
-}
 
 const defaultParamSchema = new Schema({
   busColumns: {
     type: Array,
     default: [
       {
-        field: "busName",
+        field: convertField("Bus Name"),
         title: "Bus Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "nominalKV",
+        field: convertField("Nominal kV"),
         title: "Nominal kV",
         type: "text",
         isDefault: true,
@@ -46,44 +23,44 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device name"),
         title: "Device name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "AVRType",
+        field: convertField("Automatic Voltage Regulator(AVR) Type"),
         title: "Automatic Voltage Regulator(AVR) Type",
         type: "dropdown",
         dropdownValues: ["Static", "Brushless", "Other"],
         isDefault: true,
       },
       {
-        field: "generatorDeviceName",
+        field: convertField("Generator Device Name"),
         title: "Generator Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "AVRImage",
+        field: convertField("AVR Image"),
         title: "AVR Image",
         type: "image",
         isDefault: true,
       },
       {
-        field: "PSSImage",
+        field: convertField("Power System Stabilizer(PSS) Image"),
         title: "Power System Stabilizer(PSS) Image",
         type: "image",
         isDefault: true,
       },
       {
-        field: "UELImage",
+        field: convertField("Under Excitation Limiter(UEL) image"),
         title: "Under Excitation Limiter(UEL) image",
         type: "image",
         isDefault: true,
       },
       {
-        field: "OELImage",
+        field: convertField("Over Excitation Limiter(OEL) image"),
         title: "Over Excitation Limiter(OEL) image",
         type: "image",
         isDefault: true,
@@ -94,67 +71,67 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device name"),
         title: "Device name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busTo",
+        field: convertField("Bus (To)"),
         title: "Bus (To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSectionTo",
+        field: convertField("Bus section (To)"),
         title: "Bus section (To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "type",
+        field: convertField("Type"),
         title: "Type",
         type: "dropdown",
         dropdownValues: ["Gas", "Hydro", "Steam"],
         isDefault: true,
       },
       {
-        field: "rotor",
+        field: convertField("Rotor"),
         title: "Rotor",
         type: "dropdown",
         dropdownValues: ["Round rotor", "Salient Pole"],
         isDefault: true,
       },
       {
-        field: "MW",
+        field: convertField("MW"),
         title: "MW",
         type: "text",
         isDefault: true,
       },
       {
-        field: "MVA",
+        field: convertField("MVA"),
         title: "MVA",
         type: "text",
         isDefault: true,
       },
       {
-        field: "Kv",
+        field: convertField("Kv"),
         title: "Kv",
         type: "text",
         isDefault: true,
       },
       {
-        field: "synchronousReactance",
+        field: convertField("Synchronous Reactance (pu)"),
         title: "Synchronous Reactance (pu)",
         type: "subColumns",
         subColumns: [
           {
-            field: "synchronousReactanceXd",
+            field: convertField("Synchronous Reactance (pu)" + "Xd"),
             title: "Xd",
             type: "text",
           },
           {
-            field: "synchronousReactanceXq",
+            field: convertField("Synchronous Reactance (pu)" + "Xq"),
             title: "Xq",
             type: "text",
           },
@@ -162,17 +139,17 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "transientReactance",
+        field: convertField("Transient Reactance (pu)"),
         title: "Transient Reactance (pu)",
         type: "subColumns",
         subColumns: [
           {
-            field: "transientReactanceXdPrime",
+            field: convertField("Transient Reactance (pu)" + "Xd'"),
             title: "Xd'",
             type: "text",
           },
           {
-            field: "transientReactanceXqPrime",
+            field: convertField("Transient Reactance (pu)" + "Xq'"),
             title: "Xq'",
             type: "text",
           },
@@ -180,17 +157,17 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "subtransientReactance",
+        field: convertField("Subtransient Reactance (pu)"),
         title: "Subtransient Reactance (pu)",
         type: "subColumns",
         subColumns: [
           {
-            field: "subtransientReactanceXdPrimePrime",
+            field: convertField("Subtransient Reactance (pu)" + "Xd''"),
             title: "Xd''",
             type: "text",
           },
           {
-            field: "subtransientReactanceXqPrimePrime",
+            field: convertField("Subtransient Reactance (pu)" + "Xq''"),
             title: "Xq''",
             type: "text",
           },
@@ -198,17 +175,17 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "transientOCTimeConstant",
+        field: convertField("Transient OC Time Constant (seconds)"),
         title: "Transient OC Time Constant (seconds)",
         type: "subColumns",
         subColumns: [
           {
-            field: "transientOCTimeConstantTd0Prime",
+            field: convertField("Transient OC Time Constant (seconds)" + "Td0'"),
             title: "Td0'",
             type: "text",
           },
           {
-            field: "transientOCTimeConstantTq0Prime",
+            field: convertField("Transient OC Time Constant (seconds)" + "Tq0'"),
             title: "Tq0'",
             type: "text",
           },
@@ -216,17 +193,17 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "subTransientOCTimeConstant",
+        field: convertField("Subtransient OC Time Constant (seconds)"),
         title: "Subtransient OC Time Constant (seconds)",
         type: "subColumns",
         subColumns: [
           {
-            field: "subTransientOCTimeConstantTd0PrimePrime",
+            field: convertField("Subtransient OC Time Constant (seconds)" + "Td0''"),
             title: "Td0''",
             type: "text",
           },
           {
-            field: "subTransientOCTimeConstantTq0PrimePrime",
+            field: convertField("Subtransient OC Time Constant (seconds)" + "Tq0''"),
             title: "Tq0''",
             type: "text",
           },
@@ -234,12 +211,12 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "StatorLeakageInductance",
+        field: convertField("Stator Leakage Inductance (pu)"),
         title: "Stator Leakage Inductance (pu)",
         type: "subColumns",
         subColumns: [
           {
-            field: "StatorLeakageInductanceXl",
+            field: convertField("Stator Leakage Inductance (pu)" + "Xl"),
             title: "Xl",
             type: "text",
           },
@@ -247,12 +224,12 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "statorResistance",
+        field: convertField("Stator resistance (pu)"),
         title: "Stator resistance (pu)",
         type: "subColumns",
         subColumns: [
           {
-            field: "statorResistanceRa",
+            field: convertField("Stator resistance (pu)" + "Ra"),
             title: "Ra",
             type: "text",
           },
@@ -260,12 +237,12 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "inertia",
+        field: convertField("Inertia (MJ/MVA)"),
         title: "Inertia (MJ/MVA)",
         type: "subColumns",
         subColumns: [
           {
-            field: "inertiaH",
+            field: convertField("Inertia (MJ/MVA)" + "H"),
             title: "H",
             type: "text",
           },
@@ -273,19 +250,19 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "poles",
+        field: convertField("Poles"),
         title: "Poles",
         type: "text",
         isDefault: true,
       },
       {
-        field: "speed",
+        field: convertField("Speed"),
         title: "Speed",
         type: "text",
         isDefault: true,
       },
       {
-        field: "frequency",
+        field: convertField("Frequency"),
         title: "Frequency",
         type: "text",
         isDefault: true,
@@ -296,31 +273,31 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device Name"),
         title: "Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busFrom",
+        field: convertField("Bus (From)"),
         title: "Bus (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSectionFrom",
+        field: convertField("Bus section (From)"),
         title: "Bus section (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "PMW",
+        field: convertField("P (MW)"),
         title: "P (MW)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "QMvar",
+        field: convertField("Q (Mvar)"),
         title: "Q (Mvar)",
         type: "text",
         isDefault: true,
@@ -331,19 +308,19 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device Name"),
         title: "Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "Mvar",
+        field: convertField("Mvar"),
         title: "Mvar",
         type: "text",
         isDefault: true,
       },
       {
-        field: "compensation",
+        field: convertField("%Compensation"),
         title: "%Compensation",
         type: "text",
         isDefault: true,
@@ -354,31 +331,31 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device Name"),
         title: "Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busFrom",
+        field: convertField("Bus (From)"),
         title: "Bus (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSectionFrom",
+        field: convertField("Bus section (From)"),
         title: "Bus section (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "kV",
+        field: convertField("kV"),
         title: "kV",
         type: "text",
         isDefault: true,
       },
       {
-        field: "MVA",
+        field: convertField("MVA"),
         title: "MVA",
         type: "text",
         isDefault: true,
@@ -389,31 +366,31 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device Name"),
         title: "Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busFrom",
+        field: convertField("Bus (From)"),
         title: "Bus (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSectionFrom",
+        field: convertField("Bus section (From)"),
         title: "Bus section (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "kV",
+        field: convertField("kV"),
         title: "kV",
         type: "text",
         isDefault: true,
       },
       {
-        field: "MVA",
+        field: convertField("MVA"),
         title: "MVA",
         type: "text",
         isDefault: true,
@@ -424,13 +401,13 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "description",
+        field: convertField("Description"),
         title: "Description",
         type: "text",
         isDefault: true,
       },
       {
-        field: "image",
+        field: convertField("Image"),
         title: "Image",
         type: "image",
         isDefault: true,
@@ -441,83 +418,83 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device Name"),
         title: "Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busPrimaryFrom",
+        field: convertField("Bus_Primary (From)"),
         title: "Bus_Primary (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busPrimarySectionFrom",
+        field: convertField("Bus_Primary section(From)"),
         title: "Bus_Primary section(From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSecondaryTo",
+        field: convertField("Bus_Secondary (To)"),
         title: "Bus_Secondary (To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSecondarySetionTo",
+        field: convertField("Bus section_Secondary(To)"),
         title: "Bus section_Secondary(To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busTertiaryTo",
+        field: convertField("Bus_Tertiary (To)"),
         title: "Bus_Tertiary (To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busTertiarySectionTo",
+        field: convertField("Bus section_Tertiary(To)"),
         title: "Bus section_Tertiary(To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "MVA",
+        field: convertField("MVA"),
         title: "MVA",
         type: "text",
         isDefault: true,
       },
       {
-        field: "kVPrimaryVoltage",
+        field: convertField("kV-Primary voltage"),
         title: "kV-Primary voltage",
         type: "text",
         isDefault: true,
       },
       {
-        field: "kVSecondaryVoltage",
+        field: convertField("kV-Secondary voltage"),
         title: "kV-Secondary voltage",
         type: "text",
         isDefault: true,
       },
       {
-        field: "kVTertiaryVoltage",
+        field: convertField("kV-Tertiary voltage"),
         title: "kV-Tertiary voltage",
         type: "text",
         isDefault: true,
       },
       {
-        field: "PrimarySecondary",
+        field: convertField("PS(Primary-Secondary)"),
         title: "PS(Primary-Secondary)",
         type: "subColumns",
         subColumns: [
           {
-            field: "PrimarySecondaryR",
+            field: convertField("PS(Primary-Secondary)" + "R"),
             title: "R",
             type: "text",
           },
           {
-            field: "PrimarySecondaryX",
+            field: convertField("PS(Primary-Secondary)" + "X"),
             title: "X",
             type: "text",
           },
@@ -525,17 +502,17 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "PrimaryTertiary",
+        field: convertField("PT(Primary-Tertiary)"),
         title: "PT(Primary-Tertiary)",
         type: "subColumns",
         subColumns: [
           {
-            field: "PrimaryTertiaryR",
+            field: convertField("PT(Primary-Tertiary)" + "R"),
             title: "R",
             type: "text",
           },
           {
-            field: "PrimaryTertiaryX",
+            field: convertField("PT(Primary-Tertiary)" + "X"),
             title: "X",
             type: "text",
           },
@@ -543,17 +520,17 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "SecondaryTertiary",
+        field: convertField("ST(Secondary-Tertiary)"),
         title: "ST(Secondary-Tertiary)",
         type: "subColumns",
         subColumns: [
           {
-            field: "SecondaryTertiaryR",
+            field: convertField("ST(Secondary-Tertiary)" + "R"),
             title: "R",
             type: "text",
           },
           {
-            field: "SecondaryTertiaryX",
+            field: convertField("ST(Secondary-Tertiary)" + "X"),
             title: "X",
             type: "text",
           },
@@ -561,60 +538,60 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "tapPrimary",
+        field: convertField("% Tap (primary)"),
         title: "% Tap (primary)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "tapSecondary",
+        field: convertField("% Tap (secondary)"),
         title: "% Tap (secondary)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "tapTertiary",
+        field: convertField("% Tap (Tertiary)"),
         title: "% Tap (Tertiary)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "primaryConnection",
+        field: convertField("Primary Connection"),
         title: "Primary Connection",
         type: "dropdown",
         dropdownValues: ["Delta", "Star"],
         isDefault: true,
       },
       {
-        field: "primaryConnectionGrounding",
+        field: convertField("Primary Connection Grounding"),
         title: "Primary Connection Grounding",
         type: "dropdown",
         dropdownValues: ["Grounded", "Ungrounded", "None"],
         isDefault: true,
       },
       {
-        field: "secondaryConnection",
+        field: convertField("Secondary Connection"),
         title: "Secondary Connection",
         type: "dropdown",
         dropdownValues: ["Delta", "Star"],
         isDefault: true,
       },
       {
-        field: "secondaryConnectionGrounding",
+        field: convertField("Secondary Connection Grounding"),
         title: "Secondary Connection Grounding",
         type: "dropdown",
         dropdownValues: ["Grounded", "Ungrounded", "None"],
         isDefault: true,
       },
       {
-        field: "tertiaryConnection",
+        field: convertField("Tertiary Connection"),
         title: "Tertiary Connection",
         type: "dropdown",
         dropdownValues: ["Delta", "Star"],
         isDefault: true,
       },
       {
-        field: "tertiaryConnectionGrounding",
+        field: convertField("Tertiary Connection Grounding"),
         title: "Tertiary Connection Grounding",
         type: "dropdown",
         dropdownValues: ["Grounded", "Ungrounded", "None"],
@@ -626,107 +603,107 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device Name"),
         title: "Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busFrom",
+        field: convertField("Bus (From)"),
         title: "Bus (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSectionFrom",
+        field: convertField("Bus section(From)"),
         title: "Bus section(From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busTo",
-        title: "Bus  (To)",
+        field: convertField("Bus (To)"),
+        title: "Bus (To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSetionTo",
+        field: convertField("Bus section(To)"),
         title: "Bus section(To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "MVA",
+        field: convertField("MVA"),
         title: "MVA",
         type: "text",
         isDefault: true,
       },
       {
-        field: "kVPrimary",
+        field: convertField("kV-Primary"),
         title: "kV-Primary",
         type: "text",
         isDefault: true,
       },
       {
-        field: "kVSecondary",
+        field: convertField("kV-Secondary"),
         title: "kV-Secondary",
         type: "text",
         isDefault: true,
       },
       {
-        field: "R",
+        field: convertField("R"),
         title: "R",
         type: "text",
         isDefault: true,
       },
       {
-        field: "X",
+        field: convertField("X"),
         title: "X",
         type: "text",
         isDefault: true,
       },
       {
-        field: "tapPrimary",
+        field: convertField("% Tap (primary)"),
         title: "% Tap (primary)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "tapSecondary",
+        field: convertField("% Tap (secondary)"),
         title: "% Tap (secondary)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "primaryWindingConnection",
+        field: convertField("Primary Winding Connection"),
         title: "Primary Winding Connection",
         type: "dropdown",
         dropdownValues: ["Delta", "Star"],
         isDefault: true,
       },
       {
-        field: "primaryConnectionGrounding",
+        field: convertField("Primary Connection Grounding"),
         title: "Primary Connection Grounding",
         type: "dropdown",
         dropdownValues: ["Grounded", "Ungrounded", "None"],
         isDefault: true,
       },
       {
-        field: "secondaryWindingConnection",
+        field: convertField("Secondary Winding Connection"),
         title: "Secondary Winding Connection",
         type: "dropdown",
         dropdownValues: ["Delta", "Star"],
         isDefault: true,
       },
       {
-        field: "secondaryConnectionGrounding",
+        field: convertField("Secondary Connection Grounding"),
         title: "Secondary Connection Grounding",
         type: "dropdown",
         dropdownValues: ["Grounded", "Ungrounded", "None"],
         isDefault: true,
       },
       {
-        field: "angle",
+        field: convertField("Angle"),
         title: "Angle",
         type: "dropdown",
         dropdownValues: ["0", "30", "60", "90", "120", "150", "180", "-150", "-120", "-90", "-60", "-30"],
@@ -738,59 +715,59 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device Name"),
         title: "Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "type",
+        field: convertField("Type"),
         title: "Type",
         type: "dropdown",
         dropdownValues: ["Over head conductor", "Cable"],
         isDefault: true,
       },
       {
-        field: "busFrom",
+        field: convertField("Bus (From)"),
         title: "Bus (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSectionFrom",
+        field: convertField("Bus section(From)"),
         title: "Bus section(From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busTo",
+        field: convertField("Bus  (To)"),
         title: "Bus  (To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "busSetionTo",
+        field: convertField("Bus section(To)"),
         title: "Bus section(To)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "positiveSequence",
+        field: convertField("Positive sequence"),
         title: "Positive sequence",
         type: "subColumns",
         subColumns: [
           {
-            field: "positiveSequenceR",
+            field: convertField("Positive sequence" + "R(ohms/perunitlength)"),
             title: "R(ohms/perunitlength)",
             type: "text",
           },
           {
-            field: "positiveSequenceX",
+            field: convertField("Positive sequence" + "X(ohms/perunitlength)"),
             title: "X(ohms/perunitlength)",
             type: "text",
           },
           {
-            field: "positiveSequenceB",
+            field: convertField("Positive sequence" + "B(seimens/perunitlength)"),
             title: "B(seimens/perunitlength)",
             type: "text",
           },
@@ -798,22 +775,22 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "negativeSequence",
+        field: convertField("Negative sequence"),
         title: "Negative sequence",
         type: "subColumns",
         subColumns: [
           {
-            field: "negativeSequenceR",
+            field: convertField("Negative sequence" + "R(ohms/perunitlength)"),
             title: "R(ohms/perunitlength)",
             type: "text",
           },
           {
-            field: "negativeSequenceX",
+            field: convertField("Negative sequence" + "X(ohms/perunitlength)"),
             title: "X(ohms/perunitlength)",
             type: "text",
           },
           {
-            field: "negativeSequenceB",
+            field: convertField("Negative sequence" + "B(seimens/perunitlength)"),
             title: "B(seimens/perunitlength)",
             type: "text",
           },
@@ -821,19 +798,19 @@ const defaultParamSchema = new Schema({
         isDefault: true,
       },
       {
-        field: "length",
+        field: convertField("Length (km)"),
         title: "Length (km)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "lineReactorFrom",
+        field: convertField("Line Reactor (From)"),
         title: "Line Reactor (From)",
         type: "text",
         isDefault: true,
       },
       {
-        field: "lineReactorTo",
+        field: convertField("Line Reactor (To)"),
         title: "Line Reactor (To)",
         type: "text",
         isDefault: true,
@@ -844,26 +821,26 @@ const defaultParamSchema = new Schema({
     type: Array,
     default: [
       {
-        field: "deviceName",
+        field: convertField("Device name"),
         title: "Device name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "turbineType",
+        field: convertField("Turbine Type"),
         title: "Turbine Type",
         type: "dropdown",
         dropdownValues: ["Steam", "Hydro-Pelton Turbine", "Hydro-Francis Turbine", "Hydro-Kaplan Turbine"],
         isDefault: true,
       },
       {
-        field: "generatorDeviceName",
+        field: convertField("Generator Device Name"),
         title: "Generator Device Name",
         type: "text",
         isDefault: true,
       },
       {
-        field: "turbineModelImage",
+        field: convertField("Turbine model image"),
         title: "Turbine model image",
         type: "image",
         isDefault: true,

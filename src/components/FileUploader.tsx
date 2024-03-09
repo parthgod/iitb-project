@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, Dispatch, SetStateAction } from "react";
 import { useDropzone } from "@uploadthing/react/hooks";
+import { useCallback } from "react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { Button } from "@/components/ui/button";
