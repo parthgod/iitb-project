@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllGenerators } from "@/lib/actions/generator.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const Generators = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: generators } = (await getAllGenerators()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: generators } = await getAllGenerators();
 
   const session = await getServerSession(authOptions);
 
   const filteredGenerators = searchTerm
-    ? generators.filter((item: IExcitationSystem) => {
+    ? generators.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : generators;

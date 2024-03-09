@@ -2,20 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
-import { handleError } from "../../utils/helperFunctions";
 import Generator from "../database/models/generator";
+import { ICreateUpdateParams, IGenerator } from "../../utils/defaultTypes";
 
-export const getAllGenerators = async () => {
+export const getAllGenerators = async (): Promise<{ data: IGenerator[]; status: number }> => {
   try {
     await connectToDatabase();
     const generators = await Generator.find({});
     return { data: JSON.parse(JSON.stringify(generators)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const createGenerator = async (req: any) => {
+export const createGenerator = async (req: ICreateUpdateParams) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -26,22 +26,22 @@ export const createGenerator = async (req: any) => {
     await newGenerator.save();
     return { data: JSON.parse(JSON.stringify(newGenerator)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const getGeneratorById = async (id: any) => {
+export const getGeneratorById = async (id: string) => {
   try {
     await connectToDatabase();
     const generatorDetails = await Generator.findById(id);
     if (!generatorDetails) return { data: "Generator not found", status: 404 };
     return { data: JSON.parse(JSON.stringify(generatorDetails)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const updateGenerator = async (req: any, id: any) => {
+export const updateGenerator = async (req: ICreateUpdateParams, id: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -51,11 +51,11 @@ export const updateGenerator = async (req: any, id: any) => {
     });
     return { data: JSON.parse(JSON.stringify(response)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const deleteGenerator = async (id: any, path: any) => {
+export const deleteGenerator = async (id: string, path: string) => {
   try {
     await connectToDatabase();
     const response = await Generator.findByIdAndDelete(id);
@@ -63,6 +63,6 @@ export const deleteGenerator = async (id: any, path: any) => {
       revalidatePath(path);
     }
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };

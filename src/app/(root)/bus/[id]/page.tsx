@@ -2,13 +2,12 @@ import FormSkeleton from "@/components/FormSkeleton";
 import CreateForm from "@/components/CreateForm";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
-import { IBus } from "@/lib/database/models/bus";
 import { getBusById } from "@/lib/actions/bus.actions";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 
 interface EditBusProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (busDetails: IBus, defaultParams: IDefaultParamSc
     const values: any = {};
     defaultParams?.[0].busColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               busDetails?.[item.field]?.[subItem.field] ||
               busDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -35,8 +34,8 @@ const calculateDefaultValues = (busDetails: IBus, defaultParams: IDefaultParamSc
 const EditBus = async ({ params }: EditBusProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: busDetails } = (await getBusById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: busDetails } = await getBusById(id);
 
   const defaultValues = calculateDefaultValues(busDetails, defaultParams);
 

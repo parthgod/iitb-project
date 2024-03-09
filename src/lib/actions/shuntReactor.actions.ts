@@ -2,20 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
-import { handleError } from "../../utils/helperFunctions";
 import ShuntReactor from "../database/models/shuntReactor";
+import { ICreateUpdateParams, IShuntReactor } from "../../utils/defaultTypes";
 
-export const getAllShuntReactors = async () => {
+export const getAllShuntReactors = async (): Promise<{ data: IShuntReactor[]; status: number }> => {
   try {
     await connectToDatabase();
     const shuntReactors = await ShuntReactor.find({});
     return { data: JSON.parse(JSON.stringify(shuntReactors)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const createShuntReactor = async (req: any) => {
+export const createShuntReactor = async (req: ICreateUpdateParams) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -26,22 +26,22 @@ export const createShuntReactor = async (req: any) => {
     await newShuntReactor.save();
     return { data: JSON.parse(JSON.stringify(newShuntReactor)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const getShuntReactorById = async (id: any) => {
+export const getShuntReactorById = async (id: string) => {
   try {
     await connectToDatabase();
     const shuntReactorDetails = await ShuntReactor.findById(id);
     if (!shuntReactorDetails) return { data: "ShuntReactor not found", status: 404 };
     return { data: JSON.parse(JSON.stringify(shuntReactorDetails)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const updateShuntReactor = async (req: any, id: any) => {
+export const updateShuntReactor = async (req: ICreateUpdateParams, id: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -51,11 +51,11 @@ export const updateShuntReactor = async (req: any, id: any) => {
     });
     return { data: JSON.parse(JSON.stringify(response)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const deleteShuntReactor = async (id: any, path: any) => {
+export const deleteShuntReactor = async (id: string, path: string) => {
   try {
     await connectToDatabase();
     const response = await ShuntReactor.findByIdAndDelete(id);
@@ -63,6 +63,6 @@ export const deleteShuntReactor = async (id: any, path: any) => {
       revalidatePath(path);
     }
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };

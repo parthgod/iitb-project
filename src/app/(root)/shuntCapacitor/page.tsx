@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllShuntCapacitors } from "@/lib/actions/shuntCapacitor.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const ShuntCapacitor = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: shuntCapacitors } = (await getAllShuntCapacitors()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: shuntCapacitors } = await getAllShuntCapacitors();
 
   const session = await getServerSession(authOptions);
 
   const filteredShuntCapacitors = searchTerm
-    ? shuntCapacitors.filter((item: IExcitationSystem) => {
+    ? shuntCapacitors.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : shuntCapacitors;

@@ -1,7 +1,6 @@
-import bcryptjs from "bcryptjs";
 import { connectToDatabase } from "@/lib/database/database";
 import User from "@/lib/database/models/User";
-import { handleError } from "@/utils/helperFunctions";
+import bcryptjs from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -78,7 +77,7 @@ export const authOptions: NextAuthOptions = {
         }
         return true;
       } catch (error) {
-        handleError(error);
+        throw new Error(typeof error === "string" ? error : JSON.stringify(error));
         return false;
       }
     },

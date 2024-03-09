@@ -1,17 +1,18 @@
 import qs from "query-string";
 
 export const convertField = (input: string): string => {
-  const sanitizedInput = input.replace(/[^a-zA-Z0-9\s']/g, ""); // Remove special characters
-  const words = sanitizedInput.split(" ");
+  const sanitizedInput = input.replaceAll("'", "Prime"); // Remove all single quotes
+  const tempSanitizedInput = sanitizedInput.replace(/[^a-zA-Z0-9\s']/g, "");
+  const words = tempSanitizedInput.split(" ");
   const updatedWords = words.map((word) => {
-    const baseWord = word.replace(/'$/, ""); // Remove trailing single quote if present
-    return baseWord.charAt(0).toUpperCase() + baseWord.slice(1);
+    return word.charAt(0).toUpperCase() + word.slice(1);
   });
 
   const firstWord = updatedWords[0].toLowerCase();
   const restOfTheWords = updatedWords.slice(1).join("");
 
-  const result = firstWord + restOfTheWords + (sanitizedInput.endsWith("'") ? "Prime" : "");
+  // const primes = "Prime".repeat((input.match(/'/g) || []).length); // Repeat 'Prime' for each single quote
+  const result = firstWord + restOfTheWords;
 
   return result;
 };
@@ -24,11 +25,6 @@ export const reverseUnslug = (input: string): string => {
 };
 
 export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
-
-export const handleError = (error: unknown) => {
-  console.error(error);
-  throw new Error(typeof error === "string" ? error : JSON.stringify(error));
-};
 
 export function formUrlQuery({ params, key, value }: any) {
   const currentUrl = qs.parse(params);

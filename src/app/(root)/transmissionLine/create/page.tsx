@@ -4,7 +4,7 @@ import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
 
 const CreateTransmissionLine = async () => {
-  const { data: defaultParams } = (await getDefaultParams()) as any;
+  const { data: defaultParams } = await getDefaultParams();
 
   return (
     <div className="flex flex-col gap-5">

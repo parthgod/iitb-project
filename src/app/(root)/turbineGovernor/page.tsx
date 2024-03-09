@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllTurbineGovernors } from "@/lib/actions/turbineGovernor.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const TurbineGovernor = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: turbineGovernorDetails } = (await getAllTurbineGovernors()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: turbineGovernorDetails } = await getAllTurbineGovernors();
 
   const session = await getServerSession(authOptions);
 
   const filteredTurbineGovernors = searchTerm
-    ? turbineGovernorDetails.filter((item: IExcitationSystem) => {
+    ? turbineGovernorDetails.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : turbineGovernorDetails;

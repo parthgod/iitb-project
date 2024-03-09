@@ -10,10 +10,10 @@ const loadSchema = new Schema({
   busSectionFrom: {
     type: String,
   },
-  PMW: {
+  pMW: {
     type: String,
   },
-  QMvar: {
+  qMvar: {
     type: String,
   },
   additionalFields: {

@@ -13,28 +13,28 @@ const transformersTwoWindingSchema = new Schema({
   busTo: {
     type: String,
   },
-  busSetionTo: {
+  busSectionTo: {
     type: String,
   },
-  MVA: {
+  mva: {
     type: String,
   },
-  kVPrimary: {
+  kvprimary: {
     type: String,
   },
-  kVSecondary: {
+  kvsecondary: {
     type: String,
   },
-  R: {
+  r: {
     type: String,
   },
-  X: {
+  x: {
     type: String,
   },
-  tapPrimary: {
+  TapPrimary: {
     type: String,
   },
-  tapSecondary: {
+  TapSecondary: {
     type: String,
   },
   primaryWindingConnection: {

@@ -2,20 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
-import { handleError } from "../../utils/helperFunctions";
 import ShuntCapacitor from "../database/models/shuntCapacitor";
+import { ICreateUpdateParams, IShuntCapacitor } from "../../utils/defaultTypes";
 
-export const getAllShuntCapacitors = async () => {
+export const getAllShuntCapacitors = async (): Promise<{ data: IShuntCapacitor[]; status: number }> => {
   try {
     await connectToDatabase();
     const shuntCapacitors = await ShuntCapacitor.find({});
     return { data: JSON.parse(JSON.stringify(shuntCapacitors)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const createShuntCapacitor = async (req: any) => {
+export const createShuntCapacitor = async (req: ICreateUpdateParams) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -26,22 +26,22 @@ export const createShuntCapacitor = async (req: any) => {
     await newShuntCapacitor.save();
     return { data: JSON.parse(JSON.stringify(newShuntCapacitor)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const getShuntCapacitorById = async (id: any) => {
+export const getShuntCapacitorById = async (id: string) => {
   try {
     await connectToDatabase();
     const shuntCapacitorDetails = await ShuntCapacitor.findById(id);
     if (!shuntCapacitorDetails) return { data: "Shunt Capacitor not found", status: 404 };
     return { data: JSON.parse(JSON.stringify(shuntCapacitorDetails)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const updateShuntCapacitor = async (req: any, id: any) => {
+export const updateShuntCapacitor = async (req: ICreateUpdateParams, id: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -51,11 +51,11 @@ export const updateShuntCapacitor = async (req: any, id: any) => {
     });
     return { data: JSON.parse(JSON.stringify(response)), status: 200 };
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const deleteShuntCapacitor = async (id: any, path: any) => {
+export const deleteShuntCapacitor = async (id: string, path: string) => {
   try {
     await connectToDatabase();
     const response = await ShuntCapacitor.findByIdAndDelete(id);
@@ -63,6 +63,6 @@ export const deleteShuntCapacitor = async (id: any, path: any) => {
       revalidatePath(path);
     }
   } catch (error) {
-    handleError(error);
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };

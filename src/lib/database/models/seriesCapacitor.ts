@@ -4,7 +4,7 @@ const seriesCapacitorSchema = new Schema({
   deviceName: {
     type: String,
   },
-  Mvar: {
+  mvar: {
     type: String,
   },
   compensation: {

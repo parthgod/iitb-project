@@ -2,13 +2,12 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getShuntCapacitorById } from "@/lib/actions/shuntCapacitor.actions";
-import { IBus } from "@/lib/database/models/bus";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { Suspense } from "react";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 
 interface EditShuntCapacitorProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
     const values: any = {};
     defaultParams?.[0].shuntCapacitorColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               shuntCapacitorDetails?.[item.field]?.[subItem.field] ||
               shuntCapacitorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -37,8 +36,8 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
 const EditShuntCapacitor = async ({ params }: EditShuntCapacitorProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: shuntCapacitorDetails } = (await getShuntCapacitorById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: shuntCapacitorDetails } = await getShuntCapacitorById(id);
 
   const defaultValues = calculateDefaultValues(shuntCapacitorDetails, defaultParams);
 

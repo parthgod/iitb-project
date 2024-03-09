@@ -2,22 +2,22 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getGeneratorById } from "@/lib/actions/generator.actions";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { Suspense } from "react";
+import { IDefaultParamSchema, IGenerator } from "@/utils/defaultTypes";
 
 interface EditGeneratorProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
-const calculateDefaultValues = (generatorDetails: any, defaultParams: IDefaultParamSchema[]) => {
+const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDefaultParamSchema[]) => {
   if (Object.keys(generatorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].generatorColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               generatorDetails?.[item.field]?.[subItem.field] ||
               generatorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -35,8 +35,8 @@ const calculateDefaultValues = (generatorDetails: any, defaultParams: IDefaultPa
 const EditGenerator = async ({ params }: EditGeneratorProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: generatorDetails } = (await getGeneratorById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: generatorDetails } = await getGeneratorById(id);
 
   const defaultValues = calculateDefaultValues(generatorDetails, defaultParams);
 

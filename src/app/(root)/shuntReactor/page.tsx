@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllShuntReactors } from "@/lib/actions/shuntReactor.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const ShuntReactors = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: shuntReactors } = (await getAllShuntReactors()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: shuntReactors } = await getAllShuntReactors();
 
   const session = await getServerSession(authOptions);
 
   const filteredShuntReactors = searchTerm
-    ? shuntReactors.filter((item: IExcitationSystem) => {
+    ? shuntReactors.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : shuntReactors;

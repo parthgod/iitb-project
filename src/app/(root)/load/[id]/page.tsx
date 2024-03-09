@@ -2,13 +2,12 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getLoadById } from "@/lib/actions/load.actions";
-import { IBus } from "@/lib/database/models/bus";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { Suspense } from "react";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 
 interface EditLoadProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
     const values: any = {};
     defaultParams?.[0].loadsColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               loadDetails?.[item.field]?.[subItem.field] ||
               loadDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -35,8 +34,8 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
 const EditLoad = async ({ params }: EditLoadProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: loadDetails } = (await getLoadById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: loadDetails } = await getLoadById(id);
 
   const defaultValues = calculateDefaultValues(loadDetails, defaultParams);
 

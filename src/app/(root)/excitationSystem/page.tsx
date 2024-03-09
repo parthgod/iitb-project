@@ -7,19 +7,18 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllExcitationSystems } from "@/lib/actions/excitationSystem.actions";
-import { IBus } from "@/lib/database/models/bus";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 const ExcitationSystem = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: excitationSystems } = (await getAllExcitationSystems()) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: excitationSystems } = await getAllExcitationSystems();
 
   const session = await getServerSession(authOptions);
 
   const filteredExcitationSystems = searchTerm
-    ? excitationSystems.filter((item: IBus) => {
+    ? excitationSystems.filter((item) => {
         return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
       })
     : excitationSystems;

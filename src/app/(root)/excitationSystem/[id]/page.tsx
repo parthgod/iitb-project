@@ -2,13 +2,12 @@ import FormSkeleton from "@/components/FormSkeleton";
 import CreateForm from "@/components/CreateForm";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { getExcitationSystemById } from "@/lib/actions/excitationSystem.actions";
-import { IExcitationSystem } from "@/lib/database/models/excitationSystem";
+import { IDefaultParamSchema, IExcitationSystem } from "@/utils/defaultTypes";
 
 interface EditProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defa
     const values: any = {};
     defaultParams?.[0].excitationSystemColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               excitationSystemDetails?.[item.field]?.[subItem.field] ||
               excitationSystemDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -37,8 +36,8 @@ const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defa
 const EditExcitationSystem = async ({ params }: EditProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: excitationSystemDetails } = (await getExcitationSystemById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: excitationSystemDetails } = await getExcitationSystemById(id);
 
   const defaultValues = calculateDefaultValues(excitationSystemDetails, defaultParams);
 

@@ -2,13 +2,12 @@ import CreateForm from "@/components/CreateForm";
 import FormSkeleton from "@/components/FormSkeleton";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getShuntReactorById } from "@/lib/actions/shuntReactor.actions";
-import { IBus } from "@/lib/database/models/bus";
-import { IDefaultParamSchema } from "@/lib/database/models/defaultParams";
 import { Suspense } from "react";
+import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
 
 interface EditShuntReactorProps {
   params: {
-    id: String;
+    id: string;
   };
 }
 
@@ -17,8 +16,8 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
     const values: any = {};
     defaultParams?.[0].shuntReactorsColumns.forEach((item) => {
       if (item.type === "subColumns") {
-        item.subColumns.map(
-          (subItem: any) =>
+        item.subColumns!.map(
+          (subItem) =>
             (values[subItem.field] =
               shuntReactorDetails?.[item.field]?.[subItem.field] ||
               shuntReactorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
@@ -37,8 +36,8 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
 const EditShuntReactor = async ({ params }: EditShuntReactorProps) => {
   const { id } = params;
 
-  const { data: defaultParams } = (await getDefaultParams()) as any;
-  const { data: shuntReactorDetails } = (await getShuntReactorById(id)) as any;
+  const { data: defaultParams } = await getDefaultParams();
+  const { data: shuntReactorDetails } = await getShuntReactorById(id);
 
   const defaultValues = calculateDefaultValues(shuntReactorDetails, defaultParams);
 
