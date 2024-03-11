@@ -1,9 +1,11 @@
 "use server";
 
+import { ObjectId } from "mongodb";
 import { IColumn, IColumnDetails, IDefaultParamSchema, ISubColumn } from "../../utils/defaultTypes";
 import { convertField } from "../../utils/helperFunctions";
 import { connectToDatabase } from "../database/database";
 import DefaultParam from "../database/models/defaultParams";
+import ModificationHistory from "../database/models/modificationHistory";
 
 export const getDefaultParams = async (): Promise<{ data: IDefaultParamSchema[]; status: number }> => {
   try {
@@ -29,7 +31,8 @@ export const createDefaultParams = async () => {
 export const editSpecificDefaultParam = async (
   columnDetails: IColumnDetails,
   itemColumnName: string,
-  isDefault: boolean
+  isDefault: boolean,
+  userId: string
 ) => {
   await connectToDatabase();
   let newColumns: IColumn;
@@ -71,14 +74,23 @@ export const editSpecificDefaultParam = async (
       };
     }
   }
-  console.log("newColumns");
   const newParams = oldParams[0];
+  let modificationHistory: any;
   switch (itemColumnName) {
     case "/bus":
       newParams.busColumns = oldParams[0].busColumns.map((column) => {
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Bus",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/excitationSystem":
@@ -86,6 +98,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Excitation system",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/generator":
@@ -93,6 +114,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Bus",
+        operationType: "Generator",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/load":
@@ -100,6 +130,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Load",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/seriesCapacitor":
@@ -107,6 +146,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Series Capacitor",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/shuntCapacitor":
@@ -114,6 +162,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Shunt Capacitor",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/shuntReactor":
@@ -121,6 +178,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Shunt Reactor",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/singleLineDiagram":
@@ -128,6 +194,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Single Line Diagram",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/transformersThreeWinding":
@@ -135,6 +210,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Transformers Three Winding",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/transformersTwoWinding":
@@ -142,6 +226,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Transformers Two Winding",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/transmissionLine":
@@ -149,6 +242,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Transmission Line",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     case "/turbineGovernor":
@@ -156,6 +258,15 @@ export const editSpecificDefaultParam = async (
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Turbine Governor",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
       break;
 
     default:
@@ -176,11 +287,11 @@ export const editSpecificDefaultParam = async (
     transmissionLinesColumns: newParams.transmissionLinesColumns,
     turbineGovernorColumns: newParams.turbineGovernorColumns,
   });
-  console.log("edited successfully");
+  await ModificationHistory.create(modificationHistory);
   return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
 };
 
-export const updateDefaultParams = async (columnDetails: IColumnDetails, itemColumnName: string) => {
+export const updateDefaultParams = async (columnDetails: IColumnDetails, itemColumnName: string, userId: string) => {
   try {
     await connectToDatabase();
     let newColumns: IColumn;
@@ -286,59 +397,168 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
       }
     }
     const newParams = oldParams[0];
+    let modificationHistory: any;
     switch (itemColumnName) {
       case "/bus":
         newParams.busColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Bus",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/excitationSystem":
         newParams.excitationSystemColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Excitation System",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/generator":
         newParams.generatorColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Generator",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/load":
         newParams.loadsColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Load",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/seriesCapacitor":
         newParams.seriesCapacitorColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Series Capacitor",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/shuntCapacitor":
         newParams.shuntCapacitorColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Shunt Capacitor",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/shuntReactor":
         newParams.shuntReactorsColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Shunt Reactor",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/singleLineDiagram":
         newParams.singleLineDiagramsColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Single Line Diagram",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/transformersThreeWinding":
         newParams.transformersThreeWindingColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Transformers Three Winding",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/transformersTwoWinding":
         newParams.transformersTwoWindingColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Transformers Two Winding",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/transmissionLine":
         newParams.transmissionLinesColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Transmission Line",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       case "/turbineGovernor":
         newParams.turbineGovernorColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Turbine Governor",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
         break;
 
       default:
         break;
     }
-    console.log(newColumns);
+
     const newDefaultParams = await DefaultParam.findByIdAndUpdate(newParams._id, {
       busColumns: newParams.busColumns,
       excitationSystemColumns: newParams.excitationSystemColumns,
@@ -353,6 +573,9 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
       transmissionLinesColumns: newParams.transmissionLinesColumns,
       turbineGovernorColumns: newParams.turbineGovernorColumns,
     });
+
+    await ModificationHistory.create(modificationHistory);
+
     return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));

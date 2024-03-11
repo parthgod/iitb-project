@@ -19,7 +19,11 @@ const Loads = async ({ searchParams }: { searchParams: { query: string } }) => {
 
   const filteredLoads = searchTerm
     ? loads.filter((item) => {
-        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+        return JSON.stringify(item)
+          .replace("additionalFields", "")
+          .replace(new RegExp(defaultParams[0].loadsColumns.map((item) => item.field).join("|"), "g"), "")
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     : loads;
 
@@ -32,7 +36,7 @@ const Loads = async ({ searchParams }: { searchParams: { query: string } }) => {
           <Link href="/load/create">
             <Button>Create load</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns />}
+          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>

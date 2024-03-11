@@ -33,6 +33,8 @@ import { FileUploader } from "./FileUploader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
+import { uploadImagesToFirebase } from "@/lib/firebase/storage";
+import { useSession } from "next-auth/react";
 
 type IFiles = {
   field: string;
@@ -73,6 +75,7 @@ const generateFormSchema = (fields: IColumn[]) => {
 const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   const [files, setFiles] = useState<IFiles[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
 
   const router = useRouter();
 
@@ -94,21 +97,22 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         uploadedImageUrl[item.field] = data[item.field];
       } else if (item.type === "subColumns") {
         item.subColumns!.map((subItem) => {
-          uploadedImageUrl[subItem.field] = data[subItem.field];
+          if (subItem.type === "image") uploadedImageUrl[subItem.field] = data[subItem.field];
         });
       }
     });
 
     if (files.length > 0) {
-      const uploadPromises = files.map((file) => startUpload(file.file));
-      const images: any = await Promise.all(
-        uploadPromises.map(async (promise: any, ind: number) => {
-          const result = await promise;
-          return { result, field: files[ind].field };
-        })
-      );
+      const images = await uploadImagesToFirebase(files);
+      // const uploadPromises = files.map((file) => startUpload(file.file));
+      // const images: any = await Promise.all(
+      //   uploadPromises.map(async (promise: any, ind: number) => {
+      //     const result = await promise;
+      //     return { result, field: files[ind].field };
+      //   })
+      // );
       images.map((image: any) => {
-        data[image.field] = image.result[0].url;
+        data[image.field] = image.url;
       });
     }
 
@@ -142,50 +146,50 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       if (formDetails) {
         switch (type) {
           case "bus":
-            response = await updateBus(req, formDetails._id);
+            response = await updateBus(req, formDetails._id, session?.user.id!);
             break;
           case "excitationSystem":
-            response = await updateExcitationSystem(req, formDetails._id);
+            response = await updateExcitationSystem(req, formDetails._id, session?.user.id!);
             break;
 
           case "generator":
-            response = await updateGenerator(req, formDetails._id);
+            response = await updateGenerator(req, formDetails._id, session?.user.id!);
             break;
 
           case "load":
-            response = await updateLoad(req, formDetails._id);
+            response = await updateLoad(req, formDetails._id, session?.user.id!);
             break;
 
           case "seriesCapacitor":
-            response = await updateSeriesCapacitor(req, formDetails._id);
+            response = await updateSeriesCapacitor(req, formDetails._id, session?.user.id!);
             break;
 
           case "shuntCapacitor":
-            response = await updateShuntCapacitor(req, formDetails._id);
+            response = await updateShuntCapacitor(req, formDetails._id, session?.user.id!);
             break;
 
           case "shuntReactor":
-            response = await updateShuntReactor(req, formDetails._id);
+            response = await updateShuntReactor(req, formDetails._id, session?.user.id!);
             break;
 
           case "singleLineDiagram":
-            response = await updateSingleLineDiagram(req, formDetails._id);
+            response = await updateSingleLineDiagram(req, formDetails._id, session?.user.id!);
             break;
 
           case "transformersThreeWinding":
-            response = await updateTransformersThreeWinding(req, formDetails._id);
+            response = await updateTransformersThreeWinding(req, formDetails._id, session?.user.id!);
             break;
 
           case "transformersTwoWinding":
-            response = await updateTransformersTwoWinding(req, formDetails._id);
+            response = await updateTransformersTwoWinding(req, formDetails._id, session?.user.id!);
             break;
 
           case "transmissionLine":
-            response = await updateTransmissionLine(req, formDetails._id);
+            response = await updateTransmissionLine(req, formDetails._id, session?.user.id!);
             break;
 
           case "turbineGovernor":
-            response = await updateTurbineGovernor(req, formDetails._id);
+            response = await updateTurbineGovernor(req, formDetails._id, session?.user.id!);
             break;
 
           default:
@@ -194,50 +198,50 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       } else {
         switch (type) {
           case "bus":
-            response = await createBus(req);
+            response = await createBus(req, session?.user.id!);
             break;
           case "excitationSystem":
-            response = await createExcitationSystem(req);
+            response = await createExcitationSystem(req, session?.user.id!);
             break;
 
           case "generator":
-            response = await createGenerator(req);
+            response = await createGenerator(req, session?.user.id!);
             break;
 
           case "load":
-            response = await createLoad(req);
+            response = await createLoad(req, session?.user.id!);
             break;
 
           case "seriesCapacitor":
-            response = await createSeriesCapacitor(req);
+            response = await createSeriesCapacitor(req, session?.user.id!);
             break;
 
           case "shuntCapacitor":
-            response = await createShuntCapacitor(req);
+            response = await createShuntCapacitor(req, session?.user.id!);
             break;
 
           case "shuntReactor":
-            response = await createShuntReactor(req);
+            response = await createShuntReactor(req, session?.user.id!);
             break;
 
           case "singleLineDiagram":
-            response = await createSingleLineDiagram(req);
+            response = await createSingleLineDiagram(req, session?.user.id!);
             break;
 
           case "transformersThreeWinding":
-            response = await createTransformersThreeWinding(req);
+            response = await createTransformersThreeWinding(req, session?.user.id!);
             break;
 
           case "transformersTwoWinding":
-            response = await createTransformersTwoWinding(req);
+            response = await createTransformersTwoWinding(req, session?.user.id!);
             break;
 
           case "transmissionLine":
-            response = await createTransmissionLine(req);
+            response = await createTransmissionLine(req, session?.user.id!);
             break;
 
           case "turbineGovernor":
-            response = await createTurbineGovernor(req);
+            response = await createTurbineGovernor(req, session?.user.id!);
             break;
 
           default:
@@ -326,7 +330,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                         else if (subItem.type === "dropdown") {
                           return (
                             <FormField
-                              key={ind}
+                              key={ind + 100}
                               control={form.control}
                               name={subItem.field}
                               render={({ field }) => (
@@ -345,7 +349,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                                       {subItem.dropdownValues.map((selectValue: string, index: number) => (
                                         <SelectItem
                                           value={selectValue}
-                                          key={index}
+                                          key={index + 10}
                                           className="select-item"
                                         >
                                           {selectValue}
@@ -361,7 +365,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                         } else if (subItem.type === "image")
                           return (
                             <FormField
-                              key={ind}
+                              key={ind + 5}
                               control={form.control}
                               name={subItem?.field}
                               render={({ field }) => (
@@ -444,7 +448,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                 );
             })}
           </div>
-          <div className="flex gap-5 py-3">
+          <div className="flex gap-5 pt-3">
             <Button
               type="submit"
               className="w-1/5"

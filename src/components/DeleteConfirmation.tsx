@@ -41,9 +41,10 @@ type DeleteConfirmationProps = {
     | "Transformers Two Winding"
     | "Transmission Line"
     | "Turbine Governor";
+  userId: string;
 };
 
-const DeleteConfirmation = ({ id, type }: DeleteConfirmationProps) => {
+const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
   const pathname = usePathname();
   let [isPending, startTransition] = useTransition();
 
@@ -72,50 +73,50 @@ const DeleteConfirmation = ({ id, type }: DeleteConfirmationProps) => {
               startTransition(async () => {
                 switch (type) {
                   case "Bus":
-                    await deleteBus(id, pathname);
+                    await deleteBus(id, pathname, userId);
                     break;
                   case "Excitation System":
-                    await deleteExcitationSystem(id, pathname);
+                    await deleteExcitationSystem(id, pathname, userId);
                     break;
 
                   case "Generator":
-                    await deleteGenerator(id, pathname);
+                    await deleteGenerator(id, pathname, userId);
                     break;
 
                   case "Load":
-                    await deleteLoad(id, pathname);
+                    await deleteLoad(id, pathname, userId);
                     break;
 
                   case "Series Capacitor":
-                    await deleteSeriesCapacitor(id, pathname);
+                    await deleteSeriesCapacitor(id, pathname, userId);
                     break;
 
                   case "Shunt Capacitor":
-                    await deleteShuntCapacitor(id, pathname);
+                    await deleteShuntCapacitor(id, pathname, userId);
                     break;
 
                   case "Shunt Reactor":
-                    await deleteShuntReactor(id, pathname);
+                    await deleteShuntReactor(id, pathname, userId);
                     break;
 
                   case "Single Line Diagram":
-                    await deleteSingleLineDiagram(id, pathname);
+                    await deleteSingleLineDiagram(id, pathname, userId);
                     break;
 
                   case "Transformers Three Winding":
-                    await deleteTransformersThreeWinding(id, pathname);
+                    await deleteTransformersThreeWinding(id, pathname, userId);
                     break;
 
                   case "Transformers Two Winding":
-                    await deleteTransformersTwoWinding(id, pathname);
+                    await deleteTransformersTwoWinding(id, pathname, userId);
                     break;
 
                   case "Transmission Line":
-                    await deleteTransmissionLine(id, pathname);
+                    await deleteTransmissionLine(id, pathname, userId);
                     break;
 
                   case "Turbine Governor":
-                    await deleteTurbineGovernor(id, pathname);
+                    await deleteTurbineGovernor(id, pathname, userId);
                     break;
 
                   default:

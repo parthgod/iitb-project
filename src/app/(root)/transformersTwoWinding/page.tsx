@@ -19,7 +19,14 @@ const TransformersTwoWinding = async ({ searchParams }: { searchParams: { query:
 
   const filteredtransformersTwoWindings = searchTerm
     ? transformersTwoWindings.filter((item) => {
-        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+        return JSON.stringify(item)
+          .replace("additionalFields", "")
+          .replace(
+            new RegExp(defaultParams[0].transformersTwoWindingColumns.map((item) => item.field).join("|"), "g"),
+            ""
+          )
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     : transformersTwoWindings;
 
@@ -32,7 +39,7 @@ const TransformersTwoWinding = async ({ searchParams }: { searchParams: { query:
           <Link href="/transformersTwoWinding/create">
             <Button>Create transformers two winding</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns />}
+          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>

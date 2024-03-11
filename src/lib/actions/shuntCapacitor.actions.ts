@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import ShuntCapacitor from "../database/models/shuntCapacitor";
 import { ICreateUpdateParams, IShuntCapacitor } from "../../utils/defaultTypes";
+import { ObjectId } from "mongodb";
+import ModificationHistory from "../database/models/modificationHistory";
 
 export const getAllShuntCapacitors = async (): Promise<{ data: IShuntCapacitor[]; status: number }> => {
   try {
@@ -15,7 +17,7 @@ export const getAllShuntCapacitors = async (): Promise<{ data: IShuntCapacitor[]
   }
 };
 
-export const createShuntCapacitor = async (req: ICreateUpdateParams) => {
+export const createShuntCapacitor = async (req: ICreateUpdateParams, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -24,6 +26,19 @@ export const createShuntCapacitor = async (req: ICreateUpdateParams) => {
       additionalFields,
     });
     await newShuntCapacitor.save();
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Shunt Capacitor",
+      operationType: "Create",
+      date: new Date(),
+      document: {
+        id: newShuntCapacitor._id,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+
     return { data: JSON.parse(JSON.stringify(newShuntCapacitor)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
@@ -41,7 +56,7 @@ export const getShuntCapacitorById = async (id: string) => {
   }
 };
 
-export const updateShuntCapacitor = async (req: ICreateUpdateParams, id: string) => {
+export const updateShuntCapacitor = async (req: ICreateUpdateParams, id: string, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -49,17 +64,44 @@ export const updateShuntCapacitor = async (req: ICreateUpdateParams, id: string)
       ...defaultFields,
       additionalFields,
     });
+    const documentAfterChange = await ShuntCapacitor.findById(id);
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Shunt Capacitor",
+      operationType: "Update",
+      date: new Date(),
+      document: {
+        id: id,
+        documentBeforeChange: response,
+        documentAfterChange: documentAfterChange,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
     return { data: JSON.parse(JSON.stringify(response)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const deleteShuntCapacitor = async (id: string, path: string) => {
+export const deleteShuntCapacitor = async (id: string, path: string, userId: string) => {
   try {
     await connectToDatabase();
     const response = await ShuntCapacitor.findByIdAndDelete(id);
     if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Shunt Capacitor",
+        operationType: "Delete",
+        date: new Date(),
+        document: {
+          id: id,
+          documentBeforeChange: response,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
       revalidatePath(path);
     }
   } catch (error) {

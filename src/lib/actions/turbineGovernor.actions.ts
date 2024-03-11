@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import TurbineGovernor from "../database/models/turbineGovernorColumns";
 import { ICreateUpdateParams, ITurbineGovernor } from "../../utils/defaultTypes";
+import { ObjectId } from "mongodb";
+import ModificationHistory from "../database/models/modificationHistory";
 
 export const getAllTurbineGovernors = async (): Promise<{ data: ITurbineGovernor[]; status: number }> => {
   try {
@@ -15,7 +17,7 @@ export const getAllTurbineGovernors = async (): Promise<{ data: ITurbineGovernor
   }
 };
 
-export const createTurbineGovernor = async (req: ICreateUpdateParams) => {
+export const createTurbineGovernor = async (req: ICreateUpdateParams, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -24,6 +26,19 @@ export const createTurbineGovernor = async (req: ICreateUpdateParams) => {
       additionalFields,
     });
     await newTurbineGovernor.save();
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Turbine Governor",
+      operationType: "Create",
+      date: new Date(),
+      document: {
+        id: newTurbineGovernor._id,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+
     return { data: JSON.parse(JSON.stringify(newTurbineGovernor)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
@@ -41,7 +56,7 @@ export const getTurbineGovernorById = async (id: string) => {
   }
 };
 
-export const updateTurbineGovernor = async (req: ICreateUpdateParams, id: string) => {
+export const updateTurbineGovernor = async (req: ICreateUpdateParams, id: string, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -49,17 +64,46 @@ export const updateTurbineGovernor = async (req: ICreateUpdateParams, id: string
       ...defaultFields,
       additionalFields,
     });
+
+    const documentAfterChange = await TurbineGovernor.findById(id);
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Turbine Governor",
+      operationType: "Update",
+      date: new Date(),
+      document: {
+        id: id,
+        documentBeforeChange: response,
+        documentAfterChange: documentAfterChange,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+
     return { data: JSON.parse(JSON.stringify(response)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const deleteTurbineGovernor = async (id: string, path: string) => {
+export const deleteTurbineGovernor = async (id: string, path: string, userId: string) => {
   try {
     await connectToDatabase();
     const response = await TurbineGovernor.findByIdAndDelete(id);
     if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Turbine Governor",
+        operationType: "Delete",
+        date: new Date(),
+        document: {
+          id: id,
+          documentBeforeChange: response,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
       revalidatePath(path);
     }
   } catch (error) {

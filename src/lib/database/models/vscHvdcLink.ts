@@ -1,15 +1,7 @@
 import { Schema, model, models } from "mongoose";
 
-const busSchema = new Schema(
+const vscHvdcLinkSchema = new Schema(
   {
-    busName: {
-      type: String,
-      required: true,
-    },
-    nominalKV: {
-      type: String,
-      required: true,
-    },
     additionalFields: {
       type: Schema.Types.Mixed,
       default: {},
@@ -20,6 +12,6 @@ const busSchema = new Schema(
   }
 );
 
-const Bus = models.Bus || model("Bus", busSchema);
+const VSCHVDCLink = models.VSCHVDCLink || model("VSCHVDCLink", vscHvdcLinkSchema);
 
-export default Bus;
+export default VSCHVDCLink;

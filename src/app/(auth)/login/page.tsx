@@ -1,9 +1,8 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import LoginForm from "@/components/LoginForm";
+import LoginProvider from "@/components/LoginProvider";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import React from "react";
-import LoginProvider from "@/components/LoginProvider";
 
 export default async function LoginPage() {
   const session = await getServerSession();

@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import ShuntReactor from "../database/models/shuntReactor";
 import { ICreateUpdateParams, IShuntReactor } from "../../utils/defaultTypes";
+import { ObjectId } from "mongodb";
+import ModificationHistory from "../database/models/modificationHistory";
 
 export const getAllShuntReactors = async (): Promise<{ data: IShuntReactor[]; status: number }> => {
   try {
@@ -15,7 +17,7 @@ export const getAllShuntReactors = async (): Promise<{ data: IShuntReactor[]; st
   }
 };
 
-export const createShuntReactor = async (req: ICreateUpdateParams) => {
+export const createShuntReactor = async (req: ICreateUpdateParams, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -24,6 +26,19 @@ export const createShuntReactor = async (req: ICreateUpdateParams) => {
       additionalFields,
     });
     await newShuntReactor.save();
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Shunt Reactor",
+      operationType: "Create",
+      date: new Date(),
+      document: {
+        id: newShuntReactor._id,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+
     return { data: JSON.parse(JSON.stringify(newShuntReactor)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
@@ -41,7 +56,7 @@ export const getShuntReactorById = async (id: string) => {
   }
 };
 
-export const updateShuntReactor = async (req: ICreateUpdateParams, id: string) => {
+export const updateShuntReactor = async (req: ICreateUpdateParams, id: string, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -49,17 +64,44 @@ export const updateShuntReactor = async (req: ICreateUpdateParams, id: string) =
       ...defaultFields,
       additionalFields,
     });
+    const documentAfterChange = await ShuntReactor.findById(id);
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Shunt Reactor",
+      operationType: "Update",
+      date: new Date(),
+      document: {
+        id: id,
+        documentBeforeChange: response,
+        documentAfterChange: documentAfterChange,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
     return { data: JSON.parse(JSON.stringify(response)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const deleteShuntReactor = async (id: string, path: string) => {
+export const deleteShuntReactor = async (id: string, path: string, userId: string) => {
   try {
     await connectToDatabase();
     const response = await ShuntReactor.findByIdAndDelete(id);
     if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Shunt Reactor",
+        operationType: "Delete",
+        date: new Date(),
+        document: {
+          id: id,
+          documentBeforeChange: response,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
       revalidatePath(path);
     }
   } catch (error) {

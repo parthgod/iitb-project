@@ -61,7 +61,7 @@ const FormSchema = z.object({
     .optional(),
 });
 
-const AddColumns = ({ columnDetails }: { columnDetails?: IColumn }) => {
+const AddColumns = ({ columnDetails, userId }: { columnDetails?: IColumn; userId: string }) => {
   const pathname = usePathname();
 
   let defaultValues = {};
@@ -244,8 +244,9 @@ const AddColumns = ({ columnDetails }: { columnDetails?: IColumn }) => {
     console.log(data);
     try {
       let response;
-      if (columnDetails) response = await editSpecificDefaultParam(data, pathname, columnDetails.isDefault || false);
-      else response = await updateDefaultParams(data, pathname);
+      if (columnDetails)
+        response = await editSpecificDefaultParam(data, pathname, columnDetails.isDefault || false, userId);
+      else response = await updateDefaultParams(data, pathname, userId);
       console.log(response);
       if (response?.status === 409) {
         toast.error(response.data + ". Try using a different name");

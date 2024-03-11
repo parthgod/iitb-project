@@ -16,11 +16,37 @@ import * as XLSX from "xlsx/xlsx.mjs";
 import DeleteConfirmation from "./DeleteConfirmation";
 import { convertField } from "@/utils/helperFunctions";
 import AddColumns from "./AddColumns";
-import { IBus, IColumn, IExcitationSystem } from "@/utils/defaultTypes";
+import {
+  IBus,
+  IColumn,
+  IExcitationSystem,
+  IGenerator,
+  ILoad,
+  ISeriesCapacitor,
+  IShuntCapacitor,
+  IShuntReactor,
+  ISingleLineDiagram,
+  ITransformersThreeWinding,
+  ITransformersTwoWinding,
+  ITransmissionLine,
+  ITurbineGovernor,
+} from "@/utils/defaultTypes";
 
 interface TableProps {
   columns: IColumn[];
-  data: IBus[] | IExcitationSystem[];
+  data:
+    | IBus[]
+    | IExcitationSystem[]
+    | IGenerator[]
+    | ILoad[]
+    | ISeriesCapacitor[]
+    | IShuntCapacitor[]
+    | IShuntReactor[]
+    | ISingleLineDiagram[]
+    | ITransformersThreeWinding[]
+    | ITransformersTwoWinding[]
+    | ITransmissionLine[]
+    | ITurbineGovernor[];
   type:
     | "Excitation System"
     | "Bus"
@@ -180,7 +206,7 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
     <div>
       <div
         id="buttons"
-        className="flex flex-col justify-start items-start bg-white z-10 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-sm overflow-hidden"
+        className="flex justify-start items-start bg-white z-10 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-sm overflow-hidden"
       >
         <p
           onClick={() => fnExportToExcel(type)}
@@ -197,36 +223,43 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
           Export as PDF (.pdf)
         </p>
       </div>
-      <Table
-        ref={tableRef}
-        id="tbl_exporttable_to_xls"
-        className="w-full"
-      >
-        <TableCaption className="w-screen">{sortedData.length ? "" : `No ${type.toLowerCase()} found`}</TableCaption>
-        <TableHeader>
-          <TableRow className="bg-slate-100">
-            {columns.map((item, ind: number) =>
-              item.type === "subColumns" ? (
-                <TableHead
-                  key={ind}
-                  colSpan={item.subColumns!.length}
-                  className="border-[1px] border-gray-300 whitespace-nowrap text-center group min-w-40"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    {item.title}
-                    <AddColumns columnDetails={item} />
-                  </div>
-                </TableHead>
-              ) : (
-                <TableHead
-                  key={ind}
-                  rowSpan={2}
-                  className={`border-[1px] border-gray-300 group min-w-40`}
-                >
-                  <div className="flex items-center gap-2 whitespace-nowrap">
-                    {item.title}
-                    {item.type === "dropdown" && <AddColumns columnDetails={item} />}
-                    {/* {item.type !== "image" && (
+      <div>
+        <Table
+          ref={tableRef}
+          id="tbl_exporttable_to_xls"
+          className="w-full"
+        >
+          <TableCaption className="w-screen">{sortedData.length ? "" : `No ${type.toLowerCase()} found`}</TableCaption>
+          <TableHeader>
+            <TableRow className="bg-slate-100">
+              <TableHead
+                rowSpan={2}
+                className="border-[1px] border-gray-300 group max-w-10"
+              >
+                ID
+              </TableHead>
+              {columns.map((item, ind: number) =>
+                item.type === "subColumns" ? (
+                  <TableHead
+                    key={ind}
+                    colSpan={item.subColumns!.length}
+                    className="border-[1px] border-gray-300 whitespace-nowrap text-center group min-w-40"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      {item.title}
+                      <AddColumns columnDetails={item} />
+                    </div>
+                  </TableHead>
+                ) : (
+                  <TableHead
+                    key={ind}
+                    rowSpan={2}
+                    className={`border-[1px] border-gray-300 group min-w-40`}
+                  >
+                    <div className="flex items-center gap-2 whitespace-nowrap">
+                      {item.title}
+                      {item.type === "dropdown" && <AddColumns columnDetails={item} />}
+                      {/* {item.type !== "image" && (
                       <div id="sort_icons">
                         <AiFillCaretUp onClick={() => handleSort(item.field)} />
                         <AiFillCaretDown
@@ -235,20 +268,20 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                         />
                       </div>
                     )} */}
-                  </div>
+                    </div>
+                  </TableHead>
+                )
+              )}
+              {session?.user.isAdmin && (
+                <TableHead
+                  className="border-[1px] border-gray-300"
+                  rowSpan={2}
+                >
+                  Actions
                 </TableHead>
-              )
-            )}
-            {session?.user.isAdmin && (
-              <TableHead
-                className="border-[1px] border-gray-300"
-                rowSpan={2}
-              >
-                Actions
-              </TableHead>
-            )}
+              )}
 
-            {/* <TableCell
+              {/* <TableCell
               id="icon"
               ref={iconRef}
               className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer absolute right-2 top-2"
@@ -256,19 +289,19 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
             >
               <PiDotsThreeVerticalBold />
             </TableCell> */}
-          </TableRow>
-          <TableRow>
-            {columns.map(
-              (item, i: number) =>
-                item.type === "subColumns" &&
-                item.subColumns!.map((subCol, ind: number) => (
-                  <TableHead
-                    key={ind}
-                    className="bg-muted border-[1px] border-gray-300"
-                  >
-                    <div className="flex items-center gap-2 whitespace-nowrap">
-                      {subCol.title}
-                      {/* {subCol.type !== "image" && (
+            </TableRow>
+            <TableRow>
+              {columns.map(
+                (item, i: number) =>
+                  item.type === "subColumns" &&
+                  item.subColumns!.map((subCol, ind: number) => (
+                    <TableHead
+                      key={ind}
+                      className="bg-muted border-[1px] border-gray-300"
+                    >
+                      <div className="flex items-center gap-2 whitespace-nowrap">
+                        {subCol.title}
+                        {/* {subCol.type !== "image" && (
                         <div id="sort_icons">
                           <AiFillCaretUp onClick={() => handleSort(item.field)} />
                           <AiFillCaretDown
@@ -277,92 +310,95 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                           />
                         </div>
                       )} */}
-                    </div>
-                  </TableHead>
-                ))
-            )}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedData.map((item, ind: number) => {
-            return (
-              <TableRow key={ind}>
-                {columns.map((column, i: number) => {
-                  if (column.type === "subColumns")
-                    return column.subColumns!.map((subItem, i: number) => (
+                      </div>
+                    </TableHead>
+                  ))
+              )}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedData.map((item, ind: number) => {
+              return (
+                <TableRow key={ind}>
+                  <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
+                  {columns.map((column, i: number) => {
+                    if (column.type === "subColumns")
+                      return column.subColumns!.map((subItem, i: number) => (
+                        <TableCell
+                          key={i + 100}
+                          className={`border-[1px] border-gray-300 ${
+                            !item?.[column.field]?.[subItem.field] &&
+                            !item?.additionalFields?.[column.field]?.[subItem.field] &&
+                            "text-gray-400"
+                          }`}
+                        >
+                          {subItem.type === "image" ? (
+                            <Image
+                              src={
+                                item?.[column.field]?.[subItem.field] ||
+                                item?.additionalFields?.[column.field]?.[subItem.field] ||
+                                noImageUrl
+                              }
+                              alt="image"
+                              width={120}
+                              height={120}
+                              className="object-cover"
+                            />
+                          ) : (
+                            item?.[column.field]?.[subItem.field] ||
+                            item?.additionalFields?.[column.field]?.[subItem.field] ||
+                            "null"
+                          )}
+                        </TableCell>
+                      ));
+                    return (
                       <TableCell
-                        key={i + 100}
+                        key={i}
                         className={`border-[1px] border-gray-300 ${
-                          !item?.[column.field]?.[subItem.field] &&
-                          !item?.additionalFields?.[column.field]?.[subItem.field] &&
-                          "text-gray-400"
+                          !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
                         }`}
                       >
-                        {subItem.type === "image" ? (
+                        {column.type === "image" ? (
                           <Image
-                            src={
-                              item?.[column.field]?.[subItem.field] ||
-                              item?.additionalFields?.[column.field]?.[subItem.field] ||
-                              noImageUrl
-                            }
+                            src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
                             alt="image"
                             width={120}
                             height={120}
                             className="object-cover"
                           />
                         ) : (
-                          item?.[column.field]?.[subItem.field] ||
-                          item?.additionalFields?.[column.field]?.[subItem.field] ||
-                          "null"
+                          item?.[column.field] || item?.additionalFields?.[column.field] || "null"
                         )}
                       </TableCell>
-                    ));
-                  return (
-                    <TableCell
-                      key={i}
-                      className={`border-[1px] border-gray-300 ${
-                        !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
-                      }`}
-                    >
-                      {column.type === "image" ? (
-                        <Image
-                          src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
-                          alt="image"
-                          width={120}
-                          height={120}
-                          className="object-cover"
+                    );
+                  })}
+                  {session?.user.isAdmin ? (
+                    <TableCell className="border-[1px] border-gray-300">
+                      <div className="flex justify-start items-center gap-4">
+                        <Link href={`/${convertField(type)}/${item._id}`}>
+                          <div
+                            title="Edit"
+                            className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
+                          >
+                            <MdEdit className="text-xl" />
+                          </div>
+                        </Link>
+                        <DeleteConfirmation
+                          id={item._id}
+                          type={type}
+                          userId={session.user.id}
                         />
-                      ) : (
-                        item?.[column.field] || item?.additionalFields?.[column.field] || "null"
-                      )}
+                      </div>
                     </TableCell>
-                  );
-                })}
-                {session?.user.isAdmin ? (
-                  <TableCell className="border-[1px] border-gray-300">
-                    <div className="flex justify-start items-center gap-4">
-                      <Link href={`/${convertField(type)}/${item._id}`}>
-                        <div
-                          title="Edit"
-                          className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
-                        >
-                          <MdEdit className="text-xl" />
-                        </div>
-                      </Link>
-                      <DeleteConfirmation
-                        id={item._id}
-                        type={type}
-                      />
-                    </div>
-                  </TableCell>
-                ) : (
-                  ""
-                )}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                  ) : (
+                    ""
+                  )}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };
