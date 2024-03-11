@@ -19,7 +19,11 @@ const TransmissionLines = async ({ searchParams }: { searchParams: { query: stri
 
   const filteredTransmissionLines = searchTerm
     ? transmissionLines.filter((item) => {
-        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+        return JSON.stringify(item)
+          .replace("additionalFields", "")
+          .replace(new RegExp(defaultParams[0].transmissionLinesColumns.map((item) => item.field).join("|"), "g"), "")
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     : transmissionLines;
 
@@ -32,7 +36,7 @@ const TransmissionLines = async ({ searchParams }: { searchParams: { query: stri
           <Link href="/transmissionLine/create">
             <Button>Create transmission line</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns />}
+          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>

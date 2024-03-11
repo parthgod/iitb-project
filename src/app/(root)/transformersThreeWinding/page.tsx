@@ -19,7 +19,14 @@ const TransformersThreeWinding = async ({ searchParams }: { searchParams: { quer
 
   const filteredTransformersThreeWindings = searchTerm
     ? transformersThreeWindings.filter((item) => {
-        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+        return JSON.stringify(item)
+          .replace("additionalFields", "")
+          .replace(
+            new RegExp(defaultParams[0].transformersThreeWindingColumns.map((item) => item.field).join("|"), "g"),
+            ""
+          )
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     : transformersThreeWindings;
 
@@ -32,7 +39,7 @@ const TransformersThreeWinding = async ({ searchParams }: { searchParams: { quer
           <Link href="/transformersThreeWinding/create">
             <Button>Create transformers three winding</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns />}
+          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>

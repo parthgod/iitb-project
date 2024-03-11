@@ -1,23 +1,28 @@
 import { Schema, model, models } from "mongoose";
 
-const turbineGovernorSchema = new Schema({
-  deviceName: {
-    type: String,
+const turbineGovernorSchema = new Schema(
+  {
+    deviceName: {
+      type: String,
+    },
+    turbineType: {
+      type: String,
+    },
+    generatorDeviceName: {
+      type: String,
+    },
+    turbineModelImage: {
+      type: String,
+    },
+    additionalFields: {
+      type: Schema.Types.Mixed,
+      default: {},
+    },
   },
-  turbineType: {
-    type: String,
-  },
-  generatorDeviceName: {
-    type: String,
-  },
-  turbineModelImage: {
-    type: String,
-  },
-  additionalFields: {
-    type: Schema.Types.Mixed,
-    default: {},
-  },
-});
+  {
+    collectionOptions: { changeStreamPreAndPostImages: { enabled: true } },
+  }
+);
 
 const TurbineGovernor = models.TurbineGovernor || model("TurbineGovernor", turbineGovernorSchema);
 

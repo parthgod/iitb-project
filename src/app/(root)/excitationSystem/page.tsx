@@ -19,7 +19,11 @@ const ExcitationSystem = async ({ searchParams }: { searchParams: { query: strin
 
   const filteredExcitationSystems = searchTerm
     ? excitationSystems.filter((item) => {
-        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+        return JSON.stringify(item)
+          .replace("additionalFields", "")
+          .replace(new RegExp(defaultParams[0].excitationSystemColumns.map((item) => item.field).join("|"), "g"), "")
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     : excitationSystems;
 
@@ -32,7 +36,7 @@ const ExcitationSystem = async ({ searchParams }: { searchParams: { query: strin
           <Link href="/excitationSystem/create">
             <Button>Create Excitation System</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns />}
+          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>

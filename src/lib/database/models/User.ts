@@ -23,7 +23,7 @@ const UserSchema = new Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true, collectionOptions: { changeStreamPreAndPostImages: { enabled: true } } }
 );
 
 const User = models.User || model("User", UserSchema);

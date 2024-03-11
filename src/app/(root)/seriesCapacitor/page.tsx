@@ -19,7 +19,11 @@ const SeriesCapacitor = async ({ searchParams }: { searchParams: { query: string
 
   const filteredSeriesCapacitors = searchTerm
     ? seriesCapacitors.filter((item) => {
-        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+        return JSON.stringify(item)
+          .replace("additionalFields", "")
+          .replace(new RegExp(defaultParams[0].seriesCapacitorColumns.map((item) => item.field).join("|"), "g"), "")
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     : seriesCapacitors;
 
@@ -32,7 +36,7 @@ const SeriesCapacitor = async ({ searchParams }: { searchParams: { query: string
           <Link href="/seriesCapacitor/create">
             <Button>Create series capacitor</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns />}
+          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>

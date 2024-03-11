@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import TransmissionLine from "../database/models/transmissionLines";
 import { ICreateUpdateParams, ITransmissionLine } from "../../utils/defaultTypes";
+import { ObjectId } from "mongodb";
+import ModificationHistory from "../database/models/modificationHistory";
 
 export const getAllTransmissionLines = async (): Promise<{ data: ITransmissionLine[]; status: number }> => {
   try {
@@ -15,7 +17,7 @@ export const getAllTransmissionLines = async (): Promise<{ data: ITransmissionLi
   }
 };
 
-export const createTransmissionLine = async (req: ICreateUpdateParams) => {
+export const createTransmissionLine = async (req: ICreateUpdateParams, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -24,6 +26,19 @@ export const createTransmissionLine = async (req: ICreateUpdateParams) => {
       additionalFields,
     });
     await newTransmissionLine.save();
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Transmission Line",
+      operationType: "Create",
+      date: new Date(),
+      document: {
+        id: newTransmissionLine._id,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+
     return { data: JSON.parse(JSON.stringify(newTransmissionLine)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
@@ -41,7 +56,7 @@ export const getTransmissionLineById = async (id: string) => {
   }
 };
 
-export const updateTransmissionLine = async (req: ICreateUpdateParams, id: string) => {
+export const updateTransmissionLine = async (req: ICreateUpdateParams, id: string, userId: string) => {
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
@@ -49,17 +64,45 @@ export const updateTransmissionLine = async (req: ICreateUpdateParams, id: strin
       ...defaultFields,
       additionalFields,
     });
+    const documentAfterChange = await TransmissionLine.findById(id);
+
+    let modificationHistory: any;
+    modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Transmission Line",
+      operationType: "Update",
+      date: new Date(),
+      document: {
+        id: id,
+        documentBeforeChange: response,
+        documentAfterChange: documentAfterChange,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+
     return { data: JSON.parse(JSON.stringify(response)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
 
-export const deleteTransmissionLine = async (id: string, path: string) => {
+export const deleteTransmissionLine = async (id: string, path: string, userId: string) => {
   try {
     await connectToDatabase();
     const response = await TransmissionLine.findByIdAndDelete(id);
     if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Transmission Line",
+        operationType: "Delete",
+        date: new Date(),
+        document: {
+          id: id,
+          documentBeforeChange: response,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
       revalidatePath(path);
     }
   } catch (error) {

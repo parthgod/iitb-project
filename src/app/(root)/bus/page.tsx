@@ -7,6 +7,7 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getAllBuses } from "@/lib/actions/bus.actions";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
+import { getLatestChange } from "@/lib/database/detectChanges";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
@@ -14,12 +15,17 @@ const Bus = async ({ searchParams }: { searchParams: { query: string } }) => {
   const searchTerm = searchParams.query || "";
   const { data: defaultParams } = await getDefaultParams();
   const { data: buses } = await getAllBuses();
+  getLatestChange();
 
   const session = await getServerSession(authOptions);
 
   const filteredBuses = searchTerm
     ? buses.filter((item) => {
-        return JSON.stringify(item).replace("additionalFields", "")?.toLowerCase().includes(searchTerm.toLowerCase());
+        return JSON.stringify(item)
+          .replace("additionalFields", "")
+          .replace(new RegExp(defaultParams[0].busColumns.map((item) => item.field).join("|"), "g"), "")
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
       })
     : buses;
 
@@ -32,7 +38,7 @@ const Bus = async ({ searchParams }: { searchParams: { query: string } }) => {
           <Link href="/bus/create">
             <Button>Create bus</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns />}
+          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange />}
         </div>
       </div>

@@ -79,6 +79,11 @@ const Sidebar = () => {
       route: "/requests",
       icon: <GrDocumentUser />,
     },
+    {
+      name: "Edit History",
+      route: "/historyLog",
+      icon: <GrDocumentUser />,
+    },
   ];
 
   const toggleSidebar = () => {
@@ -151,7 +156,9 @@ const Sidebar = () => {
               >
                 <div title={item.name}>{item?.icon}</div>
                 <div
-                  className={`flex pr-1 justify-between items-center w-full ${isOpen ? "opacity-100" : "opacity-0"}`}
+                  className={`flex pr-1 justify-between items-center w-full ${
+                    isOpen ? "opacity-100" : "opacity-0 hidden"
+                  }`}
                 >
                   {item?.name}
                 </div>

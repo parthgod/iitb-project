@@ -38,6 +38,31 @@ export type IUser = {
   image?: string;
 };
 
+export type IModificationHistory = {
+  userId: IUser;
+  databaseName:
+    | "Bus"
+    | "Excitation System"
+    | "Generator"
+    | "Load"
+    | "Series Capacitor"
+    | "Shunt Capacitor"
+    | "Shunt Reactor"
+    | "Single Line Diagram"
+    | "Transformers Three Winding"
+    | "Transformers Two Winding"
+    | "Transmission Line"
+    | "Turbine Governor";
+  operationType: "Create" | "Update" | "Delete";
+  date: string;
+  document: {
+    id?: string;
+    documentBeforeChange: any;
+    documentAfterChange: any;
+    columnDetails: any;
+  };
+};
+
 export type IDefaultParamSchema = {
   busColumns: IColumn[];
   excitationSystemColumns: IColumn[];
@@ -51,6 +76,11 @@ export type IDefaultParamSchema = {
   transformersTwoWindingColumns: IColumn[];
   transmissionLinesColumns: IColumn[];
   turbineGovernorColumns: IColumn[];
+  ibrColumns: IColumn[];
+  lccHvdcLinkColumns: IColumn[];
+  seriesFactsColumns: IColumn[];
+  shuntFactsColumns: IColumn[];
+  vscHvdcLinkColumns: IColumn[];
   [key: string]: any;
 };
 
