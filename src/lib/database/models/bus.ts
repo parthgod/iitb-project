@@ -2,6 +2,9 @@ import { Schema, model, models } from "mongoose";
 
 const busSchema = new Schema(
   {
+    id: {
+      type: String,
+    },
     busName: {
       type: String,
       required: true,

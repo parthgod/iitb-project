@@ -7,32 +7,27 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getAllBuses } from "@/lib/actions/bus.actions";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
-import { getLatestChange } from "@/lib/database/detectChanges";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-const Bus = async ({ searchParams }: { searchParams: { query: string } }) => {
-  const searchTerm = searchParams.query || "";
+const Bus = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
+  const searchTerm = searchParams?.query || "";
+  const page = searchParams?.page || 1;
+  const limit = searchParams?.limit || 10;
   const { data: defaultParams } = await getDefaultParams();
-  const { data: buses } = await getAllBuses();
-  getLatestChange();
+  const {
+    data: buses,
+    totalPages,
+    totalDocuments,
+    completeData,
+  } = await getAllBuses(limit, page, searchTerm, defaultParams[0]?.busColumns);
 
   const session = await getServerSession(authOptions);
 
-  const filteredBuses = searchTerm
-    ? buses.filter((item) => {
-        return JSON.stringify(item)
-          .replace("additionalFields", "")
-          .replace(new RegExp(defaultParams[0].busColumns.map((item) => item.field).join("|"), "g"), "")
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
-    : buses;
-
   return (
-    <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold">Bus</h1>
-      <div className="flex justify-between items-center gap-5 mb-2">
+    <main className="flex flex-col gap-1 w-full">
+      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Bus</h1>
+      <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
           <Link href="/bus/create">
@@ -45,8 +40,11 @@ const Bus = async ({ searchParams }: { searchParams: { query: string } }) => {
       {defaultParams.length ? (
         <DisplayTable
           columns={defaultParams[0].busColumns}
-          data={filteredBuses}
+          data={buses}
           type="Bus"
+          totalPages={totalPages}
+          totalDocuments={totalDocuments}
+          completeData={completeData}
         />
       ) : (
         <TableSkeleton />

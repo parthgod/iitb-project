@@ -10,10 +10,17 @@ import { getAllLoads } from "@/lib/actions/load.actions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-const Loads = async ({ searchParams }: { searchParams: { query: string } }) => {
-  const searchTerm = searchParams.query || "";
+const Loads = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
+  const searchTerm = searchParams?.query || "";
+  const page = searchParams?.page || 1;
+  const limit = searchParams?.limit || 10;
   const { data: defaultParams } = await getDefaultParams();
-  const { data: loads } = await getAllLoads();
+  const {
+    data: loads,
+    totalPages,
+    totalDocuments,
+    completeData,
+  } = await getAllLoads(limit, page, searchTerm, defaultParams[0]?.loadsColumns);
 
   const session = await getServerSession(authOptions);
 
@@ -29,8 +36,8 @@ const Loads = async ({ searchParams }: { searchParams: { query: string } }) => {
 
   return (
     <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold">Loads</h1>
-      <div className="flex justify-between items-center gap-5 mb-2">
+      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Loads</h1>
+      <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
           <Link href="/load/create">
@@ -45,6 +52,9 @@ const Loads = async ({ searchParams }: { searchParams: { query: string } }) => {
           columns={defaultParams[0].loadsColumns}
           data={filteredLoads}
           type="Load"
+          totalPages={totalPages}
+          totalDocuments={totalDocuments}
+          completeData={completeData}
         />
       ) : (
         <TableSkeleton />

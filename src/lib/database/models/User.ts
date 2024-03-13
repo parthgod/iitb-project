@@ -2,6 +2,9 @@ import { Schema, model, models } from "mongoose";
 
 const UserSchema = new Schema(
   {
+    id: {
+      type: String,
+    },
     name: {
       type: String,
       default: "Anonymous",

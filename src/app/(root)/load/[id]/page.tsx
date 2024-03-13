@@ -4,6 +4,14 @@ import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getLoadById } from "@/lib/actions/load.actions";
 import { Suspense } from "react";
 import { IBus, IDefaultParamSchema } from "@/utils/defaultTypes";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface EditLoadProps {
   params: {
@@ -40,8 +48,23 @@ const EditLoad = async ({ params }: EditLoadProps) => {
   const defaultValues = calculateDefaultValues(loadDetails, defaultParams);
 
   return (
-    <div className="flex flex-col gap-5">
-      <p className="font-bold text-3xl">Edit load</p>
+    <div className="flex flex-col gap-2 h-screen overflow-hidden">
+      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              href="/load"
+              className="font-bold text-3xl"
+            >
+              Load
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-bold text-3xl">Edit {id}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <Suspense fallback={<FormSkeleton />}>
         <CreateForm
           formFields={defaultParams[0].loadsColumns}

@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { FaTable } from "react-icons/fa";
 import { GrDocumentUser } from "react-icons/gr";
+import { MdManageHistory } from "react-icons/md";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -75,6 +76,31 @@ const Sidebar = () => {
       icon: <FaTable />,
     },
     {
+      name: "IBR",
+      route: "/ibr",
+      icon: <FaTable />,
+    },
+    {
+      name: "LCC-HVDC Link",
+      route: "/lccHvdcLink",
+      icon: <FaTable />,
+    },
+    {
+      name: "Series Facts",
+      route: "/seriesFact",
+      icon: <FaTable />,
+    },
+    {
+      name: "ShuntFacts",
+      route: "/shuntFact",
+      icon: <FaTable />,
+    },
+    {
+      name: "VSC-HVDC Link",
+      route: "/vscHvdcLink",
+      icon: <FaTable />,
+    },
+    {
       name: "Requests",
       route: "/requests",
       icon: <GrDocumentUser />,
@@ -82,7 +108,7 @@ const Sidebar = () => {
     {
       name: "Edit History",
       route: "/historyLog",
-      icon: <GrDocumentUser />,
+      icon: <MdManageHistory />,
     },
   ];
 

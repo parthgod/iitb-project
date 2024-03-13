@@ -2,26 +2,13 @@
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { noImageUrl } from "@/lib/constants";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRef, useState } from "react";
-import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
-import { FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
-import { MdEdit } from "react-icons/md";
-import { PiDotsThreeVerticalBold } from "react-icons/pi";
-import * as XLSX from "xlsx/xlsx.mjs";
-import DeleteConfirmation from "./DeleteConfirmation";
-import { convertField } from "@/utils/helperFunctions";
-import AddColumns from "./AddColumns";
 import {
   IBus,
   IColumn,
   IExcitationSystem,
   IGenerator,
   ILoad,
+  INonDefaultDatabases,
   ISeriesCapacitor,
   IShuntCapacitor,
   IShuntReactor,
@@ -31,6 +18,17 @@ import {
   ITransmissionLine,
   ITurbineGovernor,
 } from "@/utils/defaultTypes";
+import { convertField } from "@/utils/helperFunctions";
+import jsPDF from "jspdf";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRef, useState } from "react";
+import { MdEdit } from "react-icons/md";
+import * as XLSX from "xlsx/xlsx.mjs";
+import AddColumns from "./AddColumns";
+import DeleteConfirmation from "./DeleteConfirmation";
+import TableHeading from "./TableHeading";
 
 interface TableProps {
   columns: IColumn[];
@@ -47,6 +45,20 @@ interface TableProps {
     | ITransformersTwoWinding[]
     | ITransmissionLine[]
     | ITurbineGovernor[];
+  completeData:
+    | IBus[]
+    | IExcitationSystem[]
+    | IGenerator[]
+    | ILoad[]
+    | ISeriesCapacitor[]
+    | IShuntCapacitor[]
+    | IShuntReactor[]
+    | ISingleLineDiagram[]
+    | ITransformersThreeWinding[]
+    | ITransformersTwoWinding[]
+    | ITransmissionLine[]
+    | ITurbineGovernor[]
+    | INonDefaultDatabases[];
   type:
     | "Excitation System"
     | "Bus"
@@ -59,177 +71,177 @@ interface TableProps {
     | "Transformers Three Winding"
     | "Transformers Two Winding"
     | "Transmission Line"
-    | "Turbine Governor";
+    | "Turbine Governor"
+    | "IBR"
+    | "LCC-HVDC Link"
+    | "VSC-HVDC Link"
+    | "Series Fact"
+    | "Shunt Fact";
+  totalPages: number;
+  totalDocuments: number;
 }
 
-const DisplayTable = ({ columns, data, type }: TableProps) => {
+const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData }: TableProps) => {
+  // return console.log(data);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
-  const iconRef = useRef<HTMLTableCellElement>(null);
 
   const { data: session } = useSession();
 
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      setSortDirection((prevDirection) => (prevDirection === "asc" ? "desc" : "asc"));
-    } else {
-      setSortColumn(column);
-      setSortDirection("asc");
-    }
-  };
+  function getBase64Image(img: any) {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
 
-  const sortedData = [...data].sort((a, b) => {
-    if (!sortColumn) return 0;
+    const ctx = canvas.getContext("2d");
+    ctx!.drawImage(img, 0, 0);
 
-    const valueA = a[sortColumn] || a.additionalFields?.[sortColumn];
-    const valueB = b[sortColumn] || b.additionalFields?.[sortColumn];
-
-    if (sortDirection === "asc") {
-      return valueA > valueB ? 1 : -1;
-    } else {
-      return valueA < valueB ? 1 : -1;
-    }
-  });
-
-  // const toggleButtons = () => {
-  //   if (iconRef.current) {
-  //     const iconRect = iconRef.current.getBoundingClientRect();
-  //     const buttons = document.getElementById("buttons");
-  //     if (buttons) {
-  //       buttons.style.top = `${iconRect.bottom}px`;
-  //       buttons.style.left = `${iconRect.left - 180}px`;
-  //       buttons.classList.toggle("invisible");
-
-  //       const bodyClickHandler = (event: any) => {
-  //         if (!buttons.contains(event.target) && !iconRef.current!.contains(event.target)) {
-  //           buttons.classList.add("invisible");
-  //           document.body.removeEventListener("click", bodyClickHandler);
-  //         }
-  //       };
-
-  //       document.body.removeEventListener("click", bodyClickHandler);
-
-  //       document.body.addEventListener("click", bodyClickHandler);
-  //     }
-  //   }
-  // };
+    return canvas.toDataURL("image/png");
+  }
 
   const downloadPDF = async (type: string) => {
-    const input = tableRef.current;
-    const tempInput: any = input!.cloneNode(true);
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "pt",
+      format: "a0",
+    });
 
-    if (tempInput && tempInput.rows.length > 0) {
-      const rowsArray = Array.from(tempInput.rows);
+    const tempInput = document.createElement("table");
+    tempInput.style.borderCollapse = "collapse";
+    tempInput.style.fontSize = "10px";
+    tempInput.style.width = "3300px";
 
-      if (session?.user.isAdmin) {
-        // const headerRowCount = tempInput.rows[0].cells.length;
-        // if (headerRowCount > 0) {
-        //   tempInput.rows[0].deleteCell(headerRowCount - 1);
-        // }
+    const headingRow = tempInput.insertRow();
+    headingRow.style.fontWeight = "bold";
+    const idCellHeading = headingRow.insertCell();
+    idCellHeading.textContent = "ID";
+    idCellHeading.style.border = "1px solid #000";
+    idCellHeading.style.padding = "5px";
+    idCellHeading.rowSpan = 2;
 
-        for (let i = 0; i < tempInput.rows.length; i++) {
-          const lastCellIndex = tempInput.rows[i].cells.length - 1;
-          tempInput.rows[i].deleteCell(lastCellIndex);
-        }
+    const subHeadingRow = tempInput.insertRow();
+    subHeadingRow.style.fontWeight = "bold";
+
+    columns.forEach((headerText) => {
+      const cell = headingRow.insertCell();
+      cell.textContent = headerText.title;
+      cell.style.border = "1px solid #000";
+      cell.style.padding = "5px";
+      if (headerText.type === "subColumns") {
+        cell.colSpan = headerText.subColumns!.length;
+        headerText.subColumns?.forEach((subItem) => {
+          const subCell = subHeadingRow.insertCell();
+          subCell.textContent = subItem.title;
+          subCell.style.border = "1px solid #000";
+          subCell.style.padding = "5px";
+        });
+      } else {
+        cell.rowSpan = 2;
       }
+    });
 
-      rowsArray.forEach((row: any) => {
-        const sortIconsDivs = row.querySelectorAll("#sort_icons");
-        sortIconsDivs.forEach((div: any) => {
-          if (div.parentNode) {
-            div.parentNode.removeChild(div);
-          }
-        });
-
-        const exportIconsDivs = row.querySelectorAll("#icon");
-        exportIconsDivs.forEach((div: any) => {
-          if (div.parentNode) {
-            div.parentNode.removeChild(div);
-          }
-        });
-
-        const editIcons = row.querySelectorAll("#edit-icons");
-        editIcons.forEach((div: any) => {
-          if (div.parentNode) {
-            div.parentNode.removeChild(div);
-          }
-        });
+    completeData.forEach((rowData) => {
+      const row = tempInput.insertRow();
+      const idCell = row.insertCell();
+      idCell.textContent = rowData.id;
+      idCell.style.border = "1px solid #000";
+      idCell.style.padding = "5px";
+      columns.forEach((cellData) => {
+        if (cellData.type === "subColumns") {
+          cellData.subColumns?.map((subItem) => {
+            const subCell = row.insertCell();
+            subCell.style.border = "1px solid #000";
+            subCell.style.padding = "5px";
+            subCell.textContent = cellData.isDefault
+              ? rowData[cellData.field][subItem.field]
+              : rowData.additionalFields[cellData.field][subItem.field];
+          });
+        } else {
+          const cell = row.insertCell();
+          cell.style.border = "1px solid #000";
+          cell.style.padding = "5px";
+          // if (cellData.type === "image") {
+          //   cell.innerHTML = `<img src="${encodeURIComponent(rowData[cellData.field])}" width={50} height={50} />`;
+          // } else {
+          cell.textContent = cellData.isDefault ? rowData[cellData.field] : rowData.additionalFields[cellData.field];
+          // }
+        }
       });
-    }
+    });
 
     try {
-      tempInput.id = "clonedTable";
-      tempInput.style.position = "absolute";
-      tempInput.style.left = "-9999px";
-      tempInput.style.top = "-9999px";
-      document.body.appendChild(tempInput);
-      const canvas = await html2canvas(document.getElementById("clonedTable")!);
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "px",
-        format: "a4",
+      await pdf.html(tempInput.outerHTML, {
+        callback: () => {
+          pdf.save(`${type}.pdf`);
+        },
       });
-      const width = pdf.internal.pageSize.getWidth();
-      const height = (canvas.height * width) / canvas.width;
-      pdf.addImage(imgData, "PNG", 0, 0, width, height);
-      pdf.save(`${type}.pdf`);
-      document.body.removeChild(tempInput);
     } catch (error) {
       console.error("Error generating PDF:", error);
     }
   };
 
-  function fnExportToExcel(fn: string) {
-    var elt: any = tableRef.current;
-    const tempInput = elt.cloneNode(true);
-    if (tempInput && tempInput.rows.length > 0) {
-      if (session?.user.isAdmin) {
-        // const headerRowCount = tempInput.rows[0].cells.length;
-        // console.log(headerRowCount);
-        // if (headerRowCount > 0) {
-        //   tempInput.rows[0].deleteCell(headerRowCount - 1);
-        // }
-
-        for (let i = 0; i < tempInput.rows.length; i++) {
-          const lastCellIndex = tempInput.rows[i].cells.length - 1;
-          tempInput.rows[i].deleteCell(lastCellIndex);
-        }
+  const fnExportToExcel = (fn: string) => {
+    const tempInput = document.createElement("table");
+    const headingRow = tempInput.insertRow();
+    const subHeadingRow = tempInput.insertRow();
+    const idCellHeading = headingRow.insertCell();
+    idCellHeading.textContent = "ID";
+    idCellHeading.rowSpan = 2;
+    columns.forEach((headerText) => {
+      const cell = headingRow.insertCell();
+      cell.textContent = headerText.title;
+      if (headerText.type === "subColumns") {
+        cell.colSpan = headerText.subColumns!.length;
+        headerText.subColumns?.forEach((subItem) => {
+          const subCell = subHeadingRow.insertCell();
+          subCell.textContent = subItem.title;
+        });
+      } else {
+        cell.rowSpan = 2;
       }
-    }
+    });
+
+    completeData.forEach((rowData) => {
+      const row = tempInput.insertRow();
+      const idCell = row.insertCell();
+      idCell.textContent = rowData.id;
+      columns.forEach((cellData) => {
+        if (cellData.type === "subColumns") {
+          cellData.subColumns?.map((subItem) => {
+            const subCell = row.insertCell();
+            subCell.textContent = cellData.isDefault
+              ? rowData[cellData.field][subItem.field]
+              : rowData.additionalFields[cellData.field][subItem.field];
+          });
+        } else {
+          const cell = row.insertCell();
+          cell.textContent = cellData.isDefault ? rowData[cellData.field] : rowData.additionalFields[cellData.field];
+        }
+      });
+    });
+
     var wb = XLSX.utils.table_to_book(tempInput, { sheet: "sheet1" });
     XLSX.writeFile(wb, fn + "." + "xlsx");
-  }
+  };
 
   return (
-    <div>
-      <div
-        id="buttons"
-        className="flex justify-start items-start bg-white z-10 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-sm overflow-hidden"
-      >
-        <p
-          onClick={() => fnExportToExcel(type)}
-          className="p-4 cursor-pointer flex justify-start items-center gap-2 text-[#217149] w-full hover:bg-[#dcdcdc] transition-colors duration-300 ease-in-out border-b-[1px] border-gray-300"
-        >
-          <FaRegFileExcel className="text-[#008744]" />
-          Export as excel (.xlsx)
-        </p>
-        <p
-          onClick={() => downloadPDF(type)}
-          className="p-4 cursor-pointer flex justify-start items-center gap-2 text-[#a13931] w-full hover:bg-[#dcdcdc] transition-colors duration-300 ease-in-out"
-        >
-          <FaRegFilePdf className="text-[#d62d20]" />
-          Export as PDF (.pdf)
-        </p>
-      </div>
-      <div>
+    <div className="p-4 pb-2">
+      <div className="shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-xl">
+        <TableHeading
+          totalPages={totalPages}
+          totalDocuments={totalDocuments}
+          type={type}
+          downloadPDF={downloadPDF}
+          fnExportToExcel={fnExportToExcel}
+        />
         <Table
           ref={tableRef}
           id="tbl_exporttable_to_xls"
-          className="w-full"
         >
-          <TableCaption className="w-screen">{sortedData.length ? "" : `No ${type.toLowerCase()} found`}</TableCaption>
+          <TableCaption className={`w-full ${!data.length && "pb-3"}`}>
+            {data.length ? "" : `No ${type.toLowerCase()} found`}
+          </TableCaption>
           <TableHeader>
             <TableRow className="bg-slate-100">
               <TableHead
@@ -243,31 +255,32 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                   <TableHead
                     key={ind}
                     colSpan={item.subColumns!.length}
-                    className="border-[1px] border-gray-300 whitespace-nowrap text-center group min-w-40"
+                    className="border-[1px] border-gray-300 whitespace-nowrap text-center group"
                   >
                     <div className="flex items-center justify-center gap-2">
                       {item.title}
-                      <AddColumns columnDetails={item} />
+                      <AddColumns
+                        key={ind}
+                        columnDetails={item}
+                        userId={session?.user.id!}
+                      />
                     </div>
                   </TableHead>
                 ) : (
                   <TableHead
                     key={ind}
                     rowSpan={2}
-                    className={`border-[1px] border-gray-300 group min-w-40`}
+                    className={`border-[1px] border-gray-300 group`}
                   >
                     <div className="flex items-center gap-2 whitespace-nowrap">
                       {item.title}
-                      {item.type === "dropdown" && <AddColumns columnDetails={item} />}
-                      {/* {item.type !== "image" && (
-                      <div id="sort_icons">
-                        <AiFillCaretUp onClick={() => handleSort(item.field)} />
-                        <AiFillCaretDown
-                          onClick={() => handleSort(item.field)}
-                          className="mt-[-6px]"
+                      {item.type === "dropdown" && (
+                        <AddColumns
+                          key={ind}
+                          columnDetails={item}
+                          userId={session?.user.id!}
                         />
-                      </div>
-                    )} */}
+                      )}
                     </div>
                   </TableHead>
                 )
@@ -280,15 +293,6 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                   Actions
                 </TableHead>
               )}
-
-              {/* <TableCell
-              id="icon"
-              ref={iconRef}
-              className="rounded-full hover:bg-gray-200 p-2 text-lg cursor-pointer absolute right-2 top-2"
-              onClick={toggleButtons}
-            >
-              <PiDotsThreeVerticalBold />
-            </TableCell> */}
             </TableRow>
             <TableRow>
               {columns.map(
@@ -299,28 +303,17 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                       key={ind}
                       className="bg-muted border-[1px] border-gray-300"
                     >
-                      <div className="flex items-center gap-2 whitespace-nowrap">
-                        {subCol.title}
-                        {/* {subCol.type !== "image" && (
-                        <div id="sort_icons">
-                          <AiFillCaretUp onClick={() => handleSort(item.field)} />
-                          <AiFillCaretDown
-                            onClick={() => handleSort(item.field)}
-                            className="mt-[-6px]"
-                          />
-                        </div>
-                      )} */}
-                      </div>
+                      <div className="flex items-center gap-2 whitespace-nowrap">{subCol.title}</div>
                     </TableHead>
                   ))
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedData.map((item, ind: number) => {
+            {data.map((item, ind: number) => {
               return (
                 <TableRow key={ind}>
-                  <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
+                  <TableCell className="border-[1px] border-gray-300">{item.id}</TableCell>
                   {columns.map((column, i: number) => {
                     if (column.type === "subColumns")
                       return column.subColumns!.map((subItem, i: number) => (
@@ -374,13 +367,13 @@ const DisplayTable = ({ columns, data, type }: TableProps) => {
                   })}
                   {session?.user.isAdmin ? (
                     <TableCell className="border-[1px] border-gray-300">
-                      <div className="flex justify-start items-center gap-4">
+                      <div className="flex justify-start items-center gap-2">
                         <Link href={`/${convertField(type)}/${item._id}`}>
                           <div
                             title="Edit"
                             className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
                           >
-                            <MdEdit className="text-xl" />
+                            <MdEdit className="text-lg" />
                           </div>
                         </Link>
                         <DeleteConfirmation

@@ -39,7 +39,8 @@ export const middleware = async (req: NextRequest) => {
       pathname === "/transmissionLine" ||
       pathname === "/transmissionLine/create" ||
       pathname === "/turbineGovernor" ||
-      pathname === "/turbineGovernor/create"
+      pathname === "/turbineGovernor/create" ||
+      pathname === "/historyLog"
     )
       return NextResponse.next();
     else return NextResponse.redirect(new URL("/", req.url));
@@ -63,5 +64,6 @@ export const config = {
     "/transmissionLine/:path*",
     "/turbineGovernor/:path*",
     "/requests",
+    "/historyLog",
   ],
 };

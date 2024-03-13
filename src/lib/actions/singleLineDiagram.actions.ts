@@ -3,15 +3,63 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import SingleLineDiagram from "../database/models/singleLineDiagram";
-import { ICreateUpdateParams, ISingleLineDiagram } from "../../utils/defaultTypes";
+import { IColumn, ICreateUpdateParams, ISingleLineDiagram } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 
-export const getAllSingleLineDiagrams = async (): Promise<{ data: ISingleLineDiagram[]; status: number }> => {
+export const getAllSingleLineDiagrams = async (
+  limit = 10,
+  page = 1,
+  query = "",
+  columns: IColumn[]
+): Promise<{
+  data: ISingleLineDiagram[];
+  status: number;
+  totalPages: number;
+  totalDocuments: number;
+  completeData: ISingleLineDiagram[];
+}> => {
   try {
     await connectToDatabase();
-    const singleLineDiagrams = await SingleLineDiagram.find({});
-    return { data: JSON.parse(JSON.stringify(singleLineDiagrams)), status: 200 };
+    const searchConditions: any = [];
+    if (query)
+      columns.forEach((item) => {
+        if (item.type === "subColumns") {
+          item.subColumns?.map((subItem) => {
+            item.isDefault
+              ? searchConditions.push({
+                  [`${item.field}.${subItem.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+                })
+              : searchConditions.push({
+                  [`additionalFields.${item.field}.${subItem.field}`]: {
+                    ["$regex"]: `.*${query}.*`,
+                    ["$options"]: "i",
+                  },
+                });
+          });
+        } else
+          item.isDefault
+            ? searchConditions.push({ [item.field]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" } })
+            : searchConditions.push({
+                [`additionalFields.${item.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+              });
+      });
+    const conditions = {
+      $or: [...searchConditions, { ["id"]: query }],
+    };
+    const skipAmount = (Number(page) - 1) * limit;
+    const singleLineDiagrams = await SingleLineDiagram.find(query ? conditions : {})
+      .skip(skipAmount)
+      .limit(limit);
+    const totalDocuments = await SingleLineDiagram.countDocuments(query ? conditions : {});
+    const completeData = await SingleLineDiagram.find(query ? conditions : {});
+    return {
+      data: JSON.parse(JSON.stringify(singleLineDiagrams)),
+      status: 200,
+      totalPages: Math.ceil(totalDocuments / limit),
+      totalDocuments: totalDocuments,
+      completeData: JSON.parse(JSON.stringify(completeData)),
+    };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
@@ -39,7 +87,11 @@ export const createSingleLineDiagram = async (req: ICreateUpdateParams, userId: 
     };
     await ModificationHistory.create(modificationHistory);
 
-    return { data: JSON.parse(JSON.stringify(newSingleLineDiagram)), status: 200 };
+    const createSingleLineDiagramWithId = await SingleLineDiagram.findByIdAndUpdate(newSingleLineDiagram._id, {
+      id: newSingleLineDiagram._id.toString(),
+    });
+
+    return { data: JSON.parse(JSON.stringify(createSingleLineDiagramWithId)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

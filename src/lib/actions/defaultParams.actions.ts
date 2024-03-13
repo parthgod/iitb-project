@@ -31,10 +31,11 @@ export const createDefaultParams = async () => {
 export const editSpecificDefaultParam = async (
   columnDetails: IColumnDetails,
   itemColumnName: string,
-  isDefault: boolean,
-  userId: string
+  userId: string,
+  isDefault: boolean
 ) => {
   await connectToDatabase();
+  console.log("User ID inside editSpecificDefaultParam:", userId);
   let newColumns: IColumn;
   const oldParams: IDefaultParamSchema[] = await DefaultParam.find();
   const columnFieldName = convertField(columnDetails.name);
@@ -269,10 +270,89 @@ export const editSpecificDefaultParam = async (
       };
       break;
 
+    case "/ibr":
+      newParams.ibrColumns = oldParams[0].ibrColumns.map((column) => {
+        if (column.field === newColumns.field) return newColumns;
+        else return column;
+      });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "IBR",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
+      break;
+
+    case "/lccHvdcLink":
+      newParams.lccHvdcLinkColumns = oldParams[0].lccHvdcLinkColumns.map((column) => {
+        if (column.field === newColumns.field) return newColumns;
+        else return column;
+      });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "LCC-HVDC Link",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
+      break;
+
+    case "/seriesFact":
+      newParams.seriesFactsColumns = oldParams[0].seriesFactsColumns.map((column) => {
+        if (column.field === newColumns.field) return newColumns;
+        else return column;
+      });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Series Fact",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
+      break;
+
+    case "/shuntFact":
+      newParams.shuntFactsColumns = oldParams[0].shuntFactsColumns.map((column) => {
+        if (column.field === newColumns.field) return newColumns;
+        else return column;
+      });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Shunt Fact",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
+      break;
+
+    case "/vscHvdcLink":
+      newParams.vscHvdcLinkColumns = oldParams[0].vscHvdcLinkColumns.map((column) => {
+        if (column.field === newColumns.field) return newColumns;
+        else return column;
+      });
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "VSC-HVDC Link",
+        operationType: "Update",
+        date: new Date(),
+        document: {
+          columnDetails: newColumns,
+        },
+      };
+      break;
+
     default:
       break;
   }
-  console.log(newColumns);
   const newDefaultParams = await DefaultParam.findByIdAndUpdate(newParams._id, {
     busColumns: newParams.busColumns,
     excitationSystemColumns: newParams.excitationSystemColumns,
@@ -286,6 +366,11 @@ export const editSpecificDefaultParam = async (
     transformersTwoWindingColumns: newParams.transformersTwoWindingColumns,
     transmissionLinesColumns: newParams.transmissionLinesColumns,
     turbineGovernorColumns: newParams.turbineGovernorColumns,
+    ibrColumns: newParams.ibrColumns,
+    lccHvdcLinkColumns: newParams.lccHvdcLinkColumns,
+    seriesFactsColumns: newParams.seriesFactsColumns,
+    shuntFactsColumns: newParams.shuntFactsColumns,
+    vscHvdcLinkColumns: newParams.vscHvdcLinkColumns,
   });
   await ModificationHistory.create(modificationHistory);
   return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
@@ -356,6 +441,31 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
 
       case "/turbineGovernor":
         alreadyExists = oldParams[0].turbineGovernorColumns.find((item) => item.field === columnFieldName);
+        if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
+        break;
+
+      case "/ibr":
+        alreadyExists = oldParams[0].ibrColumns.find((item) => item.field === columnFieldName);
+        if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
+        break;
+
+      case "/lccHvdcLink":
+        alreadyExists = oldParams[0].lccHvdcLinkColumns.find((item) => item.field === columnFieldName);
+        if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
+        break;
+
+      case "/seriesFact":
+        alreadyExists = oldParams[0].seriesFactsColumns.find((item) => item.field === columnFieldName);
+        if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
+        break;
+
+      case "/shuntFact":
+        alreadyExists = oldParams[0].shuntFactsColumns.find((item) => item.field === columnFieldName);
+        if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
+        break;
+
+      case "/vscHvdcLink":
+        alreadyExists = oldParams[0].vscHvdcLinkColumns.find((item) => item.field === columnFieldName);
         if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
         break;
 
@@ -555,6 +665,71 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
         };
         break;
 
+      case "/ibr":
+        newParams.ibrColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "IBR",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
+        break;
+
+      case "/lccHvdcLink":
+        newParams.lccHvdcLinkColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "LCC-HVDC Link",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
+        break;
+
+      case "/seriesFact":
+        newParams.seriesFactsColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Series Fact",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
+        break;
+
+      case "/shuntFact":
+        newParams.shuntFactsColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Shunt Fact",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
+        break;
+
+      case "/vscHvdcLink":
+        newParams.vscHvdcLinkColumns.push(newColumns);
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "VSC-HVDC Link",
+          operationType: "Create",
+          date: new Date(),
+          document: {
+            columnDetails: newColumns,
+          },
+        };
+        break;
+
       default:
         break;
     }
@@ -572,6 +747,11 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
       transformersTwoWindingColumns: newParams.transformersTwoWindingColumns,
       transmissionLinesColumns: newParams.transmissionLinesColumns,
       turbineGovernorColumns: newParams.turbineGovernorColumns,
+      ibrColumns: newParams.ibrColumns,
+      lccHvdcLinkColumns: newParams.lccHvdcLinkColumns,
+      seriesFactsColumns: newParams.seriesFactsColumns,
+      shuntFactsColumns: newParams.shuntFactsColumns,
+      vscHvdcLinkColumns: newParams.vscHvdcLinkColumns,
     });
 
     await ModificationHistory.create(modificationHistory);
