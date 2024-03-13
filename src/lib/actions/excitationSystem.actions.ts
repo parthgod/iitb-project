@@ -3,15 +3,63 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import ExcitationSystem from "../database/models/excitationSystem";
-import { ICreateUpdateParams, IExcitationSystem } from "../../utils/defaultTypes";
+import { IColumn, ICreateUpdateParams, IExcitationSystem } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 
-export const getAllExcitationSystems = async (): Promise<{ data: IExcitationSystem[]; status: number }> => {
+export const getAllExcitationSystems = async (
+  limit = 10,
+  page = 1,
+  query = "",
+  columns: IColumn[]
+): Promise<{
+  data: IExcitationSystem[];
+  status: number;
+  totalPages: number;
+  totalDocuments: number;
+  completeData: IExcitationSystem[];
+}> => {
   try {
     await connectToDatabase();
-    const excitationSystems = await ExcitationSystem.find({});
-    return { data: JSON.parse(JSON.stringify(excitationSystems)), status: 200 };
+    const searchConditions: any = [];
+    if (query)
+      columns.forEach((item) => {
+        if (item.type === "subColumns") {
+          item.subColumns?.map((subItem) => {
+            item.isDefault
+              ? searchConditions.push({
+                  [`${item.field}.${subItem.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+                })
+              : searchConditions.push({
+                  [`additionalFields.${item.field}.${subItem.field}`]: {
+                    ["$regex"]: `.*${query}.*`,
+                    ["$options"]: "i",
+                  },
+                });
+          });
+        } else
+          item.isDefault
+            ? searchConditions.push({ [item.field]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" } })
+            : searchConditions.push({
+                [`additionalFields.${item.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+              });
+      });
+    const conditions = {
+      $or: [...searchConditions, { ["id"]: query }],
+    };
+    const skipAmount = (Number(page) - 1) * limit;
+    const excitationSystems = await ExcitationSystem.find(query ? conditions : {})
+      .skip(skipAmount)
+      .limit(limit);
+    const totalDocuments = await ExcitationSystem.countDocuments(query ? conditions : {});
+    const completeData = await ExcitationSystem.find(query ? conditions : {});
+    return {
+      data: JSON.parse(JSON.stringify(excitationSystems)),
+      status: 200,
+      totalPages: Math.ceil(totalDocuments / limit),
+      totalDocuments: totalDocuments,
+      completeData: JSON.parse(JSON.stringify(completeData)),
+    };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
@@ -39,7 +87,11 @@ export const createExcitationSystem = async (req: ICreateUpdateParams, userId: s
     };
     await ModificationHistory.create(modificationHistory);
 
-    return { data: JSON.parse(JSON.stringify(newExcitationSystem)), status: 200 };
+    const createExcitationSystemWithId = await ExcitationSystem.findByIdAndUpdate(newExcitationSystem._id, {
+      id: newExcitationSystem._id.toString(),
+    });
+
+    return { data: JSON.parse(JSON.stringify(createExcitationSystemWithId)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

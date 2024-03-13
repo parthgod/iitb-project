@@ -25,6 +25,11 @@ import { deleteTransformersThreeWinding } from "@/lib/actions/transformersThreeW
 import { deleteTransformersTwoWinding } from "@/lib/actions/transformersTwoWinding.actions";
 import { deleteTransmissionLine } from "@/lib/actions/transmissionLines.actions";
 import { deleteTurbineGovernor } from "@/lib/actions/turbineGovernor.actions";
+import { deleteIBR } from "@/lib/actions/ibr.actions";
+import { deleteLCCHVDCLink } from "@/lib/actions/lccHvdcLink.actions";
+import { deleteSeriesFact } from "@/lib/actions/seriesFact.actions";
+import { deleteShuntFact } from "@/lib/actions/shuntFact.actions";
+import { deleteVSCHVDCLink } from "@/lib/actions/vscHvdcLink.actions";
 
 type DeleteConfirmationProps = {
   id: string;
@@ -40,7 +45,12 @@ type DeleteConfirmationProps = {
     | "Transformers Three Winding"
     | "Transformers Two Winding"
     | "Transmission Line"
-    | "Turbine Governor";
+    | "Turbine Governor"
+    | "IBR"
+    | "LCC-HVDC Link"
+    | "VSC-HVDC Link"
+    | "Series Fact"
+    | "Shunt Fact";
   userId: string;
 };
 
@@ -55,7 +65,7 @@ const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
           title="Delete"
           className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
         >
-          <MdDelete className="text-gray-500 text-xl" />
+          <MdDelete className="text-gray-500 text-lg" />
         </div>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-white">
@@ -118,6 +128,21 @@ const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
                   case "Turbine Governor":
                     await deleteTurbineGovernor(id, pathname, userId);
                     break;
+
+                  case "IBR":
+                    await deleteIBR(id, pathname, userId);
+
+                  case "LCC-HVDC Link":
+                    await deleteLCCHVDCLink(id, pathname, userId);
+
+                  case "Series Fact":
+                    await deleteSeriesFact(id, pathname, userId);
+
+                  case "Shunt Fact":
+                    await deleteShuntFact(id, pathname, userId);
+
+                  case "VSC-HVDC Link":
+                    await deleteVSCHVDCLink(id, pathname, userId);
 
                   default:
                     break;

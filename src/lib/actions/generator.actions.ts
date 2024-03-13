@@ -3,15 +3,63 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import Generator from "../database/models/generator";
-import { ICreateUpdateParams, IGenerator } from "../../utils/defaultTypes";
+import { IColumn, ICreateUpdateParams, IGenerator } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 
-export const getAllGenerators = async (): Promise<{ data: IGenerator[]; status: number }> => {
+export const getAllGenerators = async (
+  limit = 10,
+  page = 1,
+  query = "",
+  columns: IColumn[]
+): Promise<{
+  data: IGenerator[];
+  status: number;
+  totalPages: number;
+  totalDocuments: number;
+  completeData: IGenerator[];
+}> => {
   try {
     await connectToDatabase();
-    const generators = await Generator.find({});
-    return { data: JSON.parse(JSON.stringify(generators)), status: 200 };
+    const searchConditions: any = [];
+    if (query)
+      columns.forEach((item) => {
+        if (item.type === "subColumns") {
+          item.subColumns?.map((subItem) => {
+            item.isDefault
+              ? searchConditions.push({
+                  [`${item.field}.${subItem.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+                })
+              : searchConditions.push({
+                  [`additionalFields.${item.field}.${subItem.field}`]: {
+                    ["$regex"]: `.*${query}.*`,
+                    ["$options"]: "i",
+                  },
+                });
+          });
+        } else
+          item.isDefault
+            ? searchConditions.push({ [item.field]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" } })
+            : searchConditions.push({
+                [`additionalFields.${item.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+              });
+      });
+    const conditions = {
+      $or: [...searchConditions, { ["id"]: query }],
+    };
+    const skipAmount = (Number(page) - 1) * limit;
+    const generators = await Generator.find(query ? conditions : {})
+      .skip(skipAmount)
+      .limit(limit);
+    const totalDocuments = await Generator.countDocuments(query ? conditions : {});
+    const completeData = await Generator.find(query ? conditions : {});
+    return {
+      data: JSON.parse(JSON.stringify(generators)),
+      status: 200,
+      totalPages: Math.ceil(totalDocuments / limit),
+      totalDocuments: totalDocuments,
+      completeData: JSON.parse(JSON.stringify(completeData)),
+    };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
@@ -39,7 +87,11 @@ export const createGenerator = async (req: ICreateUpdateParams, userId: string) 
     };
     await ModificationHistory.create(modificationHistory);
 
-    return { data: JSON.parse(JSON.stringify(newGenerator)), status: 200 };
+    const createGeneratorWithId = await Generator.findByIdAndUpdate(newGenerator._id, {
+      id: newGenerator._id.toString(),
+    });
+
+    return { data: JSON.parse(JSON.stringify(createGeneratorWithId)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

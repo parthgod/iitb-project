@@ -3,15 +3,63 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import ShuntCapacitor from "../database/models/shuntCapacitor";
-import { ICreateUpdateParams, IShuntCapacitor } from "../../utils/defaultTypes";
+import { IColumn, ICreateUpdateParams, IShuntCapacitor } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 
-export const getAllShuntCapacitors = async (): Promise<{ data: IShuntCapacitor[]; status: number }> => {
+export const getAllShuntCapacitors = async (
+  limit = 10,
+  page = 1,
+  query = "",
+  columns: IColumn[]
+): Promise<{
+  data: IShuntCapacitor[];
+  status: number;
+  totalPages: number;
+  totalDocuments: number;
+  completeData: IShuntCapacitor[];
+}> => {
   try {
     await connectToDatabase();
-    const shuntCapacitors = await ShuntCapacitor.find({});
-    return { data: JSON.parse(JSON.stringify(shuntCapacitors)), status: 200 };
+    const searchConditions: any = [];
+    if (query)
+      columns.forEach((item) => {
+        if (item.type === "subColumns") {
+          item.subColumns?.map((subItem) => {
+            item.isDefault
+              ? searchConditions.push({
+                  [`${item.field}.${subItem.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+                })
+              : searchConditions.push({
+                  [`additionalFields.${item.field}.${subItem.field}`]: {
+                    ["$regex"]: `.*${query}.*`,
+                    ["$options"]: "i",
+                  },
+                });
+          });
+        } else
+          item.isDefault
+            ? searchConditions.push({ [item.field]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" } })
+            : searchConditions.push({
+                [`additionalFields.${item.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+              });
+      });
+    const conditions = {
+      $or: [...searchConditions, { ["id"]: query }],
+    };
+    const skipAmount = (Number(page) - 1) * limit;
+    const shuntCapacitors = await ShuntCapacitor.find(query ? conditions : {})
+      .skip(skipAmount)
+      .limit(limit);
+    const totalDocuments = await ShuntCapacitor.countDocuments(query ? conditions : {});
+    const completeData = await ShuntCapacitor.find(query ? conditions : {});
+    return {
+      data: JSON.parse(JSON.stringify(shuntCapacitors)),
+      status: 200,
+      totalPages: Math.ceil(totalDocuments / limit),
+      totalDocuments: totalDocuments,
+      completeData: JSON.parse(JSON.stringify(completeData)),
+    };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
@@ -39,7 +87,11 @@ export const createShuntCapacitor = async (req: ICreateUpdateParams, userId: str
     };
     await ModificationHistory.create(modificationHistory);
 
-    return { data: JSON.parse(JSON.stringify(newShuntCapacitor)), status: 200 };
+    const createShuntCapacitorWithId = await ShuntCapacitor.findByIdAndUpdate(newShuntCapacitor._id, {
+      id: newShuntCapacitor._id.toString(),
+    });
+
+    return { data: JSON.parse(JSON.stringify(createShuntCapacitorWithId)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

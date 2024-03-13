@@ -11,7 +11,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="bg-zinc-800">
+    <div className="bg-zinc-900">
       <div className="flex w-full h-screen items-center justify-center">
         <Card className="w-1/2">
           <CardHeader className="space-y-1">

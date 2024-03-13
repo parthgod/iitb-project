@@ -1,7 +1,10 @@
 import { Schema, model, models } from "mongoose";
 
-const shuntFactsSchema = new Schema(
+const seriesFactsSchema = new Schema(
   {
+    id: {
+      type: String,
+    },
     additionalFields: {
       type: Schema.Types.Mixed,
       default: {},
@@ -12,6 +15,6 @@ const shuntFactsSchema = new Schema(
   }
 );
 
-const ShuntFacts = models.ShuntFacts || model("ShuntFacts", shuntFactsSchema);
+const SeriesFact = models.SeriesFact || model("SeriesFact", seriesFactsSchema);
 
-export default ShuntFacts;
+export default SeriesFact;

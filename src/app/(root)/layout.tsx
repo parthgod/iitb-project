@@ -15,7 +15,7 @@ export default async function RootLayout({
     <main className="flex">
       <SessionProvider session={session}>
         <Sidebar />
-        <div className="p-3 pt-10 pl-10 w-screen h-screen overflow-x-auto">{children}</div>
+        <div className="w-full h-screen overflow-auto">{children}</div>
         <Navbar />
       </SessionProvider>
     </main>

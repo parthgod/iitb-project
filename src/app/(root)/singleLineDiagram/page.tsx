@@ -10,10 +10,21 @@ import { getAllSingleLineDiagrams } from "@/lib/actions/singleLineDiagram.action
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-const SingleLineDiagram = async ({ searchParams }: { searchParams: { query: string } }) => {
-  const searchTerm = searchParams.query || "";
+const SingleLineDiagram = async ({
+  searchParams,
+}: {
+  searchParams: { query: string; page?: number; limit?: number };
+}) => {
+  const searchTerm = searchParams?.query || "";
+  const page = searchParams?.page || 1;
+  const limit = searchParams?.limit || 10;
   const { data: defaultParams } = await getDefaultParams();
-  const { data: singleLineDiagrams } = await getAllSingleLineDiagrams();
+  const {
+    data: singleLineDiagrams,
+    totalPages,
+    totalDocuments,
+    completeData,
+  } = await getAllSingleLineDiagrams(limit, page, searchTerm, defaultParams[0]?.singleLineDiagramsColumns);
 
   const session = await getServerSession(authOptions);
 
@@ -29,8 +40,8 @@ const SingleLineDiagram = async ({ searchParams }: { searchParams: { query: stri
 
   return (
     <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold">Single Line Diagram</h1>
-      <div className="flex justify-between items-center gap-5 mb-2">
+      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Single Line Diagram</h1>
+      <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
           <Link href="/singleLineDiagram/create">
@@ -45,6 +56,9 @@ const SingleLineDiagram = async ({ searchParams }: { searchParams: { query: stri
           columns={defaultParams[0].singleLineDiagramsColumns}
           data={filteredSingleLineDiagrams}
           type="Single Line Diagram"
+          totalPages={totalPages}
+          totalDocuments={totalDocuments}
+          completeData={completeData}
         />
       ) : (
         <TableSkeleton />

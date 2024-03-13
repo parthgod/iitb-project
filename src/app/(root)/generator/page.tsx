@@ -10,10 +10,17 @@ import { getAllGenerators } from "@/lib/actions/generator.actions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-const Generators = async ({ searchParams }: { searchParams: { query: string } }) => {
-  const searchTerm = searchParams.query || "";
+const Generators = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
+  const searchTerm = searchParams?.query || "";
+  const page = searchParams?.page || 1;
+  const limit = searchParams?.limit || 10;
   const { data: defaultParams } = await getDefaultParams();
-  const { data: generators } = await getAllGenerators();
+  const {
+    data: generators,
+    totalPages,
+    totalDocuments,
+    completeData,
+  } = await getAllGenerators(limit, page, searchTerm, defaultParams[0]?.generatorColumns);
 
   const session = await getServerSession(authOptions);
 
@@ -29,8 +36,8 @@ const Generators = async ({ searchParams }: { searchParams: { query: string } })
 
   return (
     <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold">Generator</h1>
-      <div className="flex justify-between items-center gap-5 mb-2">
+      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Generator</h1>
+      <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
           <Link href="/generator/create">
@@ -45,6 +52,9 @@ const Generators = async ({ searchParams }: { searchParams: { query: string } })
           columns={defaultParams[0].generatorColumns}
           data={filteredGenerators}
           type="Generator"
+          completeData={completeData}
+          totalDocuments={totalDocuments}
+          totalPages={totalPages}
         />
       ) : (
         <TableSkeleton />

@@ -10,6 +10,7 @@ import {
   editSpecificDefaultParam,
   updateDefaultParams,
 } from "@/lib/actions/defaultParams.actions";
+import { IColumn } from "@/utils/defaultTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -20,14 +21,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
-import { IColumn } from "@/utils/defaultTypes";
-
-// const SubcolumnSchema = z.object({
-//   title: z.string().optional(),
-//   type: z.string().optional(),
-// }).refine((data)=>{
-//   if(data.)
-// })
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be empty" }),
@@ -61,7 +54,15 @@ const FormSchema = z.object({
     .optional(),
 });
 
-const AddColumns = ({ columnDetails, userId }: { columnDetails?: IColumn; userId: string }) => {
+const AddColumns = ({
+  columnDetails,
+  userId,
+  newTable,
+}: {
+  columnDetails?: IColumn;
+  userId: string;
+  newTable?: boolean;
+}) => {
   const pathname = usePathname();
 
   let defaultValues = {};
@@ -245,7 +246,7 @@ const AddColumns = ({ columnDetails, userId }: { columnDetails?: IColumn; userId
     try {
       let response;
       if (columnDetails)
-        response = await editSpecificDefaultParam(data, pathname, columnDetails.isDefault || false, userId);
+        response = await editSpecificDefaultParam(data, pathname, userId, columnDetails.isDefault || false);
       else response = await updateDefaultParams(data, pathname, userId);
       console.log(response);
       if (response?.status === 409) {
@@ -263,16 +264,22 @@ const AddColumns = ({ columnDetails, userId }: { columnDetails?: IColumn; userId
 
   return (
     <div className="flex gap-5">
-      {!columnDetails && (
+      {/* {!columnDetails && (
         <Button
           variant={"destructive"}
           onClick={dummy}
         >
           Add new column
         </Button>
-      )}
+      )} */}
       <Dialog>
-        <DialogTrigger className={!columnDetails ? buttonVariants() : ""}>
+        <DialogTrigger
+          className={
+            !columnDetails
+              ? buttonVariants({ variant: newTable ? "link" : "default" }) + ` ${newTable && "text-[1.15rem]"}`
+              : ""
+          }
+        >
           {columnDetails ? (
             <MdEdit
               id="edit-icons"
@@ -427,7 +434,10 @@ const AddColumns = ({ columnDetails, userId }: { columnDetails?: IColumn; userId
                 <>
                   {subcolumns?.length! >= 1 && <Separator />}
                   {subcolumns?.map((subcolumn, index) => (
-                    <div className="flex flex-col">
+                    <div
+                      className="flex flex-col"
+                      key={index}
+                    >
                       <div className="flex w-full justify-between items-center">
                         <p className="font-bold mb-2 whitespace-nowrap">Sub-column {index + 1}</p>
                         <div className="flex gap-1">

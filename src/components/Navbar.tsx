@@ -10,7 +10,7 @@ const Navbar = () => {
   const { data: session } = useSession();
 
   return (
-    <div className="absolute right-7 top-5">
+    <div className="absolute right-5 top-2.5">
       {session ? (
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2">

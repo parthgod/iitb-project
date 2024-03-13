@@ -78,7 +78,6 @@ export const authOptions: NextAuthOptions = {
         return true;
       } catch (error) {
         throw new Error(typeof error === "string" ? error : JSON.stringify(error));
-        return false;
       }
     },
     async session({ session, token }) {

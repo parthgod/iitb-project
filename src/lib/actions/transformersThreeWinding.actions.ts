@@ -3,18 +3,63 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import TransformersThreeWinding from "../database/models/transformersThreeWinding";
-import { ICreateUpdateParams, ITransformersThreeWinding } from "../../utils/defaultTypes";
+import { IColumn, ICreateUpdateParams, ITransformersThreeWinding } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 
-export const getAllTransformersThreeWindings = async (): Promise<{
+export const getAllTransformersThreeWindings = async (
+  limit = 10,
+  page = 1,
+  query = "",
+  columns: IColumn[]
+): Promise<{
   data: ITransformersThreeWinding[];
   status: number;
+  totalPages: number;
+  totalDocuments: number;
+  completeData: ITransformersThreeWinding[];
 }> => {
   try {
     await connectToDatabase();
-    const transformersThreeWindings = await TransformersThreeWinding.find({});
-    return { data: JSON.parse(JSON.stringify(transformersThreeWindings)), status: 200 };
+    const searchConditions: any = [];
+    if (query)
+      columns.forEach((item) => {
+        if (item.type === "subColumns") {
+          item.subColumns?.map((subItem) => {
+            item.isDefault
+              ? searchConditions.push({
+                  [`${item.field}.${subItem.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+                })
+              : searchConditions.push({
+                  [`additionalFields.${item.field}.${subItem.field}`]: {
+                    ["$regex"]: `.*${query}.*`,
+                    ["$options"]: "i",
+                  },
+                });
+          });
+        } else
+          item.isDefault
+            ? searchConditions.push({ [item.field]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" } })
+            : searchConditions.push({
+                [`additionalFields.${item.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+              });
+      });
+    const conditions = {
+      $or: [...searchConditions, { ["id"]: query }],
+    };
+    const skipAmount = (Number(page) - 1) * limit;
+    const transformersThreeWindings = await TransformersThreeWinding.find(query ? conditions : {})
+      .skip(skipAmount)
+      .limit(limit);
+    const totalDocuments = await TransformersThreeWinding.countDocuments(query ? conditions : {});
+    const completeData = await TransformersThreeWinding.find(query ? conditions : {});
+    return {
+      data: JSON.parse(JSON.stringify(transformersThreeWindings)),
+      status: 200,
+      totalPages: Math.ceil(totalDocuments / limit),
+      totalDocuments: totalDocuments,
+      completeData: JSON.parse(JSON.stringify(completeData)),
+    };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
@@ -42,7 +87,14 @@ export const createTransformersThreeWinding = async (req: ICreateUpdateParams, u
     };
     await ModificationHistory.create(modificationHistory);
 
-    return { data: JSON.parse(JSON.stringify(newTransformersThreeWinding)), status: 200 };
+    const createTransformersThreeWindingWithId = await TransformersThreeWinding.findByIdAndUpdate(
+      newTransformersThreeWinding._id,
+      {
+        id: newTransformersThreeWinding._id.toString(),
+      }
+    );
+
+    return { data: JSON.parse(JSON.stringify(createTransformersThreeWindingWithId)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

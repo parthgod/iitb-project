@@ -2,6 +2,9 @@ import { Schema, model, models } from "mongoose";
 
 const excitationSystemSchema = new Schema(
   {
+    id: {
+      type: String,
+    },
     deviceName: {
       type: String,
       required: true,

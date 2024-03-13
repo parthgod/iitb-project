@@ -20,7 +20,7 @@ import {
 } from "@/lib/actions/transformersTwoWinding.actions";
 import { createTransmissionLine, updateTransmissionLine } from "@/lib/actions/transmissionLines.actions";
 import { createTurbineGovernor, updateTurbineGovernor } from "@/lib/actions/turbineGovernor.actions";
-import { useUploadThing } from "@/lib/uploadthing";
+// import { useUploadThing } from "@/lib/uploadthing";
 import { IColumn } from "@/utils/defaultTypes";
 import { reverseUnslug } from "@/utils/helperFunctions";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +35,11 @@ import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
 import { uploadImagesToFirebase } from "@/lib/firebase/storage";
 import { useSession } from "next-auth/react";
+import { createIBR, updateIBR } from "@/lib/actions/ibr.actions";
+import { createLCCHVDCLink, updateLCCHVDCLink } from "@/lib/actions/lccHvdcLink.actions";
+import { createSeriesFact, updateSeriesFact } from "@/lib/actions/seriesFact.actions";
+import { createShuntFact, updateShuntFact } from "@/lib/actions/shuntFact.actions";
+import { createVSCHVDCLink, updateVSCHVDCLink } from "@/lib/actions/vscHvdcLink.actions";
 
 type IFiles = {
   field: string;
@@ -56,7 +61,12 @@ type CreateFormProps = {
     | "transformersThreeWinding"
     | "transformersTwoWinding"
     | "transmissionLine"
-    | "turbineGovernor";
+    | "turbineGovernor"
+    | "ibr"
+    | "lccHvdcLink"
+    | "vscHvdcLink"
+    | "seriesFact"
+    | "shuntFact";
 };
 
 const generateFormSchema = (fields: IColumn[]) => {
@@ -69,6 +79,7 @@ const generateFormSchema = (fields: IColumn[]) => {
       );
     } else schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
   });
+  // console.log(schema);
   return z.object(schema);
 };
 
@@ -79,7 +90,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
 
   const router = useRouter();
 
-  const { startUpload } = useUploadThing("imageUploader");
+  // const { startUpload } = useUploadThing("imageUploader");
 
   const FormSchema = generateFormSchema(formFields);
 
@@ -89,7 +100,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    // console.log(data);
+    console.log(data);
     setIsLoading(true);
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
@@ -137,12 +148,14 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         } else additionalFields[item.field] = data[item.field];
       }
     });
+
     try {
       let response;
       let req = {
         defaultFields: defaultFields,
         additionalFields: additionalFields,
       };
+      console.log(req);
       if (formDetails) {
         switch (type) {
           case "bus":
@@ -190,6 +203,26 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
 
           case "turbineGovernor":
             response = await updateTurbineGovernor(req, formDetails._id, session?.user.id!);
+            break;
+
+          case "ibr":
+            response = await updateIBR(req, formDetails._id, session?.user.id!);
+            break;
+
+          case "lccHvdcLink":
+            response = await updateLCCHVDCLink(req, formDetails._id, session?.user.id!);
+            break;
+
+          case "seriesFact":
+            response = await updateSeriesFact(req, formDetails._id, session?.user.id!);
+            break;
+
+          case "shuntFact":
+            response = await updateShuntFact(req, formDetails._id, session?.user.id!);
+            break;
+
+          case "vscHvdcLink":
+            response = await updateVSCHVDCLink(req, formDetails._id, session?.user.id!);
             break;
 
           default:
@@ -244,6 +277,26 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
             response = await createTurbineGovernor(req, session?.user.id!);
             break;
 
+          case "ibr":
+            response = await createIBR(req, session?.user.id!);
+            break;
+
+          case "lccHvdcLink":
+            response = await createLCCHVDCLink(req, session?.user.id!);
+            break;
+
+          case "seriesFact":
+            response = await createSeriesFact(req, session?.user.id!);
+            break;
+
+          case "shuntFact":
+            response = await createShuntFact(req, session?.user.id!);
+            break;
+
+          case "vscHvdcLink":
+            response = await createVSCHVDCLink(req, session?.user.id!);
+            break;
+
           default:
             break;
         }
@@ -268,10 +321,10 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-5 justify-between pr-5"
+        className="flex flex-col gap-5 justify-between pr-5 h-full overflow-hidden p-4"
       >
         <div className="flex flex-col gap-5">
-          <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto py-3">
+          <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto">
             {formFields.map((item, ind: number) => {
               if (item.type === "text" || item.type === "number")
                 return (

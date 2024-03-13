@@ -2,6 +2,9 @@ import { Schema, model, models } from "mongoose";
 
 const lccHvdcLinkSchema = new Schema(
   {
+    id: {
+      type: String,
+    },
     additionalFields: {
       type: Schema.Types.Mixed,
       default: {},
