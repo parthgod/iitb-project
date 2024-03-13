@@ -36,7 +36,7 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
 
   return (
     <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Generator</h1>
+      <h1 className="text-4xl font-bold p-3">Generator</h1>
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
@@ -44,7 +44,7 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
             <Button>Create generator</Button>
           </Link>
           {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
-          {!session?.user.isAdmin && <RequestChange />}
+          {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>
       </div>
       {defaultParams.length ? (

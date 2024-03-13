@@ -58,7 +58,12 @@ export type IModificationHistory = {
     | "Transformers Three Winding"
     | "Transformers Two Winding"
     | "Transmission Line"
-    | "Turbine Governor";
+    | "Turbine Governor"
+    | "IBR"
+    | "LCC-HVDC Link"
+    | "VSC-HVDC Link"
+    | "Series Fact"
+    | "Shunt Fact";
   operationType: "Create" | "Update" | "Delete";
   date: string;
   document: {

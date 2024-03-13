@@ -20,7 +20,7 @@ import {
 } from "@/utils/defaultTypes";
 import { convertField } from "@/utils/helperFunctions";
 import jsPDF from "jspdf";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -79,15 +79,14 @@ interface TableProps {
     | "Shunt Fact";
   totalPages: number;
   totalDocuments: number;
+  session: Session;
 }
 
-const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData }: TableProps) => {
+const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session }: TableProps) => {
   // return console.log(data);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
-
-  const { data: session } = useSession();
 
   function getBase64Image(img: any) {
     const canvas = document.createElement("canvas");
@@ -102,7 +101,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
 
   const downloadPDF = async (type: string) => {
     const pdf = new jsPDF({
-      orientation: "landscape",
+      orientation: "portrait",
       unit: "pt",
       format: "a0",
     });
@@ -110,7 +109,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     const tempInput = document.createElement("table");
     tempInput.style.borderCollapse = "collapse";
     tempInput.style.fontSize = "10px";
-    tempInput.style.width = "3300px";
+    tempInput.style.maxWidth = "2400px";
 
     const headingRow = tempInput.insertRow();
     headingRow.style.fontWeight = "bold";
@@ -153,9 +152,10 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
             const subCell = row.insertCell();
             subCell.style.border = "1px solid #000";
             subCell.style.padding = "5px";
-            subCell.textContent = cellData.isDefault
-              ? rowData[cellData.field][subItem.field]
-              : rowData.additionalFields[cellData.field][subItem.field];
+            subCell.textContent =
+              rowData?.[cellData.field]?.[subItem.field] ||
+              rowData?.additionalFields?.[cellData.field]?.[subItem.field] ||
+              "null";
           });
         } else {
           const cell = row.insertCell();
@@ -164,7 +164,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           // if (cellData.type === "image") {
           //   cell.innerHTML = `<img src="${encodeURIComponent(rowData[cellData.field])}" width={50} height={50} />`;
           // } else {
-          cell.textContent = cellData.isDefault ? rowData[cellData.field] : rowData.additionalFields[cellData.field];
+          cell.textContent = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || "null";
           // }
         }
       });
@@ -210,13 +210,14 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
         if (cellData.type === "subColumns") {
           cellData.subColumns?.map((subItem) => {
             const subCell = row.insertCell();
-            subCell.textContent = cellData.isDefault
-              ? rowData[cellData.field][subItem.field]
-              : rowData.additionalFields[cellData.field][subItem.field];
+            subCell.textContent =
+              rowData?.[cellData.field]?.[subItem.field] ||
+              rowData.additionalFields?.[cellData.field]?.[subItem.field] ||
+              "null";
           });
         } else {
           const cell = row.insertCell();
-          cell.textContent = cellData.isDefault ? rowData[cellData.field] : rowData.additionalFields[cellData.field];
+          cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
         }
       });
     });

@@ -72,7 +72,7 @@ export const createVSCHVDCLink = async (req: ICreateUpdateParams, userId: string
     let modificationHistory: any;
     modificationHistory = {
       userId: new ObjectId(userId),
-      databaseName: "VSCHVDCLink",
+      databaseName: "VSC-HVDC Link",
       operationType: "Create",
       date: new Date(),
       document: {
@@ -115,7 +115,7 @@ export const updateVSCHVDCLink = async (req: ICreateUpdateParams, id: string, us
     let modificationHistory: any;
     modificationHistory = {
       userId: new ObjectId(userId),
-      databaseName: "VSCHVDCLink",
+      databaseName: "VSC-HVDC Link",
       operationType: "Update",
       date: new Date(),
       document: {
@@ -140,7 +140,7 @@ export const deleteVSCHVDCLink = async (id: string, path: string, userId: string
       let modificationHistory: any;
       modificationHistory = {
         userId: new ObjectId(userId),
-        databaseName: "VSCHVDCLink",
+        databaseName: "VSC-HVDC Link",
         operationType: "Delete",
         date: new Date(),
         document: {

@@ -77,55 +77,59 @@ const TableHeading = ({
           </p>
 
           <div className="flex items-center gap-3">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    aria-disabled={page <= 1}
-                    tabIndex={page <= 1 ? -1 : undefined}
-                    onClick={() => page > 1 && setPage(page - 1)}
-                    className={`${page <= 1 ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, ind) => {
-                  if (
-                    ind + 1 <= 3 ||
-                    ind + 1 >= totalPages - 2 ||
-                    (page >= 3 && page <= totalPages - 2 && Math.abs(page - (ind + 1)) <= 1)
-                  ) {
-                    return (
-                      <PaginationItem
-                        key={ind}
-                        className={`cursor-pointer ${page === ind + 1 ? "active" : ""}`}
-                        onClick={() => setPage(ind + 1)}
-                      >
-                        <PaginationLink
-                          isActive={page === ind + 1}
-                          className="p-0"
+            {totalPages > 1 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      aria-disabled={page <= 1}
+                      tabIndex={page <= 1 ? -1 : undefined}
+                      onClick={() => page > 1 && setPage(page - 1)}
+                      className={`${
+                        page <= 1 ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"
+                      }`}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, ind) => {
+                    if (
+                      ind + 1 <= 3 ||
+                      ind + 1 >= totalPages - 2 ||
+                      (page >= 3 && page <= totalPages - 2 && Math.abs(page - (ind + 1)) <= 1)
+                    ) {
+                      return (
+                        <PaginationItem
+                          key={ind}
+                          className={`cursor-pointer ${page === ind + 1 ? "active" : ""}`}
+                          onClick={() => setPage(ind + 1)}
                         >
-                          {ind + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  } else if (ind + 1 === 4 && page > 4) {
-                    return <PaginationEllipsis key="ellipsis1" />;
-                  } else if (ind + 1 === totalPages - 3 && page < totalPages - 3) {
-                    return <PaginationEllipsis key="ellipsis2" />;
-                  }
-                  return null;
-                })}
-                <PaginationItem>
-                  <PaginationNext
-                    aria-disabled={page >= totalPages}
-                    tabIndex={page >= totalPages ? -1 : undefined}
-                    onClick={() => page < totalPages && setPage(page + 1)}
-                    className={`${
-                      page >= totalPages ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"
-                    }`}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                          <PaginationLink
+                            isActive={page === ind + 1}
+                            className="p-0"
+                          >
+                            {ind + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (ind + 1 === 4 && page > 4) {
+                      return <PaginationEllipsis key="ellipsis1" />;
+                    } else if (ind + 1 === totalPages - 3 && page < totalPages - 3) {
+                      return <PaginationEllipsis key="ellipsis2" />;
+                    }
+                    return null;
+                  })}
+                  <PaginationItem>
+                    <PaginationNext
+                      aria-disabled={page >= totalPages}
+                      tabIndex={page >= totalPages ? -1 : undefined}
+                      onClick={() => page < totalPages && setPage(page + 1)}
+                      className={`${
+                        page >= totalPages ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"
+                      }`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
 
             <Popover>
               <PopoverTrigger>
@@ -136,7 +140,10 @@ const TableHeading = ({
                   <FaFileImport />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="flex flex-col gap-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
+              <PopoverContent
+                align="end"
+                className="flex flex-col gap-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
+              >
                 <Button
                   onClick={() => fnExportToExcel(type)}
                   variant="outline"

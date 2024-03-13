@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
 
-const FilteredHistory = ({ conditions }: { conditions: any }) => {
+const FilteredHistory = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [type, setType] = useState(searchParams.get("type") || "All");
@@ -56,7 +56,7 @@ const FilteredHistory = ({ conditions }: { conditions: any }) => {
   if (!isMounted) return null;
 
   return (
-    <div className="px-4 flex items-center gap-10">
+    <div className="px-4 flex items-center gap-8">
       <Search placeholder="Search by username..." />
       <div className="flex items-center gap-1">
         <p className="whitespace-nowrap">Operation type:</p>
@@ -64,7 +64,7 @@ const FilteredHistory = ({ conditions }: { conditions: any }) => {
           defaultValue={type}
           onValueChange={(value) => setType(value)}
         >
-          <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+          <SelectTrigger className="select-field w-20 pr-2 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -81,7 +81,7 @@ const FilteredHistory = ({ conditions }: { conditions: any }) => {
           defaultValue={databaseName}
           onValueChange={(value) => setDatabaseName(value)}
         >
-          <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+          <SelectTrigger className="select-field w-56 px-2 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -98,6 +98,11 @@ const FilteredHistory = ({ conditions }: { conditions: any }) => {
             <SelectItem value="Transformers Two Winding">Transformers Two Winding</SelectItem>
             <SelectItem value="Transmission Line">Transmission Line</SelectItem>
             <SelectItem value="Turbine Governor">Turbine Governor</SelectItem>
+            <SelectItem value="IBR">IBR</SelectItem>
+            <SelectItem value="LCC-HVDC Link">LCC-HVDC Link</SelectItem>
+            <SelectItem value="VSC-HVDC Link">VSC-HVDC Link</SelectItem>
+            <SelectItem value="Series Fact">Series Fact</SelectItem>
+            <SelectItem value="Shunt Fact">Shunt Fact</SelectItem>
           </SelectContent>
         </Select>
       </div>

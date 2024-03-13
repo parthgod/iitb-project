@@ -9,11 +9,11 @@ const RequestsPage = async ({ searchParams }: { searchParams: { query: string } 
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">User Requests</h1>
-      <div className="px-3">
+      <h1 className="text-4xl font-bold p-3">User Requests</h1>
+      <div className="px-3 pr-10">
         <Search placeholder="Search by username..." />
       </div>
-      <div className="flex flex-col gap-4 h-[80vh] overflow-auto px-3">
+      <div className="flex flex-col gap-4 h-[77vh] overflow-auto px-3">
         {changes.length ? (
           changes.map((change, i: number) => (
             <Card

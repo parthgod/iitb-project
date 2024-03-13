@@ -43,7 +43,7 @@ const TransformersTwoWinding = async ({
 
   return (
     <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Transformers Two Winding</h1>
+      <h1 className="text-4xl font-bold p-3">Transformers Two Winding</h1>
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
@@ -51,7 +51,7 @@ const TransformersTwoWinding = async ({
             <Button>Create transformers two winding</Button>
           </Link>
           {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
-          {!session?.user.isAdmin && <RequestChange />}
+          {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>
       </div>
       {defaultParams.length ? (
@@ -62,6 +62,7 @@ const TransformersTwoWinding = async ({
           totalPages={totalPages}
           totalDocuments={totalDocuments}
           completeData={completeData}
+          session={session!}
         />
       ) : (
         <TableSkeleton />

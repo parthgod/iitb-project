@@ -40,6 +40,7 @@ import { createLCCHVDCLink, updateLCCHVDCLink } from "@/lib/actions/lccHvdcLink.
 import { createSeriesFact, updateSeriesFact } from "@/lib/actions/seriesFact.actions";
 import { createShuntFact, updateShuntFact } from "@/lib/actions/shuntFact.actions";
 import { createVSCHVDCLink, updateVSCHVDCLink } from "@/lib/actions/vscHvdcLink.actions";
+import { Session } from "next-auth";
 
 type IFiles = {
   field: string;

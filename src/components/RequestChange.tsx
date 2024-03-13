@@ -5,7 +5,6 @@ import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTr
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { createRequest } from "@/lib/actions/requests.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -15,16 +14,14 @@ const FormSchema = z.object({
   message: z.string(),
 });
 
-const RequestChange = () => {
-  const { data: session } = useSession();
-
+const RequestChange = ({ userId }: { userId: string }) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const response = await createRequest({ userId: session?.user.id, message: data.message });
+      const response = await createRequest({ userId: userId, message: data.message });
       if (response?.status === 200) {
         toast.success("Request sent successfully");
         form.resetField("message");
