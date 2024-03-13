@@ -40,7 +40,7 @@ const ExcitationSystem = async ({
 
   return (
     <main className="flex flex-col gap-3 w-full">
-      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Excitation Systems</h1>
+      <h1 className="text-4xl font-bold p-3">Excitation Systems</h1>
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
@@ -48,7 +48,7 @@ const ExcitationSystem = async ({
             <Button>Create Excitation System</Button>
           </Link>
           {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
-          {!session?.user.isAdmin && <RequestChange />}
+          {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>
       </div>
       {defaultParams.length ? (
@@ -59,6 +59,7 @@ const ExcitationSystem = async ({
           totalPages={totalPages}
           totalDocuments={totalDocuments}
           completeData={completeData}
+          session={session!}
         />
       ) : (
         <TableSkeleton />

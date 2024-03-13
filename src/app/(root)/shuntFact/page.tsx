@@ -28,7 +28,7 @@ const ShuntFact = async ({ searchParams }: { searchParams: { query: string; page
 
   return (
     <main className="flex flex-col gap-1 w-full">
-      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Shunt Fact</h1>
+      <h1 className="text-4xl font-bold p-3">Shunt Fact</h1>
       {notToRender ? (
         <NothingToDisplay userId={session?.user.id!} />
       ) : (
@@ -40,7 +40,7 @@ const ShuntFact = async ({ searchParams }: { searchParams: { query: string; page
                 <Button>Create shunt Fact</Button>
               </Link>
               {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
-              {!session?.user.isAdmin && <RequestChange />}
+              {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
             </div>
           </div>
           {defaultParams.length ? (
@@ -51,6 +51,7 @@ const ShuntFact = async ({ searchParams }: { searchParams: { query: string; page
               totalPages={totalPages}
               totalDocuments={totalDocuments}
               completeData={completeData}
+              session={session!}
             />
           ) : (
             <TableSkeleton />

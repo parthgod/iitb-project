@@ -72,7 +72,7 @@ export const createShuntFact = async (req: ICreateUpdateParams, userId: string) 
     let modificationHistory: any;
     modificationHistory = {
       userId: new ObjectId(userId),
-      databaseName: "ShuntFact",
+      databaseName: "Shunt Fact",
       operationType: "Create",
       date: new Date(),
       document: {
@@ -115,7 +115,7 @@ export const updateShuntFact = async (req: ICreateUpdateParams, id: string, user
     let modificationHistory: any;
     modificationHistory = {
       userId: new ObjectId(userId),
-      databaseName: "ShuntFact",
+      databaseName: "Shunt Fact",
       operationType: "Update",
       date: new Date(),
       document: {
@@ -140,7 +140,7 @@ export const deleteShuntFact = async (id: string, path: string, userId: string) 
       let modificationHistory: any;
       modificationHistory = {
         userId: new ObjectId(userId),
-        databaseName: "ShuntFact",
+        databaseName: "Shunt Fact",
         operationType: "Delete",
         date: new Date(),
         document: {

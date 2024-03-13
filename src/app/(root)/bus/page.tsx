@@ -26,7 +26,7 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
 
   return (
     <main className="flex flex-col gap-1 w-full">
-      <h1 className="text-4xl font-bold p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">Bus</h1>
+      <h1 className="text-4xl font-bold p-3">Bus</h1>
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
@@ -34,7 +34,7 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
             <Button>Create bus</Button>
           </Link>
           {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
-          {!session?.user.isAdmin && <RequestChange />}
+          {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>
       </div>
       {defaultParams.length ? (
@@ -45,6 +45,7 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
           totalPages={totalPages}
           totalDocuments={totalDocuments}
           completeData={completeData}
+          session={session!}
         />
       ) : (
         <TableSkeleton />

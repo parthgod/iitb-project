@@ -1,13 +1,16 @@
 "use client";
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ISIdeMenu } from "@/utils/defaultTypes";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { FaTable } from "react-icons/fa";
+import { FcElectricity } from "react-icons/fc";
 import { GrDocumentUser } from "react-icons/gr";
 import { MdManageHistory } from "react-icons/md";
+import ProfileIcon from "./ProfileIcon";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -91,7 +94,7 @@ const Sidebar = () => {
       icon: <FaTable />,
     },
     {
-      name: "ShuntFacts",
+      name: "Shunt Facts",
       route: "/shuntFact",
       icon: <FaTable />,
     },
@@ -100,16 +103,16 @@ const Sidebar = () => {
       route: "/vscHvdcLink",
       icon: <FaTable />,
     },
-    {
-      name: "Requests",
-      route: "/requests",
-      icon: <GrDocumentUser />,
-    },
-    {
-      name: "Edit History",
-      route: "/historyLog",
-      icon: <MdManageHistory />,
-    },
+    // {
+    //   name: "Requests",
+    //   route: "/requests",
+    //   icon: <GrDocumentUser />,
+    // },
+    // {
+    //   name: "Edit History",
+    //   route: "/historyLog",
+    //   icon: <MdManageHistory />,
+    // },
   ];
 
   const toggleSidebar = () => {
@@ -118,11 +121,9 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`h-screen bg-[#1E40AF] text-white transition-all duration-200 ease-in-out pl-3 ${
-        isOpen ? "w-1/6 overflow-auto" : "w-14 scrollbar-hide"
-      } border-r-0 border-gray-200 scrollbar-hide`}
+      className={`h-screen overflow-hidden bg-[#f4f4f4] text-gray-800 transition-all duration-200 ease-in-out w-1/6 scrollbar-hide shadow-[inset_-12px_-8px_40px_#46464620] border-r-2 border-gray-300 flex flex-col items-center justify-between`}
     >
-      <input
+      {/* <input
         className="check-icon"
         id="check-icon"
         name="check-icon"
@@ -137,62 +138,81 @@ const Sidebar = () => {
         <div className="bar bar--1"></div>
         <div className="bar bar--2"></div>
         <div className="bar bar--3"></div>
-      </label>
-      <div
+      </label> */}
+      {/* <div
         className={`pt-4 w-full transition-all duration-300 ease-in-out flex flex-col gap-5 justify-start items-start scrollbar-hide overflow-x-hidden h-[90vh]`}
-      >
-        {sideMenu?.map((item, ind: number) => {
-          if (item.name === "Requests") {
-            if (session?.user.isAdmin)
-              return (
-                <Link
-                  className="text-xl w-full h-fit flex flex-col"
-                  key={ind}
-                  href={item?.route}
-                >
-                  <div
-                    className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black p-2 pl-2 active:text-[1.2rem] ${
-                      pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
-                    }`}
-                  >
-                    <div title={item.name}>{item?.icon}</div>
-                    <div
-                      className={`flex whitespace-nowrap pr-1 justify-between items-center w-full ${
-                        isOpen ? "opacity-100" : "opacity-0"
-                      }`}
-                    >
-                      {item?.name}
-                    </div>
-                  </div>
-                </Link>
-              );
-            else return null;
-          }
-
-          return (
+      ></div> */}
+      <div className="flex flex-col w-full items-center">
+        <div className="flex bg-white items-center h-[10vh] justify-start px-3 py-3 self-start text-2xl gap-1 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] w-full">
+          <FcElectricity />
+          <p className="font-semibold line-clamp-1">Power Systems</p>
+        </div>
+        <div className="text-lg w-full scrollbar-hide h-[80vh] p-2 text-center gap-1 flex flex-col items-start pt-7 overflow-auto">
+          {session?.user.isAdmin && (
             <Link
-              className="text-xl w-full h-fit flex flex-col"
-              key={ind}
-              href={item?.route}
+              href="/requests"
+              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+                pathname === "/requests"
+                  ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                  : "hover:bg-[#d7d7d7]"
+              }`}
             >
-              <div
-                className={`flex group justify-start items-center gap-2 hover:cursor-pointer hover:text-black transition-[color] w-full duration-300 p-2 pl-2 ease-in-out active:text-[1.2rem] ${
-                  pathname.toString() === item.route.toString() ? "tab bg-gray-200" : "text-white"
-                }`}
-              >
-                <div title={item.name}>{item?.icon}</div>
-                <div
-                  className={`flex pr-1 justify-between items-center w-full ${
-                    isOpen ? "opacity-100" : "opacity-0 hidden"
-                  }`}
-                >
-                  {item?.name}
-                </div>
-              </div>
+              <GrDocumentUser />
+              <p>Requests</p>
             </Link>
-          );
-        })}
+          )}
+          <Link
+            href="/historyLog"
+            className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+              pathname === "/historyLog"
+                ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                : "hover:bg-[#d7d7d7]"
+            }`}
+          >
+            <MdManageHistory />
+            <p className="whitespace-nowrap">History</p>
+          </Link>
+          <Accordion
+            type="single"
+            className="flex w-full justify-between gap-3 p-2 pl-5 items-center rounded-lg"
+            collapsible
+          >
+            <AccordionItem
+              value="item-1"
+              className="w-full"
+            >
+              <AccordionTrigger className="w-full">
+                <div className="flex items-center gap-3">
+                  <FaTable />
+                  Tables
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col items-start max-h-full xl:max-h-[57vh] overflow-auto">
+                {sideMenu.map((item) => (
+                  <Link
+                    key={item.route}
+                    href={item.route}
+                    className="text-left pl-2 text-xs xl:text-base w-full"
+                  >
+                    <div className="border-l-[1px] border-black pl-4 w-full">
+                      <p
+                        className={`rounded-lg transition-colors duration-300 ease-in-out p-2 ${
+                          pathname === item.route
+                            ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                            : "hover:bg-[#d7d7d7]"
+                        }`}
+                      >
+                        {item.name}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </div>
+      <ProfileIcon session={session!} />
     </div>
   );
 };
