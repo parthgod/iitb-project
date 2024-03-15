@@ -42,17 +42,23 @@ const TableHeading = ({
   useEffect(() => {
     let newUrl = "";
     if (page > 1) {
-      newUrl = formUrlQuery({
-        params: searchParams.toString(),
-        key: "page",
-        value: page,
-      });
-    } else {
-      if (page <= 1)
+      if (page > totalPages) {
         newUrl = removeKeysFromQuery({
           params: searchParams.toString(),
           keysToRemove: ["page"],
         });
+        setPage(1);
+      } else
+        newUrl = formUrlQuery({
+          params: searchParams.toString(),
+          key: "page",
+          value: page,
+        });
+    } else {
+      newUrl = removeKeysFromQuery({
+        params: searchParams.toString(),
+        keysToRemove: ["page"],
+      });
     }
     router.push(newUrl, { scroll: false });
   }, [page, searchParams, router]);
