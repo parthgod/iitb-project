@@ -23,12 +23,13 @@ import jsPDF from "jspdf";
 import { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdEdit } from "react-icons/md";
 import * as XLSX from "xlsx/xlsx.mjs";
 import AddColumns from "./AddColumns";
 import DeleteConfirmation from "./DeleteConfirmation";
 import TableHeading from "./TableHeading";
+import TableSkeleton from "./TableSkeleton";
 
 interface TableProps {
   columns: IColumn[];
@@ -86,6 +87,8 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
   // return console.log(data);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
   const tableRef = useRef<HTMLTableElement>(null);
 
   function getBase64Image(img: any) {
@@ -225,6 +228,12 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     var wb = XLSX.utils.table_to_book(tempInput, { sheet: "sheet1" });
     XLSX.writeFile(wb, fn + "." + "xlsx");
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return <TableSkeleton />;
 
   return (
     <div className="p-4 pb-2">
@@ -368,13 +377,13 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                   })}
                   {session?.user.isAdmin ? (
                     <TableCell className="border-[1px] border-gray-300">
-                      <div className="flex justify-start items-center gap-2">
+                      <div className="flex justify-start items-center gap-2.5">
                         <Link href={`/${convertField(type)}/${item._id}`}>
                           <div
                             title="Edit"
-                            className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
+                            className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"
                           >
-                            <MdEdit className="text-lg" />
+                            <MdEdit className="text-base" />
                           </div>
                         </Link>
                         <DeleteConfirmation

@@ -12,8 +12,8 @@ import {
 } from "@/lib/actions/defaultParams.actions";
 import { IColumn } from "@/utils/defaultTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { MdEdit } from "react-icons/md";
@@ -64,6 +64,8 @@ const AddColumns = ({
   newTable?: boolean;
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   let defaultValues = {};
   if (columnDetails?.type === "dropdown") {
@@ -252,7 +254,9 @@ const AddColumns = ({
       if (response?.status === 409) {
         toast.error(response.data + ". Try using a different name");
       } else if (response?.status === 200) {
-        location.reload();
+        router.refresh();
+        setOpen(false);
+        form.reset();
         toast.success(
           columnDetails ? `Column ${data.name} edited successfully` : `New column ${data.name} added successfully`
         );
@@ -272,7 +276,10 @@ const AddColumns = ({
           Add new column
         </Button>
       )} */}
-      <Dialog>
+      <Dialog
+        open={open}
+        onOpenChange={setOpen}
+      >
         <DialogTrigger
           className={
             !columnDetails
@@ -289,7 +296,7 @@ const AddColumns = ({
             "Add column"
           )}
         </DialogTrigger>
-        <DialogContent className="bg-white max-h-[80vh] overflow-auto">
+        <DialogContent className="bg-white max-h-[80vh] overflow-auto custom-scrollbar">
           <DialogHeader>
             <DialogTitle className="font-bold text-center">Add a new column</DialogTitle>
           </DialogHeader>
@@ -308,7 +315,7 @@ const AddColumns = ({
                       <Input
                         placeholder="Name"
                         {...field}
-                        className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                        className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                         disabled={!!columnDetails}
                       />
                     </FormControl>
@@ -364,7 +371,7 @@ const AddColumns = ({
                             <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
                               <SelectValue
                                 placeholder="Select appropriate type of field"
-                                className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                                className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                               />
                             </SelectTrigger>
                           </FormControl>
@@ -395,7 +402,7 @@ const AddColumns = ({
                                 <Input
                                   placeholder="Dropdown value"
                                   {...field}
-                                  className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                                  className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -480,7 +487,7 @@ const AddColumns = ({
                                 <Input
                                   placeholder="Subcolumn Name"
                                   {...field}
-                                  className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                                  className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                                   onBlur={(e) => hasSubcolumnsValue === "true" && handleSubcolumnNameChange(e, index)}
                                 />
                               </FormControl>
@@ -502,7 +509,7 @@ const AddColumns = ({
                                   <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
                                     <SelectValue
                                       placeholder="Select appropriate type of field"
-                                      className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                                      className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                                     />
                                   </SelectTrigger>
                                 </FormControl>
@@ -534,7 +541,7 @@ const AddColumns = ({
                                       <Input
                                         placeholder="Dropdown value"
                                         {...field}
-                                        className="focus-visible:ring-offset-0 focus-visible:ring-transparent"
+                                        className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                                       />
                                     </FormControl>
                                     <FormMessage />

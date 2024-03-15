@@ -8,10 +8,10 @@ import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
 import { IoCloseOutline } from "react-icons/io5";
 
 const Search = ({ placeholder = "Search ..." }: { placeholder?: string }) => {
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("query") || "");
 
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
