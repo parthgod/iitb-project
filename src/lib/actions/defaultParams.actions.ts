@@ -35,7 +35,6 @@ export const editSpecificDefaultParam = async (
   isDefault: boolean
 ) => {
   await connectToDatabase();
-  console.log("User ID inside editSpecificDefaultParam:", userId);
   let newColumns: IColumn;
   const oldParams: IDefaultParamSchema[] = await DefaultParam.find();
   const columnFieldName = convertField(columnDetails.name);

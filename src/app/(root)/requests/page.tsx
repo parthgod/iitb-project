@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import PrintRequests from "@/components/PrintRequests";
 import RequestsHeader from "@/components/RequestsHeader";
 import { getAllRequests } from "@/lib/actions/requests.actions";

@@ -147,13 +147,13 @@ const AddColumns = ({
     if (subcolumns?.length === 0 && hasSubcolumnsValue === "true" && !columnDetails) {
       setValue("subcolumns", [{ title: "", type: "", dropdownValues: [{ name: "" }] }]);
     }
-  }, [subcolumns, setValue, hasSubcolumnsValue]);
+  }, [subcolumns, setValue, hasSubcolumnsValue, columnDetails]);
 
   useEffect(() => {
     if (dropdown === "dropdown" && !columnDetails) {
       setValue("dropdownValues", [{ name: "" }]);
     }
-  }, [dropdown, setValue]);
+  }, [dropdown, setValue, columnDetails]);
 
   const dummy = async () => {
     try {
@@ -168,12 +168,10 @@ const AddColumns = ({
 
   const handleSubcolumnNameChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { value } = e.target;
-    console.log(subcolumns, value);
     if (subcolumns!.length > 1)
       for (let ind = 0; ind < subcolumns!.length; ind++) {
         const item = subcolumns![ind];
         if (value !== "" && item.title.toLowerCase() === value.toLowerCase() && ind !== index) {
-          console.log("object");
           setError(
             `subcolumns.${index}.title`,
             {
@@ -244,13 +242,11 @@ const AddColumns = ({
         }
       }
     }
-    console.log(data);
     try {
       let response;
       if (columnDetails)
         response = await editSpecificDefaultParam(data, pathname, userId, columnDetails.isDefault || false);
       else response = await updateDefaultParams(data, pathname, userId);
-      console.log(response);
       if (response?.status === 409) {
         toast.error(response.data + ". Try using a different name");
       } else if (response?.status === 200) {

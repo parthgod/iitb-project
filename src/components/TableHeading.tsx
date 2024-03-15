@@ -55,8 +55,6 @@ const TableHeading = ({
         });
     }
     router.push(newUrl, { scroll: false });
-
-    console.log(newUrl);
   }, [page, searchParams, router]);
 
   return (

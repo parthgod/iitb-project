@@ -109,7 +109,7 @@ export default function LoginForm() {
             href="/register"
             className="text-gray-500"
           >
-            Don't have an account? <span className="text-blue-500 underline">Create new account</span>
+            Don&apos;t have an account? <span className="text-blue-500 underline">Create new account</span>
           </Link>
         </CardFooter>
       </form>
