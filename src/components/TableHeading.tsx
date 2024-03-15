@@ -61,7 +61,7 @@ const TableHeading = ({
       });
     }
     router.push(newUrl, { scroll: false });
-  }, [page, searchParams, router]);
+  }, [page, searchParams, router, totalPages]);
 
   return (
     <div className="p-3 py-1.5 flex items-center justify-between border-b-[1px] border-b-gray-300">
