@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import AddColumns from "@/components/AddColumns";
 import DisplayTable from "@/components/DisplayTable";
 import RequestChange from "@/components/RequestChange";
@@ -55,6 +55,7 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
           completeData={completeData}
           totalDocuments={totalDocuments}
           totalPages={totalPages}
+          session={session!}
         />
       ) : (
         <TableSkeleton />

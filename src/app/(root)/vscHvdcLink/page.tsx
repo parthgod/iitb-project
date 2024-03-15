@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import AddColumns from "@/components/AddColumns";
 import DisplayTable from "@/components/DisplayTable";
 import NothingToDisplay from "@/components/NothingToDisplay";

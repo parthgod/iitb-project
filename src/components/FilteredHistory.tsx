@@ -33,7 +33,7 @@ const FilteredHistory = () => {
     }
 
     router.push(newUrl, { scroll: false });
-  }, [type, searchParams]);
+  }, [type, searchParams, router]);
 
   useEffect(() => {
     let newUrl = "";
@@ -51,7 +51,7 @@ const FilteredHistory = () => {
     }
 
     router.push(newUrl, { scroll: false });
-  }, [databaseName, searchParams]);
+  }, [databaseName, searchParams, router]);
 
   if (!isMounted) return null;
 

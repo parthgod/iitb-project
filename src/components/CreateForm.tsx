@@ -78,7 +78,6 @@ const generateFormSchema = (fields: IColumn[]) => {
       );
     } else schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
   });
-  // console.log(schema);
   return z.object(schema);
 };
 
@@ -97,7 +96,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
     setIsLoading(true);
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
@@ -152,7 +150,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         defaultFields: defaultFields,
         additionalFields: additionalFields,
       };
-      console.log(req);
       if (formDetails) {
         switch (type) {
           case "bus":

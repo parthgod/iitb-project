@@ -25,8 +25,6 @@ export const getAllModificationsHistory = async ({
       else return { data: [], status: 200, totalDocuments: 0 };
     }
 
-    console.log(type, databaseName, query);
-    console.log(conditions);
     const response = await ModificationHistory.find(conditions).populate("userId").sort({ date: -1 });
     const totalDocuments = await ModificationHistory.countDocuments(conditions);
     return { data: JSON.parse(JSON.stringify(response)), status: 200, totalDocuments };

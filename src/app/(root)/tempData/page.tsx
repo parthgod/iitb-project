@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import PushMockData from "@/components/PushMockData";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getServerSession } from "next-auth";

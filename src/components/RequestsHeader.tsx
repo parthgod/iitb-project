@@ -33,7 +33,7 @@ const RequestsHeader = () => {
     }
 
     router.push(newUrl, { scroll: false });
-  }, [status, searchParams]);
+  }, [status, searchParams, router]);
 
   if (!isMounted)
     return (

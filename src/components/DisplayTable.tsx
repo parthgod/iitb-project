@@ -84,7 +84,6 @@ interface TableProps {
 }
 
 const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session }: TableProps) => {
-  // return console.log(data);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -180,7 +179,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
         },
       });
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      console.error(error);
     }
   };
 
