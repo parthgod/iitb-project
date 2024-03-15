@@ -25,7 +25,7 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
   const session = await getServerSession(authOptions);
 
   return (
-    <main className="flex flex-col gap-1 w-full">
+    <main className="flex flex-col w-full">
       <h1 className="text-4xl font-bold p-3">Bus</h1>
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />

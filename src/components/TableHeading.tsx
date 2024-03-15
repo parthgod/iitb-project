@@ -35,15 +35,9 @@ const TableHeading = ({
   limit = 10,
 }: TableHeadingProps) => {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const [page, setPage] = useState(Number(searchParams.get("page") || 1));
-  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const totalEntries = (Number(page) - 1) * limit + limit;
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     let newUrl = "";
@@ -64,8 +58,6 @@ const TableHeading = ({
 
     console.log(newUrl);
   }, [page, searchParams, router]);
-
-  if (!isMounted) return null;
 
   return (
     <div className="p-3 py-1.5 flex items-center justify-between border-b-[1px] border-b-gray-300">

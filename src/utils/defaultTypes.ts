@@ -68,9 +68,9 @@ export type IModificationHistory = {
   date: string;
   document: {
     id?: string;
-    documentBeforeChange: any;
-    documentAfterChange: any;
-    columnDetails: any;
+    documentBeforeChange?: any;
+    documentAfterChange?: any;
+    columnDetails?: any;
   };
 };
 
@@ -103,10 +103,11 @@ export type IBus = {
   [key: string]: any;
 };
 
-export type IChange = {
-  id: string;
+export type IRequest = {
+  _id: string;
   user: IUser;
   message: string;
+  status: "Pending" | "Completed" | "Rejected";
   [key: string]: any;
 };
 

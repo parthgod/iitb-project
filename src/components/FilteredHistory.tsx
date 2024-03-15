@@ -64,7 +64,7 @@ const FilteredHistory = () => {
           defaultValue={type}
           onValueChange={(value) => setType(value)}
         >
-          <SelectTrigger className="select-field w-20 pr-2 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+          <SelectTrigger className="select-field w-28 pr-2 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

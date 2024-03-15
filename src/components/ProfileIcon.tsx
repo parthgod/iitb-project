@@ -6,19 +6,26 @@ import { pfp } from "@/lib/constants";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { CiLogout } from "react-icons/ci";
-import { IoMdSettings } from "react-icons/io";
+import { IoMdPerson } from "react-icons/io";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
+import Link from "next/link";
+import { useState } from "react";
 
 const ProfileIcon = ({ session }: { session: Session }) => {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="pb-3 bg-white h-[10vh] shadow-[rgba(0,_0,_0,_0.24)_0px_-2px_8px] w-full flex items-center justify-start pt-2">
       {session ? (
-        <Popover>
+        <Popover
+          open={open}
+          onOpenChange={setOpen}
+        >
           <div className="flex gap-3 pr-2 ml-3 items-center">
             <PopoverTrigger>
-              <Avatar className="scale-110">
+              <Avatar className="scale-100">
                 <AvatarImage src={session?.user.image || pfp} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
@@ -31,21 +38,22 @@ const ProfileIcon = ({ session }: { session: Session }) => {
             align="start"
           >
             <div className="flex gap-4">
-              <Avatar className="scale-150">
+              <Avatar className="scale-125 mr-2">
                 <AvatarImage src={session?.user.image || pfp} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <p className="text-lg font-semibold">{session?.user.name}</p>
                 <p className="text-base text-gray-500 font-semibold">{session?.user.email}</p>
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    className="px-4 h-8 text-slate-600 text-base"
+                <div className="flex gap-4 mt-4">
+                  <Link
+                    href="/profile"
+                    className={buttonVariants({ variant: "outline" }) + "px-4 h-8 text-slate-600 text-base"}
+                    onClick={() => setOpen((prev) => !prev)}
                   >
-                    Manage account
-                    <IoMdSettings className="ml-1" />
-                  </Button>
+                    Profile
+                    <IoMdPerson className="ml-1" />
+                  </Link>
                   <Button
                     onClick={() => {
                       signOut();

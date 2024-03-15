@@ -9,6 +9,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { createNewUser } from "@/lib/actions/users.actions";
 
 interface IUserRegister {
   name: string;
@@ -53,16 +54,16 @@ export default function RegistrationForm() {
     // toast loading
     const toastLoading = toast.loading("Processing...");
     try {
-      const response = await axios.post("/api/users/register", data);
-      if (response.status === 400) {
-        toast.error("User already exists. Try logging in instead");
+      const response = await createNewUser(data);
+      if (response.status === 400 || response.status === 403) {
+        toast.error(response.data);
         return;
+      } else {
+        toast.success("User registration completed successfully. Please login with your credentials");
+        router.push("/");
       }
-      toast.success("User registration completed successfully");
-      router.push("/");
     } catch (error: any) {
       console.log(error);
-      if (error.response.status) return toast.error("User already exists. Try logging in instead");
       return toast.error("Failed!", error?.message);
     } finally {
       toast.dismiss(toastLoading);

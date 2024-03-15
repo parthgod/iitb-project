@@ -12,7 +12,7 @@ const TableSkeleton = () => {
         </div>
 
         <div className="grid grid-cols-4 gap-3">
-          {[...Array(20)].map((_, index) => (
+          {[...Array(28)].map((_, index) => (
             <div key={index}>
               <Skeleton className="w-full h-12" />
             </div>

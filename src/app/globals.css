@@ -275,72 +275,6 @@ body {
   background-color: #624cf5 !important;
 }
 
-#check-icon {
-  display: none;
-}
-
-.icon-menu {
-  --gap: 5px;
-  --height-bar: 3px;
-  --pos-y-bar-one: 0;
-  --pos-y-bar-three: 0;
-  --scale-bar: 1;
-  --rotate-bar-one: 0;
-  --rotate-bar-three: 0;
-  width: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap);
-  cursor: pointer;
-  position: relative;
-  padding: 1rem 0.25rem;
-  z-index: 10;
-}
-
-.bar {
-  position: relative;
-  height: var(--height-bar);
-  width: 100%;
-  border-radius: 0.5rem;
-  background-color: white;
-}
-
-.bar--1 {
-  top: var(--pos-y-bar-one);
-  transform: rotate(var(--rotate-bar-one));
-  transition: top 200ms 100ms, transform 100ms;
-  background-color: white;
-}
-
-.bar--2 {
-  transform: scaleX(var(--scale-bar));
-  transition: transform 150ms 100ms;
-  background-color: white;
-}
-
-.bar--3 {
-  bottom: var(--pos-y-bar-three);
-  transform: rotate(var(--rotate-bar-three));
-  transition: bottom 200ms 100ms, transform 100ms;
-  background-color: white;
-}
-
-.check-icon:checked + .icon-menu > .bar--1 {
-  transition: top 200ms, transform 200ms 100ms;
-}
-
-.check-icon:checked + .icon-menu > .bar--3 {
-  transition: bottom 200ms, transform 200ms 100ms;
-}
-
-.check-icon:checked + .icon-menu {
-  --pos-y-bar-one: calc(var(--gap) + var(--height-bar));
-  --pos-y-bar-three: calc(var(--gap) + var(--height-bar));
-  --scale-bar: 0;
-  --rotate-bar-one: 45deg;
-  --rotate-bar-three: -45deg;
-}
-
 .tab {
   background-color: white;
   border-top-left-radius: 10px;
@@ -450,4 +384,29 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 6px;
+}
+
+/* Define the track (the background of the scrollbar) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  /* Change the background color */
+}
+
+/* Define the thumb (the draggable part of the scrollbar) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #b9b9b9;
+  /* Change the color of the thumb */
+  border-radius: 6px;
+  /* Round the corners of the thumb */
+}
+
+/* Define the hover styles for the thumb */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+  /* Change the color on hover */
 }

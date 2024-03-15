@@ -5,7 +5,7 @@ import { ISIdeMenu } from "@/utils/defaultTypes";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import { FaTable } from "react-icons/fa";
 import { FcElectricity } from "react-icons/fc";
 import { GrDocumentUser } from "react-icons/gr";
@@ -13,9 +13,9 @@ import { MdManageHistory } from "react-icons/md";
 import ProfileIcon from "./ProfileIcon";
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();
   const { data: session } = useSession();
+  const clickRef = useRef<HTMLButtonElement>(null);
 
   const sideMenu: ISIdeMenu[] = [
     {
@@ -115,52 +115,38 @@ const Sidebar = () => {
     // },
   ];
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  // const toggleSidebar = () => {
+  //   setIsOpen(!isOpen);
+  // };
+
+  useEffect(() => {
+    if (clickRef.current) {
+      clickRef.current.click();
+    }
+  }, []);
 
   return (
     <div
       className={`h-screen overflow-hidden bg-[#f4f4f4] text-gray-800 transition-all duration-200 ease-in-out w-1/6 scrollbar-hide shadow-[inset_-12px_-8px_40px_#46464620] border-r-2 border-gray-300 flex flex-col items-center justify-between`}
     >
-      {/* <input
-        className="check-icon"
-        id="check-icon"
-        name="check-icon"
-        type="checkbox"
-        checked={isOpen}
-        onChange={toggleSidebar}
-      />
-      <label
-        className="icon-menu"
-        htmlFor="check-icon"
-      >
-        <div className="bar bar--1"></div>
-        <div className="bar bar--2"></div>
-        <div className="bar bar--3"></div>
-      </label> */}
-      {/* <div
-        className={`pt-4 w-full transition-all duration-300 ease-in-out flex flex-col gap-5 justify-start items-start scrollbar-hide overflow-x-hidden h-[90vh]`}
-      ></div> */}
       <div className="flex flex-col w-full items-center">
         <div className="flex bg-white items-center h-[10vh] justify-start px-3 py-3 self-start text-2xl gap-1 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] w-full">
           <FcElectricity />
           <p className="font-semibold line-clamp-1">Power Systems</p>
         </div>
-        <div className="text-lg w-full scrollbar-hide h-[80vh] p-2 text-center gap-1 flex flex-col items-start pt-7 overflow-auto">
-          {session?.user.isAdmin && (
-            <Link
-              href="/requests"
-              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
-                pathname === "/requests"
-                  ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
-                  : "hover:bg-[#d7d7d7]"
-              }`}
-            >
-              <GrDocumentUser />
-              <p>Requests</p>
-            </Link>
-          )}
+        <div className="text-lg w-full scrollbar-hide h-[80vh] p-2 text-center gap-1 flex flex-col items-start pt-3 overflow-auto">
+          <Link
+            href="/requests"
+            className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+              pathname === "/requests"
+                ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                : "hover:bg-[#d7d7d7]"
+            }`}
+          >
+            <GrDocumentUser />
+            <p>Requests</p>
+          </Link>
+
           <Link
             href="/historyLog"
             className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
@@ -181,20 +167,22 @@ const Sidebar = () => {
               value="item-1"
               className="w-full"
             >
-              <AccordionTrigger className="w-full">
+              <AccordionTrigger
+                className="w-full"
+                ref={clickRef}
+              >
                 <div className="flex items-center gap-3">
                   <FaTable />
                   Tables
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="flex flex-col items-start max-h-full xl:max-h-[57vh] overflow-auto">
+              <AccordionContent className="flex flex-col items-start max-h-[57vh] overflow-auto custom-scrollbar text-left pl-2 text-xs xl:text-base w-full">
                 {sideMenu.map((item) => (
-                  <Link
+                  <div
                     key={item.route}
-                    href={item.route}
-                    className="text-left pl-2 text-xs xl:text-base w-full"
+                    className="w-full border-l-[1px] border-black pl-4"
                   >
-                    <div className="border-l-[1px] border-black pl-4 w-full">
+                    <Link href={item.route}>
                       <p
                         className={`rounded-lg transition-colors duration-300 ease-in-out p-2 ${
                           pathname === item.route
@@ -204,8 +192,8 @@ const Sidebar = () => {
                       >
                         {item.name}
                       </p>
-                    </div>
-                  </Link>
+                    </Link>
+                  </div>
                 ))}
               </AccordionContent>
             </AccordionItem>

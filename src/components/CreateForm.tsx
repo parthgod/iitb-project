@@ -20,10 +20,16 @@ import {
 } from "@/lib/actions/transformersTwoWinding.actions";
 import { createTransmissionLine, updateTransmissionLine } from "@/lib/actions/transmissionLines.actions";
 import { createTurbineGovernor, updateTurbineGovernor } from "@/lib/actions/turbineGovernor.actions";
-// import { useUploadThing } from "@/lib/uploadthing";
+import { createIBR, updateIBR } from "@/lib/actions/ibr.actions";
+import { createLCCHVDCLink, updateLCCHVDCLink } from "@/lib/actions/lccHvdcLink.actions";
+import { createSeriesFact, updateSeriesFact } from "@/lib/actions/seriesFact.actions";
+import { createShuntFact, updateShuntFact } from "@/lib/actions/shuntFact.actions";
+import { createVSCHVDCLink, updateVSCHVDCLink } from "@/lib/actions/vscHvdcLink.actions";
+import { uploadImagesToFirebase } from "@/lib/firebase/storage";
 import { IColumn } from "@/utils/defaultTypes";
 import { reverseUnslug } from "@/utils/helperFunctions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -33,14 +39,6 @@ import { FileUploader } from "./FileUploader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
-import { uploadImagesToFirebase } from "@/lib/firebase/storage";
-import { useSession } from "next-auth/react";
-import { createIBR, updateIBR } from "@/lib/actions/ibr.actions";
-import { createLCCHVDCLink, updateLCCHVDCLink } from "@/lib/actions/lccHvdcLink.actions";
-import { createSeriesFact, updateSeriesFact } from "@/lib/actions/seriesFact.actions";
-import { createShuntFact, updateShuntFact } from "@/lib/actions/shuntFact.actions";
-import { createVSCHVDCLink, updateVSCHVDCLink } from "@/lib/actions/vscHvdcLink.actions";
-import { Session } from "next-auth";
 
 type IFiles = {
   field: string;
@@ -90,8 +88,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   const { data: session } = useSession();
 
   const router = useRouter();
-
-  // const { startUpload } = useUploadThing("imageUploader");
 
   const FormSchema = generateFormSchema(formFields);
 
@@ -325,7 +321,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         className="flex flex-col gap-5 justify-between pr-5 h-full overflow-hidden p-4"
       >
         <div className="flex flex-col gap-5">
-          <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto">
+          <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto custom-scrollbar">
             {formFields.map((item, ind: number) => {
               if (item.type === "text" || item.type === "number")
                 return (
@@ -355,7 +351,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                     key={ind}
                     className="col-span-2 py-2"
                   >
-                    {/* <Separator /> */}
                     <p className="font-bold text-lg pt-2">{item.title}</p>
                     <div className="grid grid-cols-2 gap-3 mb-5">
                       {item.subColumns!.map((subItem, i: number) => {

@@ -1,4 +1,5 @@
 "use client";
+
 import { Label } from "@radix-ui/react-label";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { CardContent, CardFooter } from "./ui/card";
 import { Input } from "./ui/input";
+import { useState } from "react";
 
 interface IUserRegister {
   email: string;
@@ -16,6 +18,7 @@ interface IUserRegister {
 
 export default function LoginForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -45,7 +48,6 @@ export default function LoginForm() {
   });
 
   const handleSubmitForm = async (data: IUserRegister) => {
-    const toastLoading = toast.loading("Processing...");
     try {
       const response = await signIn("credentials", {
         email: data.email,
@@ -57,16 +59,15 @@ export default function LoginForm() {
 
       if (response?.status === 404) return toast.error("Email does not exist. Please use another email");
 
-      toast.success("Successfully signed in");
-      toast("Please wait while you are being redirected...", {
-        position: "bottom-right",
-        closeButton: false,
-      });
+      setIsLoading(true);
+      // toast.success("Successfully signed in");
+      // toast("Please wait while you are being redirected...", {
+      //   position: "bottom-right",
+      //   closeButton: false,
+      // });
       router.push("/");
     } catch (error: any) {
       toast.error("Failed!", error?.message);
-    } finally {
-      toast.dismiss(toastLoading);
     }
   };
 
@@ -112,6 +113,19 @@ export default function LoginForm() {
           </Link>
         </CardFooter>
       </form>
+      {isLoading ? (
+        <div className="z-10 absolute top-0 left-0 flex flex-col justify-center items-center w-screen h-screen bg-black bg-opacity-50">
+          <div className="loader">
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
+          </div>
+          <p className="mt-12 text-3xl font-bold text-gray-100">Please wait while you are being redirected...</p>
+        </div>
+      ) : (
+        ""
+      )}
     </>
   );
 }

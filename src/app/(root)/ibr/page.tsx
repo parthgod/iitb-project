@@ -27,7 +27,7 @@ const IBR = async ({ searchParams }: { searchParams: { query: string; page?: num
   const session = await getServerSession(authOptions);
 
   return (
-    <main className="flex flex-col gap-1 w-full">
+    <main className="flex flex-col w-full">
       <h1 className="text-4xl font-bold p-3">IBR</h1>
       {notToRender ? (
         <NothingToDisplay userId={session?.user.id!} />

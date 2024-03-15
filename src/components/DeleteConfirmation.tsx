@@ -63,9 +63,9 @@ const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
       <AlertDialogTrigger>
         <div
           title="Delete"
-          className="text-gray-500 rounded-full hover:bg-gray-200 p-2"
+          className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"
         >
-          <MdDelete className="text-gray-500 text-lg" />
+          <MdDelete className="text-gray-500 text-base" />
         </div>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-white">

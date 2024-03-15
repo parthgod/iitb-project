@@ -35,7 +35,7 @@ const ShuntReactors = async ({ searchParams }: { searchParams: { query: string; 
     : shuntReactors;
 
   return (
-    <main className="flex flex-col gap-3 w-full">
+    <main className="flex flex-col w-full">
       <h1 className="text-4xl font-bold p-3">Shunt Reactors</h1>
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
