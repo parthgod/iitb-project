@@ -75,7 +75,7 @@ export const PrintModification = ({
         return defaultParams[0].ibrColumns;
 
       case "LCC-HVDC Link":
-        return defaultParams[0].lccHvdcLinkColumns;
+        return defaultParams[0].lccHVDCLinkColumns;
 
       case "Series Fact":
         return defaultParams[0].seriesFactsColumns;
@@ -84,7 +84,7 @@ export const PrintModification = ({
         return defaultParams[0].shuntFactsColumns;
 
       case "VSC-HVDC Link":
-        return defaultParams[0].vscHvdcLinkColumns;
+        return defaultParams[0].vscHVDCLinkColumns;
 
       default:
         break;

@@ -852,7 +852,7 @@ const defaultParamSchema = new Schema(
       type: Array,
       default: [],
     },
-    lccHvdcLinkColumns: {
+    lccHVDCLinkColumns: {
       type: Array,
       default: [],
     },
@@ -864,7 +864,7 @@ const defaultParamSchema = new Schema(
       type: Array,
       default: [],
     },
-    vscHvdcLinkColumns: {
+    vscHVDCLinkColumns: {
       type: Array,
       default: [],
     },

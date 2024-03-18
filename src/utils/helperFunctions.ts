@@ -11,7 +11,6 @@ export const convertField = (input: string): string => {
   const firstWord = updatedWords[0].toLowerCase();
   const restOfTheWords = updatedWords.slice(1).join("");
 
-  // const primes = "Prime".repeat((input.match(/'/g) || []).length); // Repeat 'Prime' for each single quote
   const result = firstWord + restOfTheWords;
 
   return result;

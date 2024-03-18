@@ -85,7 +85,7 @@ const Sidebar = () => {
     },
     {
       name: "LCC-HVDC Link",
-      route: "/lccHvdcLink",
+      route: "/lccHVDCLink",
       icon: <FaTable />,
     },
     {
@@ -100,7 +100,7 @@ const Sidebar = () => {
     },
     {
       name: "VSC-HVDC Link",
-      route: "/vscHvdcLink",
+      route: "/vscHVDCLink",
       icon: <FaTable />,
     },
     // {

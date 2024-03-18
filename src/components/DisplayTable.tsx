@@ -31,7 +31,7 @@ import DeleteConfirmation from "./DeleteConfirmation";
 import TableHeading from "./TableHeading";
 import TableSkeleton from "./TableSkeleton";
 
-interface TableProps {
+type TableProps = {
   columns: IColumn[];
   data:
     | IBus[]
@@ -74,14 +74,14 @@ interface TableProps {
     | "Transmission Line"
     | "Turbine Governor"
     | "IBR"
-    | "LCC-HVDC Link"
-    | "VSC-HVDC Link"
+    | "LCC - HVDC Link"
+    | "VSC - HVDC Link"
     | "Series Fact"
     | "Shunt Fact";
   totalPages: number;
   totalDocuments: number;
   session: Session;
-}
+};
 
 const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session }: TableProps) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);

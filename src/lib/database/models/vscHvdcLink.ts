@@ -1,6 +1,6 @@
 import { Schema, model, models } from "mongoose";
 
-const vscHvdcLinkSchema = new Schema(
+const vscHVDCLinkSchema = new Schema(
   {
     id: {
       type: String,
@@ -15,6 +15,6 @@ const vscHvdcLinkSchema = new Schema(
   }
 );
 
-const VSCHVDCLink = models.VSCHVDCLink || model("VSCHVDCLink", vscHvdcLinkSchema);
+const VSCHVDCLink = models.VSCHVDCLink || model("VSCHVDCLink", vscHVDCLinkSchema);
 
 export default VSCHVDCLink;

@@ -42,14 +42,14 @@ export const middleware = async (req: NextRequest) => {
       pathname === "/turbineGovernor/create" ||
       pathname === "/ibr" ||
       pathname === "/ibr/create" ||
-      pathname === "/lccHvdcLink" ||
-      pathname === "/lccHvdcLink/create" ||
+      pathname === "/lccHVDCLink" ||
+      pathname === "/lccHVDCLink/create" ||
       pathname === "/seriesFact" ||
       pathname === "/seriesFact/create" ||
       pathname === "/shuntFact" ||
       pathname === "/shuntFact/create" ||
-      pathname === "/vscHvdcLink" ||
-      pathname === "/vscHvdcLink/create" ||
+      pathname === "/vscHVDCLink" ||
+      pathname === "/vscHVDCLink/create" ||
       pathname === "/historyLog" ||
       pathname === "/profile" ||
       pathname === "/requests"
@@ -79,9 +79,9 @@ export const config = {
     "/historyLog",
     "/profile",
     "/ibr/:path*",
-    "/lccHvdcLink/:path*",
+    "/lccHVDCLink/:path*",
     "/seriesFact/:path*",
     "/shuntFact/:path*",
-    "/vscHvdcLink/:path*",
+    "/vscHVDCLink/:path*",
   ],
 };

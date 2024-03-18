@@ -285,8 +285,8 @@ export const editSpecificDefaultParam = async (
       };
       break;
 
-    case "/lccHvdcLink":
-      newParams.lccHvdcLinkColumns = oldParams[0].lccHvdcLinkColumns.map((column) => {
+    case "/lccHVDCLink":
+      newParams.lccHVDCLinkColumns = oldParams[0].lccHVDCLinkColumns.map((column) => {
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
@@ -333,8 +333,8 @@ export const editSpecificDefaultParam = async (
       };
       break;
 
-    case "/vscHvdcLink":
-      newParams.vscHvdcLinkColumns = oldParams[0].vscHvdcLinkColumns.map((column) => {
+    case "/vscHVDCLink":
+      newParams.vscHVDCLinkColumns = oldParams[0].vscHVDCLinkColumns.map((column) => {
         if (column.field === newColumns.field) return newColumns;
         else return column;
       });
@@ -366,10 +366,10 @@ export const editSpecificDefaultParam = async (
     transmissionLinesColumns: newParams.transmissionLinesColumns,
     turbineGovernorColumns: newParams.turbineGovernorColumns,
     ibrColumns: newParams.ibrColumns,
-    lccHvdcLinkColumns: newParams.lccHvdcLinkColumns,
+    lccHVDCLinkColumns: newParams.lccHVDCLinkColumns,
     seriesFactsColumns: newParams.seriesFactsColumns,
     shuntFactsColumns: newParams.shuntFactsColumns,
-    vscHvdcLinkColumns: newParams.vscHvdcLinkColumns,
+    vscHVDCLinkColumns: newParams.vscHVDCLinkColumns,
   });
   await ModificationHistory.create(modificationHistory);
   return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
@@ -448,8 +448,8 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
         if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
         break;
 
-      case "/lccHvdcLink":
-        alreadyExists = oldParams[0].lccHvdcLinkColumns.find((item) => item.field === columnFieldName);
+      case "/lccHVDCLink":
+        alreadyExists = oldParams[0].lccHVDCLinkColumns.find((item) => item.field === columnFieldName);
         if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
         break;
 
@@ -463,8 +463,8 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
         if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
         break;
 
-      case "/vscHvdcLink":
-        alreadyExists = oldParams[0].vscHvdcLinkColumns.find((item) => item.field === columnFieldName);
+      case "/vscHVDCLink":
+        alreadyExists = oldParams[0].vscHVDCLinkColumns.find((item) => item.field === columnFieldName);
         if (alreadyExists) return { data: `${columnDetails.name} already exists`, status: 409 };
         break;
 
@@ -677,8 +677,8 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
         };
         break;
 
-      case "/lccHvdcLink":
-        newParams.lccHvdcLinkColumns.push(newColumns);
+      case "/lccHVDCLink":
+        newParams.lccHVDCLinkColumns.push(newColumns);
         modificationHistory = {
           userId: new ObjectId(userId),
           databaseName: "LCC-HVDC Link",
@@ -716,8 +716,8 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
         };
         break;
 
-      case "/vscHvdcLink":
-        newParams.vscHvdcLinkColumns.push(newColumns);
+      case "/vscHVDCLink":
+        newParams.vscHVDCLinkColumns.push(newColumns);
         modificationHistory = {
           userId: new ObjectId(userId),
           databaseName: "VSC-HVDC Link",
@@ -747,10 +747,10 @@ export const updateDefaultParams = async (columnDetails: IColumnDetails, itemCol
       transmissionLinesColumns: newParams.transmissionLinesColumns,
       turbineGovernorColumns: newParams.turbineGovernorColumns,
       ibrColumns: newParams.ibrColumns,
-      lccHvdcLinkColumns: newParams.lccHvdcLinkColumns,
+      lccHVDCLinkColumns: newParams.lccHVDCLinkColumns,
       seriesFactsColumns: newParams.seriesFactsColumns,
       shuntFactsColumns: newParams.shuntFactsColumns,
-      vscHvdcLinkColumns: newParams.vscHvdcLinkColumns,
+      vscHVDCLinkColumns: newParams.vscHVDCLinkColumns,
     });
 
     await ModificationHistory.create(modificationHistory);
