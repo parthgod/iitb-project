@@ -1,7 +1,6 @@
-import React from "react";
+import { MdArrowRightAlt } from "react-icons/md";
 import { TbTableOff } from "react-icons/tb";
 import AddColumns from "./AddColumns";
-import { MdArrowRightAlt } from "react-icons/md";
 
 const NothingToDisplay = ({ userId }: { userId: string }) => {
   return (

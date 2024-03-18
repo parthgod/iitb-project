@@ -9,11 +9,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaFileImport, FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
 import { Button } from "./ui/button";
 
