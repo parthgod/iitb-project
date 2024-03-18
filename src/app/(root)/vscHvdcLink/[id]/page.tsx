@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
-import { getVSCHVDCLinkById } from "@/lib/actions/vscHvdcLink.actions";
+import { getVSCHVDCLinkById } from "@/lib/actions/vscHVDCLink.actions";
 import { IDefaultParamSchema, INonDefaultDatabases } from "@/utils/defaultTypes";
 import { Suspense } from "react";
 
@@ -19,23 +19,23 @@ interface EditVscHvdcLinkProps {
   };
 }
 
-const calculateDefaultValues = (vscHvdcLinkDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
-  if (Object.keys(vscHvdcLinkDetails).length && defaultParams.length) {
+const calculateDefaultValues = (vscHVDCLinkDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
+  if (Object.keys(vscHVDCLinkDetails).length && defaultParams.length) {
     const values: any = {};
-    defaultParams?.[0].vscHvdcLinkColumns.forEach((item) => {
+    defaultParams?.[0].vscHVDCLinkColumns.forEach((item) => {
       if (item.type === "subColumns") {
         item.subColumns!.map(
           (subItem) =>
             (values[subItem.field] =
-              vscHvdcLinkDetails?.[item.field]?.[subItem.field] ||
-              vscHvdcLinkDetails?.additionalFields?.[item.field]?.[subItem.field] ||
+              vscHVDCLinkDetails?.[item.field]?.[subItem.field] ||
+              vscHVDCLinkDetails?.additionalFields?.[item.field]?.[subItem.field] ||
               "")
         );
       } else
         values[item.field] =
-          vscHvdcLinkDetails?.[item.field] || vscHvdcLinkDetails?.additionalFields?.[item.field] || "";
+          vscHVDCLinkDetails?.[item.field] || vscHVDCLinkDetails?.additionalFields?.[item.field] || "";
     });
-    values["_id"] = vscHvdcLinkDetails._id;
+    values["_id"] = vscHVDCLinkDetails._id;
     return values;
   }
   return {};
@@ -45,9 +45,9 @@ const EditVscHvdcLink = async ({ params }: EditVscHvdcLinkProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();
-  const { data: vscHvdcLinkDetails } = await getVSCHVDCLinkById(id);
+  const { data: vscHVDCLinkDetails } = await getVSCHVDCLinkById(id);
 
-  const defaultValues = calculateDefaultValues(vscHvdcLinkDetails, defaultParams);
+  const defaultValues = calculateDefaultValues(vscHVDCLinkDetails, defaultParams);
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
@@ -55,7 +55,7 @@ const EditVscHvdcLink = async ({ params }: EditVscHvdcLinkProps) => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink
-              href="/vscHvdcLink"
+              href="/vscHVDCLink"
               className="font-bold text-3xl"
             >
               VSC-HVDC Link
@@ -69,9 +69,9 @@ const EditVscHvdcLink = async ({ params }: EditVscHvdcLinkProps) => {
       </Breadcrumb>
       <Suspense fallback={<FormSkeleton />}>
         <CreateForm
-          formFields={defaultParams[0].vscHvdcLinkColumns}
+          formFields={defaultParams[0].vscHVDCLinkColumns}
           formDetails={defaultValues}
-          type="vscHvdcLink"
+          type="vscHVDCLink"
         />
       </Suspense>
     </div>

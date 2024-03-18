@@ -7,22 +7,22 @@ import Search from "@/components/Search";
 import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
-import { getAllLCCHVDCLinks } from "@/lib/actions/lccHvdcLink.actions";
+import { getAllLCCHVDCLinks } from "@/lib/actions/lccHVDCLink.actions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
-const lccHvdcLink = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
+const lccHVDCLink = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
   const limit = searchParams?.limit || 10;
   const { data: defaultParams } = await getDefaultParams();
   const {
-    data: lccHvdcLink,
+    data: lccHVDCLink,
     totalPages,
     totalDocuments,
     completeData,
-  } = await getAllLCCHVDCLinks(limit, page, searchTerm, defaultParams[0]?.lccHvdcLinkColumns);
-  const notToRender = !defaultParams[0]?.lccHvdcLinkColumns.length;
+  } = await getAllLCCHVDCLinks(limit, page, searchTerm, defaultParams[0]?.lccHVDCLinkColumns);
+  const notToRender = !defaultParams[0]?.lccHVDCLinkColumns.length;
 
   const session = await getServerSession(authOptions);
 
@@ -36,7 +36,7 @@ const lccHvdcLink = async ({ searchParams }: { searchParams: { query: string; pa
           <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
             <Search />
             <div className="flex gap-5">
-              <Link href="/lccHvdcLink/create">
+              <Link href="/lccHVDCLink/create">
                 <Button>Create LCC-HVDC Link</Button>
               </Link>
               {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
@@ -45,9 +45,9 @@ const lccHvdcLink = async ({ searchParams }: { searchParams: { query: string; pa
           </div>
           {defaultParams.length ? (
             <DisplayTable
-              columns={defaultParams[0].lccHvdcLinkColumns}
-              data={lccHvdcLink}
-              type="LCC-HVDC Link"
+              columns={defaultParams[0].lccHVDCLinkColumns}
+              data={lccHVDCLink}
+              type="LCC - HVDC Link"
               totalPages={totalPages}
               totalDocuments={totalDocuments}
               completeData={completeData}
@@ -62,4 +62,4 @@ const lccHvdcLink = async ({ searchParams }: { searchParams: { query: string; pa
   );
 };
 
-export default lccHvdcLink;
+export default lccHVDCLink;

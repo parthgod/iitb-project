@@ -7,22 +7,22 @@ import Search from "@/components/Search";
 import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
-import { getAllVSCHVDCLinks } from "@/lib/actions/vscHvdcLink.actions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { getAllVSCHVDCLinks } from "@/lib/actions/vscHVDCLink.actions";
 
-const vscHvdcLink = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
+const vscHVDCLink = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
   const limit = searchParams?.limit || 10;
   const { data: defaultParams } = await getDefaultParams();
   const {
-    data: vscHvdcLink,
+    data: vscHVDCLink,
     totalPages,
     totalDocuments,
     completeData,
-  } = await getAllVSCHVDCLinks(limit, page, searchTerm, defaultParams[0]?.vscHvdcLinkColumns);
-  const notToRender = !defaultParams[0]?.vscHvdcLinkColumns.length;
+  } = await getAllVSCHVDCLinks(limit, page, searchTerm, defaultParams[0]?.vscHVDCLinkColumns);
+  const notToRender = !defaultParams[0]?.vscHVDCLinkColumns.length;
 
   const session = await getServerSession(authOptions);
 
@@ -36,7 +36,7 @@ const vscHvdcLink = async ({ searchParams }: { searchParams: { query: string; pa
           <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
             <Search />
             <div className="flex gap-5">
-              <Link href="/vscHvdcLink/create">
+              <Link href="/vscHVDCLink/create">
                 <Button>Create VSC-HVDC Link</Button>
               </Link>
               {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
@@ -45,9 +45,9 @@ const vscHvdcLink = async ({ searchParams }: { searchParams: { query: string; pa
           </div>
           {defaultParams.length ? (
             <DisplayTable
-              columns={defaultParams[0].vscHvdcLinkColumns}
-              data={vscHvdcLink}
-              type="VSC-HVDC Link"
+              columns={defaultParams[0].vscHVDCLinkColumns}
+              data={vscHVDCLink}
+              type="VSC - HVDC Link"
               totalPages={totalPages}
               totalDocuments={totalDocuments}
               completeData={completeData}
@@ -62,4 +62,4 @@ const vscHvdcLink = async ({ searchParams }: { searchParams: { query: string; pa
   );
 };
 
-export default vscHvdcLink;
+export default vscHVDCLink;

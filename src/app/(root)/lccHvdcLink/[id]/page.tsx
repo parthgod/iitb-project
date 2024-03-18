@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
-import { getLCCHVDCLinkById } from "@/lib/actions/lccHvdcLink.actions";
+import { getLCCHVDCLinkById } from "@/lib/actions/lccHVDCLink.actions";
 import { IDefaultParamSchema, INonDefaultDatabases } from "@/utils/defaultTypes";
 import { Suspense } from "react";
 
@@ -19,23 +19,23 @@ interface EditLccHvdcLinkProps {
   };
 }
 
-const calculateDefaultValues = (lccHvdcLinkDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
-  if (Object.keys(lccHvdcLinkDetails).length && defaultParams.length) {
+const calculateDefaultValues = (lccHVDCLinkDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
+  if (Object.keys(lccHVDCLinkDetails).length && defaultParams.length) {
     const values: any = {};
-    defaultParams?.[0].lccHvdcLinkColumns.forEach((item) => {
+    defaultParams?.[0].lccHVDCLinkColumns.forEach((item) => {
       if (item.type === "subColumns") {
         item.subColumns!.map(
           (subItem) =>
             (values[subItem.field] =
-              lccHvdcLinkDetails?.[item.field]?.[subItem.field] ||
-              lccHvdcLinkDetails?.additionalFields?.[item.field]?.[subItem.field] ||
+              lccHVDCLinkDetails?.[item.field]?.[subItem.field] ||
+              lccHVDCLinkDetails?.additionalFields?.[item.field]?.[subItem.field] ||
               "")
         );
       } else
         values[item.field] =
-          lccHvdcLinkDetails?.[item.field] || lccHvdcLinkDetails?.additionalFields?.[item.field] || "";
+          lccHVDCLinkDetails?.[item.field] || lccHVDCLinkDetails?.additionalFields?.[item.field] || "";
     });
-    values["_id"] = lccHvdcLinkDetails._id;
+    values["_id"] = lccHVDCLinkDetails._id;
     return values;
   }
   return {};
@@ -45,9 +45,9 @@ const EditLccHvdcLink = async ({ params }: EditLccHvdcLinkProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();
-  const { data: lccHvdcLinkDetails } = await getLCCHVDCLinkById(id);
+  const { data: lccHVDCLinkDetails } = await getLCCHVDCLinkById(id);
 
-  const defaultValues = calculateDefaultValues(lccHvdcLinkDetails, defaultParams);
+  const defaultValues = calculateDefaultValues(lccHVDCLinkDetails, defaultParams);
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
@@ -55,7 +55,7 @@ const EditLccHvdcLink = async ({ params }: EditLccHvdcLinkProps) => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink
-              href="/lccHvdcLink"
+              href="/lccHVDCLink"
               className="font-bold text-3xl"
             >
               LCC-HVDC Link
@@ -69,9 +69,9 @@ const EditLccHvdcLink = async ({ params }: EditLccHvdcLinkProps) => {
       </Breadcrumb>
       <Suspense fallback={<FormSkeleton />}>
         <CreateForm
-          formFields={defaultParams[0].lccHvdcLinkColumns}
+          formFields={defaultParams[0].lccHVDCLinkColumns}
           formDetails={defaultValues}
-          type="lccHvdcLink"
+          type="lccHVDCLink"
         />
       </Suspense>
     </div>

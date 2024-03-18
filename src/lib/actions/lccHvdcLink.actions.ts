@@ -5,7 +5,7 @@ import { connectToDatabase } from "../database/database";
 import { INonDefaultDatabases, IColumn, ICreateUpdateParams } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
-import LCCHVDCLink from "../database/models/lccHvdcLink";
+import LCCHVDCLink from "../database/models/lccHVDCLink";
 
 export const getAllLCCHVDCLinks = async (
   limit = 10,

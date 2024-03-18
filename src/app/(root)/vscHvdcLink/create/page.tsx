@@ -20,7 +20,7 @@ const CreateVSCHVDCLink = async () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink
-              href="/vscHvdcLink"
+              href="/vscHVDCLink"
               className="font-bold text-3xl"
             >
               VSC-HVDC Link
@@ -34,8 +34,8 @@ const CreateVSCHVDCLink = async () => {
       </Breadcrumb>
       <Suspense fallback={<FormSkeleton />}>
         <CreateForm
-          formFields={defaultParams[0].vscHvdcLinkColumns}
-          type="vscHvdcLink"
+          formFields={defaultParams[0].vscHVDCLinkColumns}
+          type="vscHVDCLink"
         />
       </Suspense>
     </div>

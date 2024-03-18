@@ -21,10 +21,10 @@ import {
 import { createTransmissionLine, updateTransmissionLine } from "@/lib/actions/transmissionLines.actions";
 import { createTurbineGovernor, updateTurbineGovernor } from "@/lib/actions/turbineGovernor.actions";
 import { createIBR, updateIBR } from "@/lib/actions/ibr.actions";
-import { createLCCHVDCLink, updateLCCHVDCLink } from "@/lib/actions/lccHvdcLink.actions";
+import { createLCCHVDCLink, updateLCCHVDCLink } from "@/lib/actions/lccHVDCLink.actions";
 import { createSeriesFact, updateSeriesFact } from "@/lib/actions/seriesFact.actions";
 import { createShuntFact, updateShuntFact } from "@/lib/actions/shuntFact.actions";
-import { createVSCHVDCLink, updateVSCHVDCLink } from "@/lib/actions/vscHvdcLink.actions";
+import { createVSCHVDCLink, updateVSCHVDCLink } from "@/lib/actions/vscHVDCLink.actions";
 import { uploadImagesToFirebase } from "@/lib/firebase/storage";
 import { IColumn } from "@/utils/defaultTypes";
 import { reverseUnslug } from "@/utils/helperFunctions";
@@ -62,8 +62,8 @@ type CreateFormProps = {
     | "transmissionLine"
     | "turbineGovernor"
     | "ibr"
-    | "lccHvdcLink"
-    | "vscHvdcLink"
+    | "lccHVDCLink"
+    | "vscHVDCLink"
     | "seriesFact"
     | "shuntFact";
 };
@@ -203,7 +203,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
             response = await updateIBR(req, formDetails._id, session?.user.id!);
             break;
 
-          case "lccHvdcLink":
+          case "lccHVDCLink":
             response = await updateLCCHVDCLink(req, formDetails._id, session?.user.id!);
             break;
 
@@ -215,7 +215,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
             response = await updateShuntFact(req, formDetails._id, session?.user.id!);
             break;
 
-          case "vscHvdcLink":
+          case "vscHVDCLink":
             response = await updateVSCHVDCLink(req, formDetails._id, session?.user.id!);
             break;
 
@@ -275,7 +275,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
             response = await createIBR(req, session?.user.id!);
             break;
 
-          case "lccHvdcLink":
+          case "lccHVDCLink":
             response = await createLCCHVDCLink(req, session?.user.id!);
             break;
 
@@ -287,7 +287,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
             response = await createShuntFact(req, session?.user.id!);
             break;
 
-          case "vscHvdcLink":
+          case "vscHVDCLink":
             response = await createVSCHVDCLink(req, session?.user.id!);
             break;
 

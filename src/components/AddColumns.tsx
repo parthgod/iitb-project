@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
+import { convertField } from "@/utils/helperFunctions";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be empty" }),
@@ -96,6 +97,7 @@ const AddColumns = ({
 
   const { watch, setValue, getValues, setError } = form;
   const hasSubcolumnsValue = watch("hasSubcolumns");
+  const name = watch("name");
   const subcolumns = watch("subcolumns", []);
   const dropdown = watch("type");
   const dropdownValues = watch("dropdownValues") || [];
@@ -171,7 +173,11 @@ const AddColumns = ({
     if (subcolumns!.length > 1)
       for (let ind = 0; ind < subcolumns!.length; ind++) {
         const item = subcolumns![ind];
-        if (value !== "" && item.title.toLowerCase() === value.toLowerCase() && ind !== index) {
+        if (
+          value !== "" &&
+          convertField(name + " " + item.title) === convertField(name + " " + value) &&
+          ind !== index
+        ) {
           setError(
             `subcolumns.${index}.title`,
             {
@@ -200,13 +206,16 @@ const AddColumns = ({
           return;
         } else {
           const duplicate = data.subcolumns?.find(
-            (subItem, i) => subItem.title.toLowerCase() === item.title.toLowerCase() && i < ind
+            (subItem, i) =>
+              convertField(data.name + " " + subItem.title) === convertField(data.name + " " + item.title) && i < ind
           );
           if (duplicate) {
             setError(
               `subcolumns.${ind}.title`,
               {
-                message: `${duplicate.title} sub-column name already exists. Please use a differnet name`,
+                message: `${convertField(
+                  data.name + " " + duplicate.title
+                )} sub-column name already exists. Please use a differnet nameeeee`,
               },
               { shouldFocus: true }
             );
@@ -242,6 +251,7 @@ const AddColumns = ({
         }
       }
     }
+
     try {
       let response;
       if (columnDetails)
@@ -252,7 +262,7 @@ const AddColumns = ({
       } else if (response?.status === 200) {
         router.refresh();
         setOpen(false);
-        form.reset();
+        form.reset(columnDetails && data);
         toast.success(
           columnDetails ? `Column ${data.name} edited successfully` : `New column ${data.name} added successfully`
         );
@@ -471,23 +481,25 @@ const AddColumns = ({
                       </div>
                       <div
                         key={index}
-                        className="grid grid-cols-3 w-full gap-2 items-center"
+                        className="grid grid-cols-3 w-full gap-4 items-start"
                       >
                         <FormField
                           control={form.control}
                           name={`subcolumns.${index}.title`}
                           render={({ field }) => (
-                            <FormItem className="flex gap-2 items-center justify-start w-full">
-                              <FormLabel>Name:</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="Subcolumn Name"
-                                  {...field}
-                                  className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                                  onBlur={(e) => hasSubcolumnsValue === "true" && handleSubcolumnNameChange(e, index)}
-                                />
-                              </FormControl>
-                              <FormMessage />
+                            <FormItem className="space-y-0 w-full">
+                              <div className="flex gap-2 items-center justify-start w-full">
+                                <FormLabel>Name:</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Subcolumn Name"
+                                    {...field}
+                                    className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                                    onBlur={(e) => hasSubcolumnsValue === "true" && handleSubcolumnNameChange(e, index)}
+                                  />
+                                </FormControl>
+                              </div>
+                              <FormMessage className="ml-[18%]" />
                             </FormItem>
                           )}
                         />
@@ -495,28 +507,30 @@ const AddColumns = ({
                           control={form.control}
                           name={`subcolumns.${index}.type`}
                           render={({ field }) => (
-                            <FormItem className="flex ml-3 gap-2 items-center justify-start w-full">
-                              <FormLabel>Type:</FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
-                                    <SelectValue
-                                      placeholder="Select appropriate type of field"
-                                      className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                                    />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="text">Text</SelectItem>
-                                  <SelectItem value="number">Number</SelectItem>
-                                  <SelectItem value="image">Image</SelectItem>
-                                  <SelectItem value="dropdown">Dropdown</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
+                            <FormItem className="space-y-0 w-full">
+                              <div className="flex gap-2 items-center justify-start w-full">
+                                <FormLabel>Type:</FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+                                      <SelectValue
+                                        placeholder="Select appropriate type of field"
+                                        className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                                      />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="text">Text</SelectItem>
+                                    <SelectItem value="number">Number</SelectItem>
+                                    <SelectItem value="image">Image</SelectItem>
+                                    <SelectItem value="dropdown">Dropdown</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <FormMessage className="ml-[18%]" />
                             </FormItem>
                           )}
                         />

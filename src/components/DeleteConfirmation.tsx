@@ -26,10 +26,10 @@ import { deleteTransformersTwoWinding } from "@/lib/actions/transformersTwoWindi
 import { deleteTransmissionLine } from "@/lib/actions/transmissionLines.actions";
 import { deleteTurbineGovernor } from "@/lib/actions/turbineGovernor.actions";
 import { deleteIBR } from "@/lib/actions/ibr.actions";
-import { deleteLCCHVDCLink } from "@/lib/actions/lccHvdcLink.actions";
+import { deleteLCCHVDCLink } from "@/lib/actions/lccHVDCLink.actions";
 import { deleteSeriesFact } from "@/lib/actions/seriesFact.actions";
 import { deleteShuntFact } from "@/lib/actions/shuntFact.actions";
-import { deleteVSCHVDCLink } from "@/lib/actions/vscHvdcLink.actions";
+import { deleteVSCHVDCLink } from "@/lib/actions/vscHVDCLink.actions";
 
 type DeleteConfirmationProps = {
   id: string;
@@ -47,8 +47,8 @@ type DeleteConfirmationProps = {
     | "Transmission Line"
     | "Turbine Governor"
     | "IBR"
-    | "LCC-HVDC Link"
-    | "VSC-HVDC Link"
+    | "LCC - HVDC Link"
+    | "VSC - HVDC Link"
     | "Series Fact"
     | "Shunt Fact";
   userId: string;
@@ -132,7 +132,7 @@ const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
                   case "IBR":
                     await deleteIBR(id, pathname, userId);
 
-                  case "LCC-HVDC Link":
+                  case "LCC - HVDC Link":
                     await deleteLCCHVDCLink(id, pathname, userId);
 
                   case "Series Fact":
@@ -141,7 +141,7 @@ const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
                   case "Shunt Fact":
                     await deleteShuntFact(id, pathname, userId);
 
-                  case "VSC-HVDC Link":
+                  case "VSC - HVDC Link":
                     await deleteVSCHVDCLink(id, pathname, userId);
 
                   default:

@@ -88,10 +88,10 @@ export type IDefaultParamSchema = {
   transmissionLinesColumns: IColumn[];
   turbineGovernorColumns: IColumn[];
   ibrColumns: IColumn[];
-  lccHvdcLinkColumns: IColumn[];
+  lccHVDCLinkColumns: IColumn[];
   seriesFactsColumns: IColumn[];
   shuntFactsColumns: IColumn[];
-  vscHvdcLinkColumns: IColumn[];
+  vscHVDCLinkColumns: IColumn[];
   [key: string]: any;
 };
 
