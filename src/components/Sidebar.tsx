@@ -115,10 +115,6 @@ const Sidebar = () => {
     // },
   ];
 
-  // const toggleSidebar = () => {
-  //   setIsOpen(!isOpen);
-  // };
-
   useEffect(() => {
     if (clickRef.current) {
       clickRef.current.click();

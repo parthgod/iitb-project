@@ -1,16 +1,8 @@
 "use client";
 
-import { createBus } from "@/lib/actions/bus.actions";
-import { createGenerator } from "@/lib/actions/generator.actions";
-import { createLoad } from "@/lib/actions/load.actions";
-import { createSeriesCapacitor } from "@/lib/actions/seriesCapacitor.actions";
-import { createShuntCapacitor } from "@/lib/actions/shuntCapacitor.actions";
-import { createShuntReactor } from "@/lib/actions/shuntReactor.actions";
-import { createTransformersThreeWinding } from "@/lib/actions/transformersThreeWinding.actions";
-import { createTransformersTwoWinding } from "@/lib/actions/transformersTwoWinding.actions";
 import { createTransmissionLine } from "@/lib/actions/transmissionLines.actions";
 import { IColumn } from "@/utils/defaultTypes";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const PushMockData = ({ mockData, session, columns }: { mockData: any; session: any; columns: IColumn[] }) => {
   const [done, setDone] = useState(false);

@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
-import { CardContent } from "./ui/card";
-import { Button } from "./ui/button";
+
 import { signIn } from "next-auth/react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
+import { Button } from "./ui/button";
+import { CardContent } from "./ui/card";
 
 const providers = [
   { providerName: "github", Icon: <FaGithub /> },

@@ -1,14 +1,14 @@
 "use client";
-import React from "react";
-import { CardContent, CardFooter } from "./ui/card";
-import { Button } from "./ui/button";
-import { Label } from "@radix-ui/react-label";
-import { Input } from "./ui/input";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { toast } from "sonner";
+
 import { createNewUser } from "@/lib/actions/users.actions";
+import { Label } from "@radix-ui/react-label";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { Button } from "./ui/button";
+import { CardContent, CardFooter } from "./ui/card";
+import { Input } from "./ui/input";
 
 interface IUserRegister {
   name: string;
