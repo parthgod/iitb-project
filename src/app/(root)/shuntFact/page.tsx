@@ -1,5 +1,3 @@
-import { authOptions } from "@/lib/authOptions";
-import AddColumns from "@/components/AddColumns";
 import DisplayTable from "@/components/DisplayTable";
 import NothingToDisplay from "@/components/NothingToDisplay";
 import RequestChange from "@/components/RequestChange";
@@ -8,6 +6,7 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllShuntFacts } from "@/lib/actions/shuntFact.actions";
+import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
@@ -39,7 +38,6 @@ const ShuntFact = async ({ searchParams }: { searchParams: { query: string; page
               <Link href="/shuntFact/create">
                 <Button>Create shunt Fact</Button>
               </Link>
-              {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
               {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
             </div>
           </div>

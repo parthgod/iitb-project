@@ -2,9 +2,6 @@ import { Schema, model, models } from "mongoose";
 
 const seriesFactsSchema = new Schema(
   {
-    id: {
-      type: String,
-    },
     additionalFields: {
       type: Schema.Types.Mixed,
       default: {},

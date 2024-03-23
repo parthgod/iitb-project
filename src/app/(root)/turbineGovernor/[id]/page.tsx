@@ -23,17 +23,8 @@ const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDe
   if (Object.keys(turbineGovernorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].turbineGovernorColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              turbineGovernorDetails?.[item.field]?.[subItem.field] ||
-              turbineGovernorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          turbineGovernorDetails?.[item.field] || turbineGovernorDetails?.additionalFields?.[item.field] || "";
+      values[item.field] =
+        turbineGovernorDetails?.[item.field] || turbineGovernorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = turbineGovernorDetails._id;
     return values;
@@ -51,7 +42,7 @@ const EditTurbineGovernor = async ({ params }: EditTurbineGovernorProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

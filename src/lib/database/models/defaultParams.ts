@@ -39,7 +39,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Generator Device Name"),
           title: "Generator Device Name",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Generator",
+          columnRef: "deviceName",
           isDefault: true,
         },
         {
@@ -80,7 +82,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus (To)"),
           title: "Bus (To)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -122,132 +126,81 @@ const defaultParamSchema = new Schema(
           isDefault: true,
         },
         {
-          field: convertField("Synchronous Reactance (pu)"),
-          title: "Synchronous Reactance (pu)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Synchronous Reactance (pu)" + "Xd"),
-              title: "Xd",
-              type: "text",
-            },
-            {
-              field: convertField("Synchronous Reactance (pu)" + "Xq"),
-              title: "Xq",
-              type: "text",
-            },
-          ],
+          field: convertField("Synchronous Reactance (pu): Xd"),
+          title: "Synchronous Reactance (pu): Xd",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Transient Reactance (pu)"),
-          title: "Transient Reactance (pu)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Transient Reactance (pu)" + "Xd'"),
-              title: "Xd'",
-              type: "text",
-            },
-            {
-              field: convertField("Transient Reactance (pu)" + "Xq'"),
-              title: "Xq'",
-              type: "text",
-            },
-          ],
+          field: convertField("Synchronous Reactance (pu): Xq"),
+          title: "Synchronous Reactance (pu): Xq",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Subtransient Reactance (pu)"),
-          title: "Subtransient Reactance (pu)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Subtransient Reactance (pu)" + "Xd''"),
-              title: "Xd''",
-              type: "text",
-            },
-            {
-              field: convertField("Subtransient Reactance (pu)" + "Xq''"),
-              title: "Xq''",
-              type: "text",
-            },
-          ],
+          field: convertField("Transient Reactance (pu): Xd'"),
+          title: "Transient Reactance (pu): Xd'",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Transient OC Time Constant (seconds)"),
-          title: "Transient OC Time Constant (seconds)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Transient OC Time Constant (seconds)" + "Td0'"),
-              title: "Td0'",
-              type: "text",
-            },
-            {
-              field: convertField("Transient OC Time Constant (seconds)" + "Tq0'"),
-              title: "Tq0'",
-              type: "text",
-            },
-          ],
+          field: convertField("Transient Reactance (pu): Xq'"),
+          title: "Transient Reactance (pu): Xq'",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Subtransient OC Time Constant (seconds)"),
-          title: "Subtransient OC Time Constant (seconds)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Subtransient OC Time Constant (seconds)" + "Td0''"),
-              title: "Td0''",
-              type: "text",
-            },
-            {
-              field: convertField("Subtransient OC Time Constant (seconds)" + "Tq0''"),
-              title: "Tq0''",
-              type: "text",
-            },
-          ],
+          field: convertField("Subtransient Reactance (pu): Xd''"),
+          title: "Subtransient Reactance (pu): Xd''",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Stator Leakage Inductance (pu)"),
-          title: "Stator Leakage Inductance (pu)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Stator Leakage Inductance (pu)" + "Xl"),
-              title: "Xl",
-              type: "text",
-            },
-          ],
+          field: convertField("Subtransient Reactance (pu): Xq''"),
+          title: "Subtransient Reactance (pu): Xq''",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Stator resistance (pu)"),
-          title: "Stator resistance (pu)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Stator resistance (pu)" + "Ra"),
-              title: "Ra",
-              type: "text",
-            },
-          ],
+          field: convertField("Transient OC Time Constant (seconds): Td0'"),
+          title: "Transient OC Time Constant (seconds): Td0'",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Inertia (MJ/MVA)"),
-          title: "Inertia (MJ/MVA)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Inertia (MJ/MVA)" + "H"),
-              title: "H",
-              type: "text",
-            },
-          ],
+          field: convertField("Transient OC Time Constant (seconds): Tq0'"),
+          title: "Transient OC Time Constant (seconds): Tq0'",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Subtransient OC Time Constant (seconds): Td0''"),
+          title: "Subtransient OC Time Constant (seconds): Td0''",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Subtransient OC Time Constant (seconds): Tq0''"),
+          title: "Subtransient OC Time Constant (seconds): Tq0''",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Stator Leakage Inductance (pu): Xl"),
+          title: "Stator Leakage Inductance (pu): Xl",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Stator resistance (pu): Ra"),
+          title: "Stator resistance (pu): Ra",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Inertia (MJ/MVA): H"),
+          title: "Inertia (MJ/MVA): H",
+          type: "text",
           isDefault: true,
         },
         {
@@ -282,7 +235,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus (From)"),
           title: "Bus (From)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -340,7 +295,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus (From)"),
           title: "Bus (From)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -375,7 +332,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus (From)"),
           title: "Bus (From)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -427,7 +386,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus_Primary (From)"),
           title: "Bus_Primary (From)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -439,7 +400,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus_Secondary (To)"),
           title: "Bus_Secondary (To)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -451,7 +414,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus_Tertiary (To)"),
           title: "Bus_Tertiary (To)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -485,57 +450,39 @@ const defaultParamSchema = new Schema(
           isDefault: true,
         },
         {
-          field: convertField("PS(Primary-Secondary)"),
-          title: "PS(Primary-Secondary)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("PS(Primary-Secondary)" + "R"),
-              title: "R",
-              type: "text",
-            },
-            {
-              field: convertField("PS(Primary-Secondary)" + "X"),
-              title: "X",
-              type: "text",
-            },
-          ],
+          field: convertField("PS(Primary-Secondary): R"),
+          title: "PS(Primary-Secondary): R",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("PT(Primary-Tertiary)"),
-          title: "PT(Primary-Tertiary)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("PT(Primary-Tertiary)" + "R"),
-              title: "R",
-              type: "text",
-            },
-            {
-              field: convertField("PT(Primary-Tertiary)" + "X"),
-              title: "X",
-              type: "text",
-            },
-          ],
+          field: convertField("PS(Primary-Secondary): X"),
+          title: "PS(Primary-Secondary): X",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("ST(Secondary-Tertiary)"),
-          title: "ST(Secondary-Tertiary)",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("ST(Secondary-Tertiary)" + "R"),
-              title: "R",
-              type: "text",
-            },
-            {
-              field: convertField("ST(Secondary-Tertiary)" + "X"),
-              title: "X",
-              type: "text",
-            },
-          ],
+          field: convertField("PT(Primary-Tertiary): R"),
+          title: "PT(Primary-Tertiary): R",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("PT(Primary-Tertiary): X"),
+          title: "PT(Primary-Tertiary): X",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("ST(Secondary-Tertiary): R"),
+          title: "ST(Secondary-Tertiary): R",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("ST(Secondary-Tertiary): X"),
+          title: "ST(Secondary-Tertiary): X",
+          type: "text",
           isDefault: true,
         },
         {
@@ -612,7 +559,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus (From)"),
           title: "Bus (From)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -624,7 +573,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus (To)"),
           title: "Bus (To)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -731,7 +682,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus (From)"),
           title: "Bus (From)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -743,7 +696,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus  (To)"),
           title: "Bus  (To)",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Bus",
+          columnRef: "busName",
           isDefault: true,
         },
         {
@@ -753,49 +708,39 @@ const defaultParamSchema = new Schema(
           isDefault: true,
         },
         {
-          field: convertField("Positive sequence"),
-          title: "Positive sequence",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Positive sequence" + "R(ohms/perunitlength)"),
-              title: "R(ohms/perunitlength)",
-              type: "text",
-            },
-            {
-              field: convertField("Positive sequence" + "X(ohms/perunitlength)"),
-              title: "X(ohms/perunitlength)",
-              type: "text",
-            },
-            {
-              field: convertField("Positive sequence" + "B(seimens/perunitlength)"),
-              title: "B(seimens/perunitlength)",
-              type: "text",
-            },
-          ],
+          field: convertField("Positive sequence: R(ohms/perunitlength)"),
+          title: "Positive sequence: R(ohms/perunitlength)",
+          type: "text",
           isDefault: true,
         },
         {
-          field: convertField("Negative sequence"),
-          title: "Negative sequence",
-          type: "subColumns",
-          subColumns: [
-            {
-              field: convertField("Negative sequence" + "R(ohms/perunitlength)"),
-              title: "R(ohms/perunitlength)",
-              type: "text",
-            },
-            {
-              field: convertField("Negative sequence" + "X(ohms/perunitlength)"),
-              title: "X(ohms/perunitlength)",
-              type: "text",
-            },
-            {
-              field: convertField("Negative sequence" + "B(seimens/perunitlength)"),
-              title: "B(seimens/perunitlength)",
-              type: "text",
-            },
-          ],
+          field: convertField("Positive sequence: X(ohms/perunitlength)"),
+          title: "Positive sequence: X(ohms/perunitlength)",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Positive sequence: B(seimens/perunitlength)"),
+          title: "Positive sequence: B(seimens/perunitlength)",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Negative sequence: R(ohms/perunitlength)"),
+          title: "Negative sequence: R(ohms/perunitlength)",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Negative sequence: X(ohms/perunitlength)"),
+          title: "Negative sequence: X(ohms/perunitlength)",
+          type: "text",
+          isDefault: true,
+        },
+        {
+          field: convertField("Negative sequence: B(seimens/perunitlength)"),
+          title: "Negative sequence: B(seimens/perunitlength)",
+          type: "text",
           isDefault: true,
         },
         {
@@ -837,7 +782,9 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Generator Device Name"),
           title: "Generator Device Name",
-          type: "text",
+          type: "dropdown",
+          tableRef: "Generator",
+          columnRef: "deviceName",
           isDefault: true,
         },
         {

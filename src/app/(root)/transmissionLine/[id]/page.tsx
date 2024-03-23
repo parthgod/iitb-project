@@ -23,17 +23,8 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
   if (Object.keys(transmissionLineDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transmissionLinesColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              transmissionLineDetails?.[item.field]?.[subItem.field] ||
-              transmissionLineDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          transmissionLineDetails?.[item.field] || transmissionLineDetails?.additionalFields?.[item.field] || "";
+      values[item.field] =
+        transmissionLineDetails?.[item.field] || transmissionLineDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = transmissionLineDetails._id;
     return values;
@@ -51,7 +42,7 @@ const EditTransmissionLine = async ({ params }: EditTransmissionLineProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

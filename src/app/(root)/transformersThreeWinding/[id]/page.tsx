@@ -23,19 +23,10 @@ const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultPa
   if (Object.keys(transformersThreeWindingDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transformersThreeWindingColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              transformersThreeWindingDetails?.[item.field]?.[subItem.field] ||
-              transformersThreeWindingDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          transformersThreeWindingDetails?.[item.field] ||
-          transformersThreeWindingDetails?.additionalFields?.[item.field] ||
-          "";
+      values[item.field] =
+        transformersThreeWindingDetails?.[item.field] ||
+        transformersThreeWindingDetails?.additionalFields?.[item.field] ||
+        "";
     });
     values["_id"] = transformersThreeWindingDetails._id;
     return values;
@@ -53,7 +44,7 @@ const EditTransformersThreeWinding = async ({ params }: EditTransformersThreeWin
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

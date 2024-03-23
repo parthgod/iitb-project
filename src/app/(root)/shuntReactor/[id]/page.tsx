@@ -23,17 +23,8 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
   if (Object.keys(shuntReactorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntReactorsColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              shuntReactorDetails?.[item.field]?.[subItem.field] ||
-              shuntReactorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          shuntReactorDetails?.[item.field] || shuntReactorDetails?.additionalFields?.[item.field] || "";
+      values[item.field] =
+        shuntReactorDetails?.[item.field] || shuntReactorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = shuntReactorDetails._id;
     return values;
@@ -51,7 +42,7 @@ const EditShuntReactor = async ({ params }: EditShuntReactorProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

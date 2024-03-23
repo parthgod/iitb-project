@@ -1,5 +1,3 @@
-import { authOptions } from "@/lib/authOptions";
-import AddColumns from "@/components/AddColumns";
 import DisplayTable from "@/components/DisplayTable";
 import NothingToDisplay from "@/components/NothingToDisplay";
 import RequestChange from "@/components/RequestChange";
@@ -7,9 +5,10 @@ import Search from "@/components/Search";
 import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
+import { getAllVSCHVDCLinks } from "@/lib/actions/vscHVDCLink.actions";
+import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { getAllVSCHVDCLinks } from "@/lib/actions/vscHVDCLink.actions";
 
 const vscHVDCLink = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
@@ -39,7 +38,6 @@ const vscHVDCLink = async ({ searchParams }: { searchParams: { query: string; pa
               <Link href="/vscHVDCLink/create">
                 <Button>Create VSC-HVDC Link</Button>
               </Link>
-              {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
               {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
             </div>
           </div>

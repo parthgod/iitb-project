@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   createDefaultParams,
   editSpecificDefaultParam,
+  getDefaultParams,
   updateDefaultParams,
 } from "@/lib/actions/defaultParams.actions";
 import { IColumn } from "@/utils/defaultTypes";
@@ -16,12 +17,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
-import { MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "./ui/input";
-import { Separator } from "./ui/separator";
-import { convertField } from "@/utils/helperFunctions";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be empty" }),
@@ -32,61 +30,56 @@ const FormSchema = z.object({
       })
     )
     .optional(),
-  type: z
-    .string({
-      required_error: "Please select appropriate type of field",
-    })
-    .optional(),
-  hasSubcolumns: z.enum(["true", "false"], {
-    required_error: "You need to select yes or no.",
+  type: z.string({
+    required_error: "Please select appropriate type of field",
   }),
-  subcolumns: z
-    .array(
-      z.object({
-        title: z.string(),
-        type: z.string(),
-        dropdownValues: z.array(
-          z.object({
-            name: z.string(),
-          })
-        ),
-      })
-    )
-    .optional(),
+  dropdownFromExistingTable: z.enum(["true", "false"]).optional(),
+  dropdownTableRef: z.string().min(1, { message: "Required" }).optional(),
+  dropdownColumnRef: z.string().min(1, { message: "Required" }).optional(),
 });
 
 const AddColumns = ({
   columnDetails,
   userId,
   newTable,
+  columnIndex,
+  actionType,
 }: {
   columnDetails?: IColumn;
   userId: string;
   newTable?: boolean;
+  columnIndex: number;
+  actionType: "Edit" | "Add-Column-Left" | "Add-Column-Right" | "Hide-Column";
 }) => {
   const pathname = usePathname();
+  // console.log(pathname);
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [dropdownColumnData, setDropdownColumnData] = useState<IColumn[]>([]);
+  // const [columnIndex, setColumnIndex] = useState(0);
 
   let defaultValues = {};
   if (columnDetails?.type === "dropdown") {
+    if (columnDetails.tableRef) {
+      defaultValues = {
+        name: columnDetails?.title,
+        type: columnDetails?.type,
+        dropdownFromExistingTable: "true",
+        dropdownTableRef: columnDetails.tableRef,
+        dropdownColumnRef: columnDetails.columnRef,
+      };
+    } else {
+      defaultValues = {
+        name: columnDetails?.title,
+        type: columnDetails?.type,
+        dropdownFromExistingTable: "false",
+        // dropdownValues: columnDetails?.dropdownValues.map((item: string) => ({ name: item })),
+      };
+    }
+  } else {
     defaultValues = {
       name: columnDetails?.title,
       type: columnDetails?.type,
-      hasSubcolumns: "false",
-      dropdownValues: columnDetails?.dropdownValues.map((item: string) => ({ name: item })),
-    };
-  } else if (columnDetails?.type === "subColumns") {
-    defaultValues = {
-      name: columnDetails?.title,
-      type: columnDetails?.type,
-      hasSubcolumns: "true",
-      subcolumns: columnDetails?.subColumns!.map((item) => ({
-        title: item?.title,
-        type: item?.type,
-        dropdownValues:
-          item?.type === "dropdown" ? item?.dropdownValues.map((subitem: string) => ({ name: subitem })) : [],
-      })),
     };
   }
 
@@ -96,23 +89,10 @@ const AddColumns = ({
   });
 
   const { watch, setValue, getValues, setError } = form;
-  const hasSubcolumnsValue = watch("hasSubcolumns");
-  const name = watch("name");
-  const subcolumns = watch("subcolumns", []);
   const dropdown = watch("type");
   const dropdownValues = watch("dropdownValues") || [];
-
-  const addSubcolumn = () => {
-    const currentSubcolumns = getValues("subcolumns") || [];
-    const newSubcolumns = [...currentSubcolumns, { title: "", type: "", dropdownValues: [{ name: "" }] }];
-    setValue("subcolumns", newSubcolumns);
-  };
-
-  const removeSubcolumn = (index: number) => {
-    const currentSubcolumns = getValues("subcolumns") || [];
-    const newSubcolumns = currentSubcolumns.filter((_, i) => i !== index);
-    setValue("subcolumns", newSubcolumns);
-  };
+  const dropdownFromExistingTable = watch("dropdownFromExistingTable");
+  const dropdownTableRef = watch("dropdownTableRef");
 
   const addDropDownValues = () => {
     const currentDropdownValues = getValues("dropdownValues") || [];
@@ -126,36 +106,34 @@ const AddColumns = ({
     setValue("dropdownValues", newDropdownValues);
   };
 
-  const addSubcolumnDropDownValues = (index: number) => {
-    const currentDropdownValues = getValues("subcolumns") || [];
-    currentDropdownValues.map((item, ind) => {
-      if (ind === index) item.dropdownValues = [...item.dropdownValues, { name: "" }];
-    });
-    setValue("subcolumns", currentDropdownValues);
-  };
+  useEffect(() => {
+    if (dropdown === "dropdown" && dropdownFromExistingTable === "false") {
+      setValue(
+        "dropdownValues",
+        columnDetails?.dropdownValues?.map((item: string) => ({ name: item })) || [{ name: "" }]
+      );
+    }
+  }, [dropdown, setValue, dropdownFromExistingTable]);
 
-  const removeSubcolumnDropDownValues = (index: number, subIndex: number) => {
-    const currentDropdownValues = getValues("subcolumns") || [];
-    currentDropdownValues.map((item, ind) => {
-      if (ind === index) {
-        const newDropdownValues = item.dropdownValues.filter((_, i) => i !== subIndex);
-        item.dropdownValues = newDropdownValues;
+  useEffect(() => {
+    const fetchColumnData = async () => {
+      if (dropdownTableRef === "Bus") {
+        const { data } = await getDefaultParams();
+        setDropdownColumnData(data[0].busColumns);
+      } else if (dropdownTableRef === "Generator") {
+        const { data } = await getDefaultParams();
+        setDropdownColumnData(data[0].generatorColumns);
       }
-    });
-    setValue("subcolumns", currentDropdownValues);
-  };
+    };
+    fetchColumnData();
+  }, [dropdownTableRef]);
 
   useEffect(() => {
-    if (subcolumns?.length === 0 && hasSubcolumnsValue === "true" && !columnDetails) {
-      setValue("subcolumns", [{ title: "", type: "", dropdownValues: [{ name: "" }] }]);
+    if (!open) {
+      const popoverTrigger = document.getElementById(`popover-btn-${columnIndex}`);
+      if (popoverTrigger) popoverTrigger.click();
     }
-  }, [subcolumns, setValue, hasSubcolumnsValue, columnDetails]);
-
-  useEffect(() => {
-    if (dropdown === "dropdown" && !columnDetails) {
-      setValue("dropdownValues", [{ name: "" }]);
-    }
-  }, [dropdown, setValue, columnDetails]);
+  }, [open]);
 
   const dummy = async () => {
     try {
@@ -168,97 +146,68 @@ const AddColumns = ({
     }
   };
 
-  const handleSubcolumnNameChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const { value } = e.target;
-    if (subcolumns!.length > 1)
-      for (let ind = 0; ind < subcolumns!.length; ind++) {
-        const item = subcolumns![ind];
-        if (
-          value !== "" &&
-          convertField(name + " " + item.title) === convertField(name + " " + value) &&
-          ind !== index
-        ) {
-          setError(
-            `subcolumns.${index}.title`,
-            {
-              message: `${value} sub-column name already exists. Please use a differnet name`,
-            },
-            { shouldFocus: true }
-          );
-          break;
-        } else form.clearErrors(`subcolumns.${index}.title`);
-      }
-  };
-
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (Object.keys(form.formState.errors).length !== 0) return;
-    if (data.hasSubcolumns === "false") {
-      if (!data.type) {
-        setError("type", { message: "Required" }, { shouldFocus: true });
-        return;
-      }
-    } else {
-      data.type = "subColumns";
-      for (let ind = 0; ind < data.subcolumns!.length; ind++) {
-        const item = data.subcolumns![ind];
-        if (item.title === "") {
-          setError(`subcolumns.${ind}.title`, { message: "Required" }, { shouldFocus: true });
-          return;
-        } else {
-          const duplicate = data.subcolumns?.find(
-            (subItem, i) =>
-              convertField(data.name + " " + subItem.title) === convertField(data.name + " " + item.title) && i < ind
-          );
-          if (duplicate) {
-            setError(
-              `subcolumns.${ind}.title`,
-              {
-                message: `${convertField(
-                  data.name + " " + duplicate.title
-                )} sub-column name already exists. Please use a differnet nameeeee`,
-              },
-              { shouldFocus: true }
-            );
-            return;
-          }
-        }
-        if (item.type === "") {
-          setError(`subcolumns.${ind}.type`, { message: "Required" }, { shouldFocus: true });
-          return;
-        }
-        if (item.type === "dropdown") {
-          for (let index = 0; index < item.dropdownValues!.length; index++) {
-            const dropdownItem = item.dropdownValues[index];
-            if (dropdownItem.name === "") {
-              setError(
-                `subcolumns.${ind}.dropdownValues.${index}.name`,
-                { message: "Required" },
-                { shouldFocus: true }
-              );
-              return;
-            }
-          }
-        }
-      }
+    if (!data.type) {
+      setError("type", { message: "Required" }, { shouldFocus: true });
+      return;
     }
 
     if (data.type === "dropdown") {
-      for (let ind = 0; ind < data.dropdownValues!.length; ind++) {
-        const item = data.dropdownValues![ind];
-        if (item.name === "") {
-          setError(`dropdownValues.${ind}.name`, { message: "Required" }, { shouldFocus: true });
+      if (!data.dropdownFromExistingTable) {
+        setError("dropdownFromExistingTable", { message: "Required" }, { shouldFocus: true });
+        return;
+      }
+      if (data.dropdownFromExistingTable === "true") {
+        if (!data.dropdownTableRef) {
+          setError("dropdownTableRef", { message: "Required" }, { shouldFocus: true });
           return;
+        }
+        if (!data.dropdownColumnRef) {
+          setError("dropdownColumnRef", { message: "Required" }, { shouldFocus: true });
+          return;
+        }
+      } else {
+        for (let ind = 0; ind < data.dropdownValues!.length; ind++) {
+          const item = data.dropdownValues![ind];
+          if (item.name === "") {
+            setError(`dropdownValues.${ind}.name`, { message: "Required" }, { shouldFocus: true });
+            return;
+          }
         }
       }
     }
 
     try {
       let response;
-      if (columnDetails)
-        response = await editSpecificDefaultParam(data, pathname, userId, columnDetails.isDefault || false);
-      else response = await updateDefaultParams(data, pathname, userId);
+      switch (actionType) {
+        case "Add-Column-Left":
+          response = await updateDefaultParams(data, pathname, userId, columnIndex - 1 < 0 ? 0 : columnIndex - 1);
+          break;
+
+        case "Add-Column-Right":
+          response = await updateDefaultParams(data, pathname, userId, columnIndex + 1);
+          break;
+
+        case "Edit":
+          response = await editSpecificDefaultParam(
+            data,
+            pathname,
+            userId,
+            columnIndex,
+            columnDetails!.isDefault || false
+          );
+          break;
+
+        case "Hide-Column":
+          response = await updateDefaultParams(data, pathname, userId, columnIndex - 1 < 0 ? 0 : columnIndex - 1);
+          break;
+
+        default:
+          break;
+      }
       if (response?.status === 409) {
-        toast.error(response.data + ". Try using a different name");
+        toast.error(response.data);
       } else if (response?.status === 200) {
         router.refresh();
         setOpen(false);
@@ -286,20 +235,15 @@ const AddColumns = ({
         open={open}
         onOpenChange={setOpen}
       >
-        <DialogTrigger
-          className={
-            !columnDetails
-              ? buttonVariants({ variant: newTable ? "link" : "default" }) + ` ${newTable && "text-[1.15rem]"}`
-              : ""
-          }
-        >
-          {columnDetails ? (
-            <MdEdit
-              id="edit-icons"
-              title={`Edit ${columnDetails.title}`}
-            />
-          ) : (
-            "Add column"
+        <DialogTrigger className={`${newTable && "text-[1.15rem]"} w-full`}>
+          {actionType === "Add-Column-Left" && (
+            <p className={buttonVariants({ variant: "outline" }) + " w-full"}>Add column to left</p>
+          )}
+          {actionType === "Add-Column-Right" && (
+            <p className={buttonVariants({ variant: "outline" }) + " w-full"}>Add column to right</p>
+          )}
+          {actionType === "Edit" && (
+            <p className={buttonVariants({ variant: "outline" }) + " w-full"}>Edit column details</p>
           )}
         </DialogTrigger>
         <DialogContent className="bg-white max-h-[80vh] overflow-auto custom-scrollbar">
@@ -322,7 +266,6 @@ const AddColumns = ({
                         placeholder="Name"
                         {...field}
                         className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                        disabled={!!columnDetails}
                       />
                     </FormControl>
                     <FormMessage />
@@ -331,266 +274,188 @@ const AddColumns = ({
               />
               <FormField
                 control={form.control}
-                name="hasSubcolumns"
+                name="type"
                 render={({ field }) => (
-                  <FormItem className="flex gap-5 items-center">
-                    <FormLabel>Does this column have any sub-columns?</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex gap-10"
-                        disabled={!!columnDetails}
-                      >
-                        <FormItem className="flex items-center space-y-0 gap-2">
-                          <FormControl>
-                            <RadioGroupItem value="true" />
-                          </FormControl>
-                          <FormLabel className="font-normal">Yes</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-y-0 gap-2">
-                          <FormControl>
-                            <RadioGroupItem value="false" />
-                          </FormControl>
-                          <FormLabel className="font-normal">No</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
+                  <FormItem>
+                    <FormLabel>Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={!!columnDetails}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+                          <SelectValue
+                            placeholder="Select appropriate type of field"
+                            className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="text">Text</SelectItem>
+                        <SelectItem value="number">Number</SelectItem>
+                        <SelectItem value="image">Image</SelectItem>
+                        <SelectItem value="dropdown">Dropdown</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {hasSubcolumnsValue === "false" && (
-                <>
+
+              {dropdown === "dropdown" && (
+                <FormField
+                  control={form.control}
+                  name="dropdownFromExistingTable"
+                  render={({ field }) => (
+                    <FormItem className="flex gap-5 items-center">
+                      <FormLabel>Do you want to fetch dropdown values from existing tables?</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex gap-10"
+                        >
+                          <FormItem className="flex items-center space-y-0 gap-2">
+                            <FormControl>
+                              <RadioGroupItem value="true" />
+                            </FormControl>
+                            <FormLabel className="font-normal">Yes</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-y-0 gap-2">
+                            <FormControl>
+                              <RadioGroupItem value="false" />
+                            </FormControl>
+                            <FormLabel className="font-normal">No</FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {dropdownFromExistingTable === "true" && (
+                <div className="grid grid-cols-2 gap-2">
                   <FormField
                     control={form.control}
-                    name="type"
+                    name="dropdownTableRef"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Type</FormLabel>
+                        <FormLabel>Table name:</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
-                          disabled={!!columnDetails}
                         >
                           <FormControl>
                             <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
                               <SelectValue
-                                placeholder="Select appropriate type of field"
+                                placeholder="Select table from which you want to fetch dropdown values"
                                 className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                               />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="text">Text</SelectItem>
-                            <SelectItem value="number">Number</SelectItem>
-                            <SelectItem value="image">Image</SelectItem>
-                            <SelectItem value="dropdown">Dropdown</SelectItem>
+                            <SelectItem value="Bus">Bus</SelectItem>
+                            <SelectItem value="Generator">Generator</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  {dropdown === "dropdown" &&
-                    dropdownValues.map((dropdownValue, index) => (
-                      <div
-                        key={index}
-                        className="flex w-full gap-2 items-center"
-                      >
-                        <FormField
-                          control={form.control}
-                          name={`dropdownValues.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem className="flex gap-2 items-center justify-start w-3/4">
-                              <FormLabel className="whitespace-nowrap">Dropdown value {index + 1}:</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="Dropdown value"
-                                  {...field}
+
+                  {dropdownTableRef && dropdownColumnData.length ? (
+                    <FormField
+                      control={form.control}
+                      name="dropdownColumnRef"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Column name:</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+                                <SelectValue
+                                  placeholder="Select particular column of table"
                                   className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                                 />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <div className="w-10 flex gap-2 px-2">
-                          <button
-                            title={`Remove dropdown value ${index + 1}`}
-                            onClick={() => removeDropDownValues(index)}
-                            type="button"
-                            disabled={dropdownValues.length <= 1}
-                            className={`bg-transparent rounded-full text-3xl ${
-                              dropdownValues.length <= 1
-                                ? "cursor-not-allowed text-gray-300"
-                                : "cursor-pointer hover:bg-transparent hover:text-black text-gray-500"
-                            }`}
-                          >
-                            <CiCircleMinus />
-                          </button>
-                          <button
-                            onClick={addDropDownValues}
-                            type="button"
-                            className={`bg-transparent rounded-full text-3xl cursor-pointer hover:bg-transparent hover:text-black text-gray-500 ${
-                              index === dropdownValues.length - 1 ? "visible" : "hidden"
-                            }`}
-                          >
-                            <CiCirclePlus />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                </>
-              )}
-              {hasSubcolumnsValue === "true" && (
-                <>
-                  {subcolumns?.length! >= 1 && <Separator />}
-                  {subcolumns?.map((subcolumn, index) => (
-                    <div
-                      className="flex flex-col"
-                      key={index}
-                    >
-                      <div className="flex w-full justify-between items-center">
-                        <p className="font-bold mb-2 whitespace-nowrap">Sub-column {index + 1}</p>
-                        <div className="flex gap-1">
-                          <button
-                            title={`Remove subcolumn ${index + 1}`}
-                            onClick={() => removeSubcolumn(index)}
-                            type="button"
-                            disabled={subcolumns.length <= 1}
-                            className={`bg-transparent rounded-full text-3xl ${
-                              subcolumns.length <= 1
-                                ? "cursor-not-allowed text-gray-300"
-                                : "cursor-pointer hover:bg-transparent hover:text-black text-gray-500"
-                            }`}
-                          >
-                            <CiCircleMinus />
-                          </button>
-                          <button
-                            title="Add new subcolumn"
-                            onClick={addSubcolumn}
-                            type="button"
-                            className={`bg-transparent rounded-full text-3xl cursor-pointer hover:bg-transparent hover:text-black text-gray-500 ${
-                              index === subcolumns.length - 1 ? "visible" : "hidden"
-                            }`}
-                          >
-                            <CiCirclePlus />
-                          </button>
-                        </div>
-                      </div>
-                      <div
-                        key={index}
-                        className="grid grid-cols-3 w-full gap-4 items-start"
-                      >
-                        <FormField
-                          control={form.control}
-                          name={`subcolumns.${index}.title`}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0 w-full">
-                              <div className="flex gap-2 items-center justify-start w-full">
-                                <FormLabel>Name:</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="Subcolumn Name"
-                                    {...field}
-                                    className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                                    onBlur={(e) => hasSubcolumnsValue === "true" && handleSubcolumnNameChange(e, index)}
-                                  />
-                                </FormControl>
-                              </div>
-                              <FormMessage className="ml-[18%]" />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`subcolumns.${index}.type`}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0 w-full">
-                              <div className="flex gap-2 items-center justify-start w-full">
-                                <FormLabel>Type:</FormLabel>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {dropdownColumnData.map((selectValue, ind) => (
+                                <SelectItem
+                                  value={selectValue.field}
+                                  key={ind}
                                 >
-                                  <FormControl>
-                                    <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
-                                      <SelectValue
-                                        placeholder="Select appropriate type of field"
-                                        className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                                      />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="text">Text</SelectItem>
-                                    <SelectItem value="number">Number</SelectItem>
-                                    <SelectItem value="image">Image</SelectItem>
-                                    <SelectItem value="dropdown">Dropdown</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <FormMessage className="ml-[18%]" />
-                            </FormItem>
-                          )}
-                        />
+                                  {selectValue.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </div>
+              )}
 
-                        {subcolumn.type === "dropdown" &&
-                          subcolumn.dropdownValues.map((dropdownValue, i) => (
-                            <div
-                              key={i}
-                              className="flex w-full gap-2 items-center col-start-1 col-span-2"
-                            >
-                              <FormField
-                                control={form.control}
-                                name={`subcolumns.${index}.dropdownValues.${i}.name`}
-                                render={({ field }) => (
-                                  <FormItem className="flex gap-2 items-center justify-start w-full">
-                                    <FormLabel className="whitespace-nowrap">Dropdown value {i + 1}:</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        placeholder="Dropdown value"
-                                        {...field}
-                                        className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <div className="w-10 flex gap-2 px-2">
-                                <button
-                                  title={`Remove dropdown value ${i + 1} for subcolumn ${index + 1}`}
-                                  onClick={() => removeSubcolumnDropDownValues(index, i)}
-                                  type="button"
-                                  disabled={subcolumn.dropdownValues.length <= 1}
-                                  className={`bg-transparent rounded-full text-3xl ${
-                                    subcolumn.dropdownValues.length <= 1
-                                      ? "cursor-not-allowed text-gray-300"
-                                      : "cursor-pointer hover:bg-transparent hover:text-black text-gray-500"
-                                  }`}
-                                >
-                                  <CiCircleMinus />
-                                </button>
-                                <button
-                                  title={`Add new dropdown value for subcolumn ${index + 1}`}
-                                  onClick={() => addSubcolumnDropDownValues(index)}
-                                  type="button"
-                                  className={`bg-transparent rounded-full text-3xl cursor-pointer hover:bg-transparent hover:text-black text-gray-500 ${
-                                    i === subcolumn.dropdownValues.length - 1 ? "visible" : "hidden"
-                                  }`}
-                                >
-                                  <CiCirclePlus />
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                      <Separator className="mt-5" />
+              {dropdownFromExistingTable === "false" &&
+                dropdownValues.map((dropdownValue, index) => (
+                  <div
+                    key={index}
+                    className="flex w-full gap-2 items-center"
+                  >
+                    <FormField
+                      control={form.control}
+                      name={`dropdownValues.${index}.name`}
+                      render={({ field }) => (
+                        <FormItem className="flex gap-2 items-center justify-start w-3/4">
+                          <FormLabel className="whitespace-nowrap">Dropdown value {index + 1}:</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Dropdown value"
+                              {...field}
+                              className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="w-10 flex gap-2 px-2">
+                      <button
+                        title={`Remove dropdown value ${index + 1}`}
+                        onClick={() => removeDropDownValues(index)}
+                        type="button"
+                        disabled={dropdownValues.length <= 1}
+                        className={`bg-transparent rounded-full text-3xl ${
+                          dropdownValues.length <= 1
+                            ? "cursor-not-allowed text-gray-300"
+                            : "cursor-pointer hover:bg-transparent hover:text-black text-gray-500"
+                        }`}
+                      >
+                        <CiCircleMinus />
+                      </button>
+                      <button
+                        onClick={addDropDownValues}
+                        type="button"
+                        className={`bg-transparent rounded-full text-3xl cursor-pointer hover:bg-transparent hover:text-black text-gray-500 ${
+                          index === dropdownValues.length - 1 ? "visible" : "hidden"
+                        }`}
+                      >
+                        <CiCirclePlus />
+                      </button>
                     </div>
-                  ))}
-                </>
-              )}
+                  </div>
+                ))}
+
               <Button type="submit">Submit</Button>
             </form>
           </Form>

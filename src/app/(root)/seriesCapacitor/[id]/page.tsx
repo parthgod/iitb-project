@@ -23,17 +23,8 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
   if (Object.keys(seriesCapacitorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].seriesCapacitorColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              seriesCapacitorDetails?.[item.field]?.[subItem.field] ||
-              seriesCapacitorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          seriesCapacitorDetails?.[item.field] || seriesCapacitorDetails?.additionalFields?.[item.field] || "";
+      values[item.field] =
+        seriesCapacitorDetails?.[item.field] || seriesCapacitorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = seriesCapacitorDetails._id;
     return values;
@@ -51,7 +42,7 @@ const EditSeriesCapacitor = async ({ params }: EditSeriesCapacitorProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

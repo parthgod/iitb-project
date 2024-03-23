@@ -22,30 +22,17 @@ export const getAllExcitationSystems = async (
   try {
     await connectToDatabase();
     const searchConditions: any = [];
-    if (query)
+    if (query) {
       columns.forEach((item) => {
-        if (item.type === "subColumns") {
-          item.subColumns?.map((subItem) => {
-            item.isDefault
-              ? searchConditions.push({
-                  [`${item.field}.${subItem.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
-                })
-              : searchConditions.push({
-                  [`additionalFields.${item.field}.${subItem.field}`]: {
-                    ["$regex"]: `.*${query}.*`,
-                    ["$options"]: "i",
-                  },
-                });
-          });
-        } else
-          item.isDefault
-            ? searchConditions.push({ [item.field]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" } })
-            : searchConditions.push({
-                [`additionalFields.${item.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
-              });
+        item.isDefault
+          ? searchConditions.push({ [item.field]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" } })
+          : searchConditions.push({
+              [`additionalFields.${item.field}`]: { ["$regex"]: `.*${query}.*`, ["$options"]: "i" },
+            });
       });
+    }
     const conditions = {
-      $or: [...searchConditions, { ["id"]: query }],
+      $or: [...searchConditions, { ["_id"]: ObjectId.isValid(query) ? new ObjectId(query) : null }],
     };
     const skipAmount = (Number(page) - 1) * limit;
     const excitationSystems = await ExcitationSystem.find(query ? conditions : {})
@@ -156,6 +143,29 @@ export const deleteExcitationSystem = async (id: string, path: string, userId: s
       };
       await ModificationHistory.create(modificationHistory);
       revalidatePath(path);
+    }
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const uploadExcitationSystemFromExcel = async (data: any, userId: string) => {
+  try {
+    await connectToDatabase();
+    const response = await ExcitationSystem.insertMany(data);
+    if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Excitation System",
+        operationType: "Create",
+        date: new Date(),
+        document: {
+          documentAfterChange: `${data.length}`,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
+      return { data: `${data.length} were records uploaded successfully to Excitation System`, status: 200 };
     }
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));

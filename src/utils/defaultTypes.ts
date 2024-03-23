@@ -4,12 +4,13 @@ export type IColumn = {
   type: string;
   isDefault: boolean;
   dropdownValues?: any;
-  subColumns?: ISubColumn[];
+  tableRef?: string;
+  columnRef?: string;
   [key: string]: any;
 };
 
 export type INonDefaultDatabases = {
-  id: string;
+  _id: string;
   additionalFields?: Record<string, any>;
   [key: string]: any;
 };
@@ -22,18 +23,11 @@ export type ISIdeMenu = {
 
 export type IColumnDetails = {
   name: string;
-  hasSubcolumns: "true" | "false";
   dropdownValues?: { name: string }[];
-  type?: string;
-  subcolumns?: any;
-};
-
-export type ISubColumn = {
-  field: string;
-  title: string;
   type: string;
-  dropdownValues?: any;
-  [key: string]: any;
+  dropdownFromExistingTable?: "true" | "false";
+  dropdownTableRef?: string;
+  dropdownColumnRef?: string;
 };
 
 export type IUser = {
@@ -96,7 +90,7 @@ export type IDefaultParamSchema = {
 };
 
 export type IBus = {
-  id: string;
+  _id: string;
   busName?: string;
   nominalKV?: string;
   additionalFields?: Record<string, any>;
@@ -112,7 +106,6 @@ export type IRequest = {
 };
 
 export type IExcitationSystem = {
-  id: string;
   _id: string;
   deviceName?: string;
   automaticVoltageRegulatorAVRType?: string;
@@ -126,7 +119,6 @@ export type IExcitationSystem = {
 };
 
 export type IGenerator = {
-  id: string;
   _id: string;
   deviceName?: string;
   busTo?: string;
@@ -152,7 +144,7 @@ export type IGenerator = {
 };
 
 export type ILoad = {
-  id: string;
+  _id: string;
   deviceName?: string;
   busFrom?: string;
   busSectionFrom?: string;
@@ -163,7 +155,7 @@ export type ILoad = {
 };
 
 export type ISeriesCapacitor = {
-  id: string;
+  _id: string;
   deviceName?: string;
   mvar?: string;
   compensation?: string;
@@ -172,7 +164,7 @@ export type ISeriesCapacitor = {
 };
 
 export type IShuntCapacitor = {
-  id: string;
+  _id: string;
   deviceName?: string;
   busFrom?: string;
   busSectionFrom?: string;
@@ -183,7 +175,7 @@ export type IShuntCapacitor = {
 };
 
 export type IShuntReactor = {
-  id: string;
+  _id: string;
   deviceName?: string;
   busFrom?: string;
   busSectionFrom?: string;
@@ -194,14 +186,14 @@ export type IShuntReactor = {
 };
 
 export type ISingleLineDiagram = {
-  id: string;
+  _id: string;
   description?: string;
   image?: string;
   [key: string]: any;
 };
 
 export type ITransformersThreeWinding = {
-  id: string;
+  _id: string;
   deviceName?: string;
   busprimaryFrom?: string;
   busprimarySectionFrom?: string;
@@ -230,7 +222,7 @@ export type ITransformersThreeWinding = {
 };
 
 export type ITransformersTwoWinding = {
-  id: string;
+  _id: string;
   deviceName?: string;
   busFrom?: string;
   busSectionFrom?: string;
@@ -253,7 +245,7 @@ export type ITransformersTwoWinding = {
 };
 
 export type ITransmissionLine = {
-  id: string;
+  _id: string;
   deviceName?: string;
   type?: string;
   busFrom?: string;
@@ -270,7 +262,7 @@ export type ITransmissionLine = {
 };
 
 export type ITurbineGovernor = {
-  id: string;
+  _id: string;
   deviceName?: string;
   turbineType?: string;
   generatorDeviceName?: string;

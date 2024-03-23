@@ -1,5 +1,3 @@
-import { authOptions } from "@/lib/authOptions";
-import AddColumns from "@/components/AddColumns";
 import DisplayTable from "@/components/DisplayTable";
 import RequestChange from "@/components/RequestChange";
 import Search from "@/components/Search";
@@ -7,6 +5,7 @@ import TableSkeleton from "@/components/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { getAllLoads } from "@/lib/actions/load.actions";
+import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
@@ -43,7 +42,6 @@ const Loads = async ({ searchParams }: { searchParams: { query: string; page?: n
           <Link href="/load/create">
             <Button>Create load</Button>
           </Link>
-          {session?.user.isAdmin && <AddColumns userId={session.user.id} />}
           {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>
       </div>

@@ -23,16 +23,7 @@ const calculateDefaultValues = (seriesFactDetails: INonDefaultDatabases, default
   if (Object.keys(seriesFactDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].seriesFactsColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              seriesFactDetails?.[item.field]?.[subItem.field] ||
-              seriesFactDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] = seriesFactDetails?.[item.field] || seriesFactDetails?.additionalFields?.[item.field] || "";
+      values[item.field] = seriesFactDetails?.[item.field] || seriesFactDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = seriesFactDetails._id;
     return values;
@@ -50,7 +41,7 @@ const EditSeriesFact = async ({ params }: EditSeriesFactProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

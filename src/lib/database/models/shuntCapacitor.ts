@@ -2,9 +2,6 @@ import { Schema, model, models } from "mongoose";
 
 const shuntCapacitorSchema = new Schema(
   {
-    id: {
-      type: String,
-    },
     deviceName: {
       type: String,
     },

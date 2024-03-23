@@ -30,6 +30,8 @@ import AddColumns from "./AddColumns";
 import DeleteConfirmation from "./DeleteConfirmation";
 import TableHeading from "./TableHeading";
 import TableSkeleton from "./TableSkeleton";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { PiDotsThreeVerticalBold } from "react-icons/pi";
 
 type TableProps = {
   columns: IColumn[];
@@ -84,9 +86,12 @@ type TableProps = {
 };
 
 const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session }: TableProps) => {
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [open, setOpen] = useState(
+    columns.forEach((item) => {
+      return { [item.field]: false };
+    })
+  );
 
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -119,56 +124,29 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     idCellHeading.textContent = "ID";
     idCellHeading.style.border = "1px solid #000";
     idCellHeading.style.padding = "5px";
-    idCellHeading.rowSpan = 2;
-
-    const subHeadingRow = tempInput.insertRow();
-    subHeadingRow.style.fontWeight = "bold";
 
     columns.forEach((headerText) => {
       const cell = headingRow.insertCell();
       cell.textContent = headerText.title;
       cell.style.border = "1px solid #000";
       cell.style.padding = "5px";
-      if (headerText.type === "subColumns") {
-        cell.colSpan = headerText.subColumns!.length;
-        headerText.subColumns?.forEach((subItem) => {
-          const subCell = subHeadingRow.insertCell();
-          subCell.textContent = subItem.title;
-          subCell.style.border = "1px solid #000";
-          subCell.style.padding = "5px";
-        });
-      } else {
-        cell.rowSpan = 2;
-      }
     });
 
     completeData.forEach((rowData) => {
       const row = tempInput.insertRow();
       const idCell = row.insertCell();
-      idCell.textContent = rowData.id;
+      idCell.textContent = rowData._id;
       idCell.style.border = "1px solid #000";
       idCell.style.padding = "5px";
       columns.forEach((cellData) => {
-        if (cellData.type === "subColumns") {
-          cellData.subColumns?.map((subItem) => {
-            const subCell = row.insertCell();
-            subCell.style.border = "1px solid #000";
-            subCell.style.padding = "5px";
-            subCell.textContent =
-              rowData?.[cellData.field]?.[subItem.field] ||
-              rowData?.additionalFields?.[cellData.field]?.[subItem.field] ||
-              "null";
-          });
-        } else {
-          const cell = row.insertCell();
-          cell.style.border = "1px solid #000";
-          cell.style.padding = "5px";
-          // if (cellData.type === "image") {
-          //   cell.innerHTML = `<img src="${encodeURIComponent(rowData[cellData.field])}" width={50} height={50} />`;
-          // } else {
-          cell.textContent = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || "null";
-          // }
-        }
+        const cell = row.insertCell();
+        cell.style.border = "1px solid #000";
+        cell.style.padding = "5px";
+        // if (cellData.type === "image") {
+        //   cell.innerHTML = `<img src="${encodeURIComponent(rowData[cellData.field])}" width={50} height={50} />`;
+        // } else {
+        cell.textContent = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || "null";
+        // }
       });
     });
 
@@ -186,41 +164,20 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
   const fnExportToExcel = (fn: string) => {
     const tempInput = document.createElement("table");
     const headingRow = tempInput.insertRow();
-    const subHeadingRow = tempInput.insertRow();
     const idCellHeading = headingRow.insertCell();
     idCellHeading.textContent = "ID";
-    idCellHeading.rowSpan = 2;
     columns.forEach((headerText) => {
       const cell = headingRow.insertCell();
       cell.textContent = headerText.title;
-      if (headerText.type === "subColumns") {
-        cell.colSpan = headerText.subColumns!.length;
-        headerText.subColumns?.forEach((subItem) => {
-          const subCell = subHeadingRow.insertCell();
-          subCell.textContent = subItem.title;
-        });
-      } else {
-        cell.rowSpan = 2;
-      }
     });
 
     completeData.forEach((rowData) => {
       const row = tempInput.insertRow();
       const idCell = row.insertCell();
-      idCell.textContent = rowData.id;
+      idCell.textContent = rowData._id;
       columns.forEach((cellData) => {
-        if (cellData.type === "subColumns") {
-          cellData.subColumns?.map((subItem) => {
-            const subCell = row.insertCell();
-            subCell.textContent =
-              rowData?.[cellData.field]?.[subItem.field] ||
-              rowData.additionalFields?.[cellData.field]?.[subItem.field] ||
-              "null";
-          });
-        } else {
-          const cell = row.insertCell();
-          cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
-        }
+        const cell = row.insertCell();
+        cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
       });
     });
 
@@ -243,6 +200,8 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           type={type}
           downloadPDF={downloadPDF}
           fnExportToExcel={fnExportToExcel}
+          columns={columns}
+          userId={session.user.id}
         />
         <Table
           ref={tableRef}
@@ -253,127 +212,72 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           </TableCaption>
           <TableHeader>
             <TableRow className="bg-slate-100">
-              <TableHead
-                rowSpan={2}
-                className="border-[1px] border-gray-300 group max-w-10"
-              >
-                ID
-              </TableHead>
-              {columns.map((item, ind: number) =>
-                item.type === "subColumns" ? (
-                  <TableHead
-                    key={ind}
-                    colSpan={item.subColumns!.length}
-                    className="border-[1px] border-gray-300 whitespace-nowrap text-center group"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      {item.title}
-                      <AddColumns
-                        key={ind}
-                        columnDetails={item}
-                        userId={session?.user.id!}
-                      />
-                    </div>
-                  </TableHead>
-                ) : (
-                  <TableHead
-                    key={ind}
-                    rowSpan={2}
-                    className={`border-[1px] border-gray-300 group`}
-                  >
-                    <div className="flex items-center gap-2 whitespace-nowrap">
-                      {item.title}
-                      {item.type === "dropdown" && (
-                        <AddColumns
-                          key={ind}
-                          columnDetails={item}
-                          userId={session?.user.id!}
-                        />
-                      )}
-                    </div>
-                  </TableHead>
-                )
-              )}
-              {session?.user.isAdmin && (
+              <TableHead className="border-[1px] border-gray-300 group max-w-10">ID</TableHead>
+              {columns.map((item, ind: number) => (
                 <TableHead
-                  className="border-[1px] border-gray-300"
-                  rowSpan={2}
+                  key={ind}
+                  className={`border-[1px] border-gray-300 group`}
                 >
-                  Actions
+                  <div className="flex items-center gap-2 whitespace-nowrap justify-between">
+                    {item.title}
+                    <Popover open={open?.[item.field]}>
+                      <PopoverTrigger
+                        className="p-1 rounded-full hover:bg-gray-200"
+                        id={`popover-btn-${ind}`}
+                      >
+                        <PiDotsThreeVerticalBold />
+                      </PopoverTrigger>
+                      <PopoverContent className="flex flex-col gap-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
+                        <AddColumns
+                          actionType="Add-Column-Left"
+                          columnIndex={ind}
+                          userId={session.user.id}
+                        />
+                        <AddColumns
+                          actionType="Add-Column-Right"
+                          columnIndex={ind}
+                          userId={session.user.id}
+                        />
+                        <AddColumns
+                          actionType="Edit"
+                          columnIndex={ind}
+                          userId={session.user.id}
+                          columnDetails={item}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </TableHead>
-              )}
-            </TableRow>
-            <TableRow>
-              {columns.map(
-                (item, i: number) =>
-                  item.type === "subColumns" &&
-                  item.subColumns!.map((subCol, ind: number) => (
-                    <TableHead
-                      key={ind}
-                      className="bg-muted border-[1px] border-gray-300"
-                    >
-                      <div className="flex items-center gap-2 whitespace-nowrap">{subCol.title}</div>
-                    </TableHead>
-                  ))
-              )}
+              ))}
+              {session?.user.isAdmin && <TableHead className="border-[1px] border-gray-300">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item, ind: number) => {
               return (
                 <TableRow key={ind}>
-                  <TableCell className="border-[1px] border-gray-300">{item.id}</TableCell>
-                  {columns.map((column, i: number) => {
-                    if (column.type === "subColumns")
-                      return column.subColumns!.map((subItem, i: number) => (
-                        <TableCell
-                          key={i + 100}
-                          className={`border-[1px] border-gray-300 ${
-                            !item?.[column.field]?.[subItem.field] &&
-                            !item?.additionalFields?.[column.field]?.[subItem.field] &&
-                            "text-gray-400"
-                          }`}
-                        >
-                          {subItem.type === "image" ? (
-                            <Image
-                              src={
-                                item?.[column.field]?.[subItem.field] ||
-                                item?.additionalFields?.[column.field]?.[subItem.field] ||
-                                noImageUrl
-                              }
-                              alt="image"
-                              width={120}
-                              height={120}
-                              className="object-cover"
-                            />
-                          ) : (
-                            item?.[column.field]?.[subItem.field] ||
-                            item?.additionalFields?.[column.field]?.[subItem.field] ||
-                            "null"
-                          )}
-                        </TableCell>
-                      ));
-                    return (
-                      <TableCell
-                        key={i}
-                        className={`border-[1px] border-gray-300 ${
-                          !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
-                        }`}
-                      >
-                        {column.type === "image" ? (
-                          <Image
-                            src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
-                            alt="image"
-                            width={120}
-                            height={120}
-                            className="object-cover"
-                          />
-                        ) : (
-                          item?.[column.field] || item?.additionalFields?.[column.field] || "null"
-                        )}
-                      </TableCell>
-                    );
-                  })}
+                  <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
+                  {columns.map((column, i: number) => (
+                    <TableCell
+                      key={i}
+                      className={`border-[1px] border-gray-300 ${
+                        !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
+                      }`}
+                    >
+                      {column.type === "image" ? (
+                        <Image
+                          src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
+                          alt="image"
+                          width={120}
+                          height={120}
+                          className="object-cover"
+                        />
+                      ) : (
+                        item?.[column.field] || item?.additionalFields?.[column.field] || "null"
+                      )}
+                    </TableCell>
+                  ))}
+
                   {session?.user.isAdmin ? (
                     <TableCell className="border-[1px] border-gray-300">
                       <div className="flex justify-start items-center gap-2.5">

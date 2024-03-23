@@ -23,17 +23,7 @@ const calculateDefaultValues = (vscHVDCLinkDetails: INonDefaultDatabases, defaul
   if (Object.keys(vscHVDCLinkDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].vscHVDCLinkColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              vscHVDCLinkDetails?.[item.field]?.[subItem.field] ||
-              vscHVDCLinkDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          vscHVDCLinkDetails?.[item.field] || vscHVDCLinkDetails?.additionalFields?.[item.field] || "";
+      values[item.field] = vscHVDCLinkDetails?.[item.field] || vscHVDCLinkDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = vscHVDCLinkDetails._id;
     return values;
@@ -51,7 +41,7 @@ const EditVscHvdcLink = async ({ params }: EditVscHvdcLinkProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

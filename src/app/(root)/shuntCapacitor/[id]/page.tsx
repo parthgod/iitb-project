@@ -23,17 +23,8 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
   if (Object.keys(shuntCapacitorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntCapacitorColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              shuntCapacitorDetails?.[item.field]?.[subItem.field] ||
-              shuntCapacitorDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          shuntCapacitorDetails?.[item.field] || shuntCapacitorDetails?.additionalFields?.[item.field] || "";
+      values[item.field] =
+        shuntCapacitorDetails?.[item.field] || shuntCapacitorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = shuntCapacitorDetails._id;
     return values;
@@ -51,7 +42,7 @@ const EditShuntCapacitor = async ({ params }: EditShuntCapacitorProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

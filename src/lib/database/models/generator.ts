@@ -2,9 +2,6 @@ import { Schema, model, models } from "mongoose";
 
 const generatorSchema = new Schema(
   {
-    id: {
-      type: String,
-    },
     deviceName: {
       type: String,
     },
@@ -29,37 +26,44 @@ const generatorSchema = new Schema(
     kv: {
       type: String,
     },
-    synchronousReactancePu: {
-      type: Schema.Types.Mixed,
-      default: {},
+    synchronousReactancePuXd: {
+      type: String,
     },
-    transientReactancePu: {
-      type: Schema.Types.Mixed,
-      default: {},
+    synchronousReactancePuXq: {
+      type: String,
     },
-    subtransientReactancePu: {
-      type: Schema.Types.Mixed,
-      default: {},
+    transientReactancePuXdPrime: {
+      type: String,
     },
-    transientOCTimeConstantSeconds: {
-      type: Schema.Types.Mixed,
-      default: {},
+    transientReactancePuXqPrime: {
+      type: String,
     },
-    subtransientOCTimeConstantSeconds: {
-      type: Schema.Types.Mixed,
-      default: {},
+    subtransientReactancePuXdPrimePrime: {
+      type: String,
     },
-    statorLeakageInductancePu: {
-      type: Schema.Types.Mixed,
-      default: {},
+    subtransientReactancePuXqPrimePrime: {
+      type: String,
     },
-    statorResistancePu: {
-      type: Schema.Types.Mixed,
-      default: {},
+    transientOCTimeConstantSecondsTd0Prime: {
+      type: String,
     },
-    inertiaMJMVA: {
-      type: Schema.Types.Mixed,
-      default: {},
+    transientOCTimeConstantSecondsTq0Prime: {
+      type: String,
+    },
+    subtransientOCTimeConstantSecondsTd0PrimePrime: {
+      type: String,
+    },
+    subtransientOCTimeConstantSecondsTq0PrimePrime: {
+      type: String,
+    },
+    statorLeakageInductancePuXl: {
+      type: String,
+    },
+    statorResistancePuRa: {
+      type: String,
+    },
+    inertiaMJMVAH: {
+      type: String,
     },
     poles: {
       type: String,
