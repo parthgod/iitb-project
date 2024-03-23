@@ -2,9 +2,6 @@ import { Schema, model, models } from "mongoose";
 
 const singleLineDiagramSchema = new Schema(
   {
-    id: {
-      type: String,
-    },
     description: {
       type: String,
     },

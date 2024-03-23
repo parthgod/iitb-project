@@ -117,119 +117,181 @@ export const PrintModification = ({
           </CardHeader>
           <CardContent className="p-0">
             <p className="text-sm">
-              {item.operationType === "Create"
-                ? item.document.columnDetails
-                  ? `New column named '${item.document.columnDetails.title}' of type ${reverseUnslug(
-                      item.document.columnDetails.type
-                    )} ${
-                      item.document.columnDetails.type === "subColumns"
-                        ? ` having subcolumns ${item.document.columnDetails.subColumns
-                            .map(
-                              (subitem: any) =>
-                                `'${subitem.title}' of type ${reverseUnslug(subitem.type)}${
-                                  subitem.type === "dropdown"
-                                    ? ` having dropdown values as ${subitem.dropdownValues.map(
-                                        (dropItem: string) => `'${dropItem}' `
-                                      )}`
-                                    : ""
-                                }, `
-                            )
-                            .filter(Boolean)
-                            .join(" ")} was added`
-                        : `${
-                            item.document.columnDetails.type === "dropdown"
-                              ? `having dropdown values as ${item.document.columnDetails.dropdownValues
-                                  .map((dropItem: any) => `'${dropItem}' `)
-                                  .filter(Boolean)
-                                  .join(" ")}`
-                              : ""
-                          } was added to ${item.databaseName}. `
-                    }`
-                  : `New record with ID ${item.document.id} was added to ${item.databaseName}.`
-                : item.operationType === "Update"
-                ? item.document.columnDetails
-                  ? `Column '${item.document.columnDetails.title}' was updated for ${item.databaseName} table. `
-                  : `Record with ID ${item.document.id} was updated. Field${getRequiredParams(item.databaseName)!
+              {item.operationType === "Create" ? (
+                item.document.columnDetails ? (
+                  <>
+                    New column named <span className="font-semibold">{item.document.columnDetails.title}</span> of type{" "}
+                    <span className="font-semibold">{reverseUnslug(item.document.columnDetails.type)}</span>
+                    {item.document.columnDetails.type === "dropdown" ? (
+                      item.document.columnDetails.tableRef ? (
+                        <>
+                          linked to{" "}
+                          <span className="font-semibold">
+                            {
+                              getRequiredParams(item.document.documentAfterChange.tableRef)?.find(
+                                (column) => column.field === item.document.documentAfterChange.columnRef
+                              )?.title
+                            }
+                          </span>{" "}
+                          of <span className="font-semibold">{item.document.columnDetails.tableRef}</span> table
+                        </>
+                      ) : (
+                        <>
+                          having dropdown values:
+                          <span className="font-semibold">
+                            {item.document.columnDetails.dropdownValues &&
+                              item.document.columnDetails.dropdownValues.map(
+                                (dropdownValue: string) => `'${dropdownValue}'`
+                              )}
+                          </span>
+                        </>
+                      )
+                    ) : (
+                      ""
+                    )}{" "}
+                    was added to <span className="font-semibold">{item.databaseName}</span>.
+                  </>
+                ) : item.document.documentAfterChange ? (
+                  <>
+                    <span className="font-semibold">{item.document.documentAfterChange}</span> records were added to{" "}
+                    <span className="font-semibold">{item.databaseName}</span> from an excel file
+                  </>
+                ) : (
+                  <>
+                    New record with ID <span className="font-semibold">{item.document.id}</span> was added to{" "}
+                    <span className="font-semibold">{item.databaseName}</span>.
+                  </>
+                )
+              ) : item.operationType === "Update" ? (
+                item.document.documentBeforeChange ? (
+                  <>
+                    Column <span className="font-semibold">{item.document.documentBeforeChange.title}</span> was updated
+                    for <span className="font-semibold">{item.databaseName}</span> table.{" "}
+                    {item.document.documentBeforeChange.title !== item.document.documentAfterChange.title ? (
+                      <>
+                        It's new name is{" "}
+                        <span className="font-semibold">{item.document.documentAfterChange.title}</span> and is
+                      </>
+                    ) : (
+                      <>It is now</>
+                    )}{" "}
+                    of type{" "}
+                    <span className="font-semibold">{reverseUnslug(item.document.documentAfterChange.type)}</span>
+                    {item.document.documentAfterChange.type === "dropdown" ? (
+                      item.document.documentAfterChange.tableRef ? (
+                        <>
+                          {" "}
+                          linked to{" "}
+                          <span className="font-semibold">
+                            {
+                              getRequiredParams(item.document.documentAfterChange.tableRef)?.find(
+                                (column) => column.field === item.document.documentAfterChange.columnRef
+                              )?.title
+                            }
+                          </span>{" "}
+                          of <span className="font-semibold">{item.document.documentAfterChange.tableRef}</span> table
+                        </>
+                      ) : (
+                        <>
+                          {" "}
+                          having dropdown values:{" "}
+                          <span className="font-semibold">
+                            {item.document.documentAfterChange.dropdownValues &&
+                              item.document.documentAfterChange.dropdownValues.map(
+                                (dropdownValue: string) => `'${dropdownValue}'`
+                              )}
+                          </span>
+                        </>
+                      )
+                    ) : (
+                      ""
+                    )}
+                    .
+                  </>
+                ) : (
+                  <>
+                    Record with ID <span className="font-semibold">{item.document.id}</span> was updated. Field
+                    {getRequiredParams(item.databaseName)!
                       .map((key, ind: number) => {
                         if (
                           item.document.documentBeforeChange.hasOwnProperty(key.field) &&
                           item.document.documentAfterChange.hasOwnProperty(key.field)
                         ) {
-                          if (key.type === "subColumns") {
-                            `${key.title}'s ${key.subColumns!.map((subCol) => {
-                              if (
-                                item.document.documentBeforeChange[key.field][subCol.field] !==
-                                item.document.documentAfterChange[key.field][subCol.field]
-                              ) {
-                                if (subCol.type === "image") return ` ${subCol.title} was changed`;
-                                return ` ${subCol.title} was changed from ${
-                                  item.document.documentBeforeChange[key.field][subCol.field]
-                                } to ${item.document.documentAfterChange[key.field][subCol.field]}${
-                                  ind === getRequiredParams(item.databaseName)!.length - 1 ? "." : ","
-                                }`;
-                              }
-                            })}`;
-                          } else {
-                            if (
-                              item.document.documentBeforeChange[key.field] !==
-                              item.document.documentAfterChange[key.field]
-                            ) {
-                              if (key.type === "image") return ` ${key.title} was changed`;
-                              return ` ${key.title} was changed from ${
-                                item.document.documentBeforeChange[key.field]
-                              } to ${item.document.documentAfterChange[key.field]}${
-                                ind === getRequiredParams(item.databaseName)!.length - 1 ? "." : ","
-                              }`;
-                            }
+                          if (
+                            item.document.documentBeforeChange[key.field] !==
+                            item.document.documentAfterChange[key.field]
+                          ) {
+                            if (key.type === "image")
+                              return (
+                                <>
+                                  {" "}
+                                  <span className="font-semibold">{key.title}</span> was changed
+                                </>
+                              );
+                            return (
+                              <>
+                                {" "}
+                                <span className="font-semibold">{key.title}</span> was changed from{" "}
+                                <span className="font-semibold">{item.document.documentBeforeChange[key.field]}</span>{" "}
+                                to <span className="font-semibold">{item.document.documentAfterChange[key.field]}</span>
+                                {ind === getRequiredParams(item.databaseName)!.length - 1 ? "." : ","}
+                              </>
+                            );
                           }
                         } else if (
                           item.document.documentBeforeChange?.additionalFields?.hasOwnProperty(key.field) &&
                           item.document.documentAfterChange?.additionalFields?.hasOwnProperty(key.field)
                         ) {
-                          if (key.type === "subColumns") {
-                            `${key.title}'s ${key.subColumns!.map((subCol) => {
-                              if (
-                                item.document.documentBeforeChange?.additionalFields[key.field][subCol.field] !==
-                                item.document.documentAfterChange?.additionalFields[key.field][subCol.field]
-                              ) {
-                                if (subCol.type === "image") return ` ${subCol.title} was changed`;
-                                return ` ${subCol.title} was changed from ${
-                                  item.document.documentBeforeChange?.additionalFields[key.field][subCol.field]
-                                } to ${item.document.documentAfterChange?.additionalFields[key.field][subCol.field]}${
-                                  ind === getRequiredParams(item.databaseName)!.length - 1 ? "." : ","
-                                }`;
-                              }
-                            })}`;
-                          } else {
-                            if (
-                              item.document.documentBeforeChange.additionalFields[key.field] !==
-                              item.document.documentAfterChange.additionalFields[key.field]
-                            ) {
-                              if (key.type === "image") return ` ${key.title} was changed`;
-                              return ` ${key.title} was changed from ${
-                                item.document.documentBeforeChange.additionalFields[key.field]
-                              } to ${item.document.documentAfterChange.additionalFields[key.field]}${
-                                ind === getRequiredParams(item.databaseName)!.length - 1 ? "." : ","
-                              }`;
-                            }
-                          }
-                        } else if (key.type === "subColumns") {
-                          return `, ${key.title}'s ${key.subColumns!.map((subCol) => {
-                            return ` ${subCol.title} was updated to ${
-                              item.document.documentAfterChange.additionalFields[key.field][subCol.field]
-                            }`;
-                          })}`;
-                        } else {
-                          return `${key.title} was updated to ${
-                            item.document.documentAfterChange[key.field] ||
+                          if (
+                            item.document.documentBeforeChange.additionalFields[key.field] !==
                             item.document.documentAfterChange.additionalFields[key.field]
-                          }`;
+                          ) {
+                            if (key.type === "image")
+                              return (
+                                <>
+                                  {" "}
+                                  <span className="font-semibold">{key.title}</span> was changed
+                                </>
+                              );
+                            return (
+                              <>
+                                {" "}
+                                <span className="font-semibold">{key.title}</span> was changed from{" "}
+                                <span className="font-semibold">
+                                  {item.document.documentBeforeChange.additionalFields[key.field]}
+                                </span>{" "}
+                                to{" "}
+                                <span className="font-semibold">
+                                  {item.document.documentAfterChange.additionalFields[key.field]}
+                                </span>
+                                {ind === getRequiredParams(item.databaseName)!.length - 1 ? "." : ","}
+                              </>
+                            );
+                          }
+                        } else {
+                          return (
+                            <>
+                              <span className="font-semibold">{key.title}</span> was updated to{" "}
+                              <span className="font-semibold">
+                                {item.document.documentAfterChange[key.field] ||
+                                  item.document.documentAfterChange.additionalFields[key.field]}
+                              </span>
+                            </>
+                          );
                         }
                         return null;
                       })
                       .filter(Boolean)
-                      .join(" ")}.`
-                : `Record with ID ${item.document.id} was deleted from ${item.databaseName}.`}
+                      .join(" ")}
+                    .
+                  </>
+                )
+              ) : (
+                <>
+                  Record with ID <span className="font-semibold">{item.document.id}</span> was deleted from{" "}
+                  <span className="font-semibold">{item.databaseName}</span>.
+                </>
+              )}
             </p>
           </CardContent>
         </div>

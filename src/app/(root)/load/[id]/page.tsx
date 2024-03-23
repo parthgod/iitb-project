@@ -23,15 +23,7 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
   if (Object.keys(loadDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].loadsColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              loadDetails?.[item.field]?.[subItem.field] ||
-              loadDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else values[item.field] = loadDetails?.[item.field] || loadDetails?.additionalFields?.[item.field] || "";
+      values[item.field] = loadDetails?.[item.field] || loadDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = loadDetails._id;
     return values;
@@ -49,7 +41,7 @@ const EditLoad = async ({ params }: EditLoadProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

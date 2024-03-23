@@ -23,15 +23,7 @@ const calculateDefaultValues = (busDetails: IBus, defaultParams: IDefaultParamSc
   if (Object.keys(busDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].busColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              busDetails?.[item.field]?.[subItem.field] ||
-              busDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else values[item.field] = busDetails?.[item.field] || busDetails?.additionalFields?.[item.field] || "";
+      values[item.field] = busDetails?.[item.field] || busDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = busDetails._id;
     return values;
@@ -49,7 +41,7 @@ const EditBus = async ({ params }: EditBusProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

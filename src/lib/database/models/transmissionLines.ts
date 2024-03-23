@@ -2,9 +2,6 @@ import { Schema, model, models } from "mongoose";
 
 const transmissionLineSchema = new Schema(
   {
-    id: {
-      type: String,
-    },
     deviceName: {
       type: String,
     },
@@ -23,13 +20,23 @@ const transmissionLineSchema = new Schema(
     busSectionTo: {
       type: String,
     },
-    positiveSequence: {
-      type: Schema.Types.Mixed,
-      default: {},
+    positiveSequenceRohmsperunitlength: {
+      type: String,
     },
-    negativeSequence: {
-      type: Schema.Types.Mixed,
-      default: {},
+    positiveSequenceXohmsperunitlength: {
+      type: String,
+    },
+    positiveSequenceBseimensperunitlength: {
+      type: String,
+    },
+    negativeSequenceRohmsperunitlength: {
+      type: String,
+    },
+    negativeSequenceXohmsperunitlength: {
+      type: String,
+    },
+    negativeSequenceBseimensperunitlength: {
+      type: String,
     },
     lengthKm: {
       type: String,

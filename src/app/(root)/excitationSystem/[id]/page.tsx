@@ -23,17 +23,8 @@ const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defa
   if (Object.keys(excitationSystemDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].excitationSystemColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              excitationSystemDetails?.[item.field]?.[subItem.field] ||
-              excitationSystemDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          excitationSystemDetails?.[item.field] || excitationSystemDetails?.additionalFields?.[item.field] || "";
+      values[item.field] =
+        excitationSystemDetails?.[item.field] || excitationSystemDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = excitationSystemDetails._id;
     return values;
@@ -51,7 +42,7 @@ const EditExcitationSystem = async ({ params }: EditProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

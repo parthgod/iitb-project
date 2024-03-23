@@ -126,11 +126,11 @@ const Sidebar = () => {
       className={`h-screen overflow-hidden bg-[#f4f4f4] text-gray-800 transition-all duration-200 ease-in-out w-1/6 scrollbar-hide shadow-[inset_-12px_-8px_40px_#46464620] border-r-2 border-gray-300 flex flex-col items-center justify-between`}
     >
       <div className="flex flex-col w-full items-center">
-        <div className="flex bg-white items-center h-[10vh] justify-start px-3 py-3 self-start text-2xl gap-1 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] w-full">
+        <div className="flex bg-white items-center h-[8vh] justify-start px-3 py-3 self-start text-2xl gap-1 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] w-full">
           <FcElectricity />
           <p className="font-semibold line-clamp-1">Power Systems</p>
         </div>
-        <div className="text-lg w-full scrollbar-hide h-[80vh] p-2 text-center gap-1 flex flex-col items-start pt-3 overflow-auto">
+        <div className="text-lg w-full scrollbar-hide h-[85vh] p-2 text-center gap-1 flex flex-col items-start pt-3 overflow-auto">
           <Link
             href="/requests"
             className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
@@ -172,7 +172,7 @@ const Sidebar = () => {
                   Tables
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="flex flex-col items-start max-h-[57vh] overflow-auto custom-scrollbar text-left pl-2 text-xs xl:text-base w-full">
+              <AccordionContent className="flex flex-col items-start max-h-[60vh] overflow-auto custom-scrollbar text-left pl-2 text-xs xl:text-base w-full">
                 {sideMenu.map((item) => (
                   <div
                     key={item.route}

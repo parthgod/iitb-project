@@ -2,9 +2,6 @@ import { Schema, model, models } from "mongoose";
 
 const transformersThreeWindingSchema = new Schema(
   {
-    id: {
-      type: String,
-    },
     deviceName: {
       type: String,
     },
@@ -38,17 +35,23 @@ const transformersThreeWindingSchema = new Schema(
     kvtertiaryVoltage: {
       type: String,
     },
-    psprimarysecondary: {
-      type: Schema.Types.Mixed,
-      default: {},
+    psprimarysecondaryR: {
+      type: String,
     },
-    ptprimarytertiary: {
-      type: Schema.Types.Mixed,
-      default: {},
+    psprimarysecondaryX: {
+      type: String,
     },
-    stsecondarytertiary: {
-      type: Schema.Types.Mixed,
-      default: {},
+    ptprimarytertiaryR: {
+      type: String,
+    },
+    ptprimarytertiaryX: {
+      type: String,
+    },
+    stsecondarytertiaryR: {
+      type: String,
+    },
+    stsecondarytertiaryX: {
+      type: String,
     },
     TapPrimary: {
       type: String,

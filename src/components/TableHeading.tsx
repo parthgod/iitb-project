@@ -10,10 +10,12 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { IColumn } from "@/utils/defaultTypes";
 import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaFileImport, FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
+import { FaFileDownload, FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
+import ImportFromExcel from "./ImportFromExcel";
 import { Button } from "./ui/button";
 
 type TableHeadingProps = {
@@ -23,6 +25,8 @@ type TableHeadingProps = {
   fnExportToExcel: any;
   downloadPDF: any;
   limit?: number;
+  columns: IColumn[];
+  userId: string;
 };
 
 const TableHeading = ({
@@ -32,6 +36,8 @@ const TableHeading = ({
   downloadPDF,
   fnExportToExcel,
   limit = 10,
+  columns,
+  userId,
 }: TableHeadingProps) => {
   const searchParams = useSearchParams();
   const [page, setPage] = useState(Number(searchParams.get("page") || 1));
@@ -65,13 +71,16 @@ const TableHeading = ({
   return (
     <div className="p-3 py-1.5 flex items-center justify-between border-b-[1px] border-b-gray-300">
       {totalDocuments ? (
-        <>
-          <p className="font-semibold whitespace-nowrap">
-            Showing {(Number(page) - 1) * limit + 1} - {totalEntries > totalDocuments ? totalDocuments : totalEntries}{" "}
-            of {totalDocuments} records
-          </p>
-
-          <div className="flex items-center gap-3">
+        <p className="font-semibold whitespace-nowrap">
+          Showing {(Number(page) - 1) * limit + 1} - {totalEntries > totalDocuments ? totalDocuments : totalEntries} of{" "}
+          {totalDocuments} records
+        </p>
+      ) : (
+        <p className="font-semibold whitespace-nowrap">No records to display</p>
+      )}
+      <div className="flex items-center gap-3">
+        {totalDocuments ? (
+          <>
             {totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
@@ -132,7 +141,7 @@ const TableHeading = ({
                   title="Download table"
                   className="p-3 bg-gray-200 ml-5 rounded-lg hover:bg-gray-300"
                 >
-                  <FaFileImport />
+                  <FaFileDownload />
                 </div>
               </PopoverTrigger>
               <PopoverContent
@@ -157,11 +166,15 @@ const TableHeading = ({
                 </Button>
               </PopoverContent>
             </Popover>
-          </div>
-        </>
-      ) : (
-        <p className="font-semibold whitespace-nowrap">No records to display</p>
-      )}
+          </>
+        ) : (
+          ""
+        )}
+        <ImportFromExcel
+          columns={columns}
+          userId={userId}
+        />
+      </div>
     </div>
   );
 };

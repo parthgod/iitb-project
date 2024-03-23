@@ -11,7 +11,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <main className="flex">
+    <main className="flex scale-75 xl:scale-100">
       <SessionProvider session={session}>
         <Sidebar />
         <div className="w-full h-screen overflow-auto pl-3">{children}</div>

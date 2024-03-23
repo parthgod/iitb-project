@@ -23,19 +23,10 @@ const calculateDefaultValues = (transformersTwoWindingDetails: IBus, defaultPara
   if (Object.keys(transformersTwoWindingDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transformersTwoWindingColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              transformersTwoWindingDetails?.[item.field]?.[subItem.field] ||
-              transformersTwoWindingDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] =
-          transformersTwoWindingDetails?.[item.field] ||
-          transformersTwoWindingDetails?.additionalFields?.[item.field] ||
-          "";
+      values[item.field] =
+        transformersTwoWindingDetails?.[item.field] ||
+        transformersTwoWindingDetails?.additionalFields?.[item.field] ||
+        "";
     });
     values["_id"] = transformersTwoWindingDetails._id;
     return values;
@@ -53,7 +44,7 @@ const EditTransformersTwoWinding = async ({ params }: EditTransformersTwoWinding
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

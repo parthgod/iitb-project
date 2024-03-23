@@ -23,16 +23,7 @@ const calculateDefaultValues = (shuntFactDetails: INonDefaultDatabases, defaultP
   if (Object.keys(shuntFactDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntFactsColumns.forEach((item) => {
-      if (item.type === "subColumns") {
-        item.subColumns!.map(
-          (subItem) =>
-            (values[subItem.field] =
-              shuntFactDetails?.[item.field]?.[subItem.field] ||
-              shuntFactDetails?.additionalFields?.[item.field]?.[subItem.field] ||
-              "")
-        );
-      } else
-        values[item.field] = shuntFactDetails?.[item.field] || shuntFactDetails?.additionalFields?.[item.field] || "";
+      values[item.field] = shuntFactDetails?.[item.field] || shuntFactDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = shuntFactDetails._id;
     return values;
@@ -50,7 +41,7 @@ const EditShuntFact = async ({ params }: EditShuntFactProps) => {
 
   return (
     <div className="flex flex-col gap-2 h-screen overflow-hidden">
-      <Breadcrumb className="p-3 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
+      <Breadcrumb className="p-3">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink

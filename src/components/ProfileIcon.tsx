@@ -17,13 +17,13 @@ const ProfileIcon = ({ session }: { session: Session }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="pb-3 bg-white h-[10vh] shadow-[rgba(0,_0,_0,_0.24)_0px_-2px_8px] w-full flex items-center justify-start pt-2">
+    <div className="bg-white h-[7vh] shadow-[rgba(0,_0,_0,_0.24)_0px_-2px_8px] w-full flex items-center justify-start py-2">
       {session ? (
         <Popover
           open={open}
           onOpenChange={setOpen}
         >
-          <div className="flex gap-3 pr-2 ml-3 items-center">
+          <div className="flex gap-2 pr-2 ml-3 items-center">
             <PopoverTrigger>
               <Avatar className="scale-100">
                 <AvatarImage src={session?.user.image || pfp} />
