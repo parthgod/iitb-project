@@ -20,6 +20,9 @@ import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "./ui/input";
+import { IoMdAdd } from "react-icons/io";
+import { FaAngleDoubleRight } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be empty" }),
@@ -237,13 +240,22 @@ const AddColumns = ({
       >
         <DialogTrigger className={`${newTable && "text-[1.15rem]"} w-full`}>
           {actionType === "Add-Column-Left" && (
-            <p className={buttonVariants({ variant: "outline" }) + " w-full"}>Add column to left</p>
+            <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
+              <IoMdAdd />
+              <p>Add column to left</p>
+            </div>
           )}
           {actionType === "Add-Column-Right" && (
-            <p className={buttonVariants({ variant: "outline" }) + " w-full"}>Add column to right</p>
+            <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
+              <IoMdAdd />
+              <p>Add column to right</p>
+            </div>
           )}
           {actionType === "Edit" && (
-            <p className={buttonVariants({ variant: "outline" }) + " w-full"}>Edit column details</p>
+            <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
+              <MdEdit />
+              <p>Edit column details</p>
+            </div>
           )}
         </DialogTrigger>
         <DialogContent className="bg-white max-h-[80vh] overflow-auto custom-scrollbar">

@@ -115,12 +115,12 @@ export default function RegistrationForm() {
           >
             Create account
           </Button>
-          <Link
-            href="/login"
-            className="text-gray-500"
-          >
-            Already have an account? <span className="text-blue-500 underline">Login here</span>
-          </Link>
+          <p className="text-gray-500">
+            Already have an account?{" "}
+            <span className="text-blue-500 underline">
+              <Link href="/login">Login here</Link>
+            </span>
+          </p>
         </CardFooter>
       </form>
     </>

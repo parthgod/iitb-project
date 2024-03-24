@@ -1,5 +1,6 @@
 "use server";
 
+import { IUser } from "@/utils/defaultTypes";
 import { connectToDatabase } from "../database/database";
 import User from "../database/models/User";
 import bcryptjs from "bcryptjs";
@@ -49,6 +50,40 @@ export const changePassword = async (req: {
 
     const updatedUser = await User.findByIdAndUpdate(id, { password: hashedPassword });
     return { data: "Password changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const getAllUsers = async ({
+  query,
+  status,
+}: {
+  query: string;
+  status: string;
+}): Promise<{ data: IUser[]; status: number }> => {
+  try {
+    await connectToDatabase();
+    const searchConditions: any = {
+      isAdmin: false,
+    };
+    if (query) {
+      searchConditions.name = { $regex: `.*${query}.*`, $options: "i" };
+      searchConditions.email = { $regex: `.*${query}.*`, $options: "i" };
+    }
+    if (status) searchConditions.disabled = status === "disabled" ? true : false;
+    const users = await User.find(searchConditions);
+    return { data: JSON.parse(JSON.stringify(users)), status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const updateUserStatus = async (userId: string, disabled: boolean) => {
+  try {
+    await connectToDatabase();
+    const updatedUser = await User.findByIdAndUpdate(userId, { disabled: disabled });
+    return { data: "User status changed successfully.", status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

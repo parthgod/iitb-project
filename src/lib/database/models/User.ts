@@ -22,6 +22,14 @@ const UserSchema = new Schema(
     image: {
       type: String,
     },
+    latestLoginTime: {
+      type: Date,
+      default: new Date(),
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true, collectionOptions: { changeStreamPreAndPostImages: { enabled: true } } }
 );

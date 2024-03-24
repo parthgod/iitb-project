@@ -1,15 +1,15 @@
 "use client";
 
 import { Label } from "@radix-ui/react-label";
-import { signIn } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { CardContent, CardFooter } from "./ui/card";
 import { Input } from "./ui/input";
-import { useState } from "react";
 
 interface IUserRegister {
   email: string;
@@ -55,9 +55,9 @@ export default function LoginForm() {
         redirect: false,
       });
 
-      if (response?.status === 401) return toast.error("Incorrect email or password. Please try again");
+      if (response?.error === "AccessDenied") return toast.error("Account is disabled. Please contact admin.");
 
-      if (response?.status === 404) return toast.error("Email does not exist. Please use another email");
+      if (response?.status === 401) return toast.error("Incorrect email or password. Please try again");
 
       setIsLoading(true);
       // toast.success("Successfully signed in");
@@ -67,7 +67,8 @@ export default function LoginForm() {
       // });
       router.push("/");
     } catch (error: any) {
-      toast.error("Failed!", error?.message);
+      console.log(error);
+      toast.error("Failed!");
     }
   };
 
@@ -105,12 +106,13 @@ export default function LoginForm() {
           >
             Login
           </Button>
-          <Link
-            href="/register"
-            className="text-gray-500"
-          >
-            Don&apos;t have an account? <span className="text-blue-500 underline">Create new account</span>
-          </Link>
+          <p className="text-gray-500">
+            Don&apos;t have an account?{" "}
+            <span className="text-blue-500 underline">
+              {" "}
+              <Link href="/register">Create new account</Link>
+            </span>
+          </p>
         </CardFooter>
       </form>
       {isLoading ? (

@@ -12,7 +12,8 @@ const providers = [
 
 export default function LoginProvider() {
   const handleOAuthSignIn = (provider: string) => {
-    signIn(provider);
+    const response = signIn(provider);
+    console.log(response);
   };
 
   return (

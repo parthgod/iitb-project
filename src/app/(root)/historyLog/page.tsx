@@ -98,7 +98,7 @@ export const PrintModification = ({
         key={i}
       >
         <Avatar className="scale-100 mr-4">
-          <AvatarImage src={item.userId.image || pfp} />
+          <AvatarImage src={item?.userId?.image || pfp} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="w-full">

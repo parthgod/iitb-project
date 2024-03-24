@@ -10,6 +10,7 @@ declare module "next-auth" {
       /** The user's postal address. */
       isAdmin: boolean;
       id: string;
+      disabled: boolean;
     } & DefaultSession["user"];
   }
 }

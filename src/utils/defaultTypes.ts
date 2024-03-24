@@ -31,11 +31,15 @@ export type IColumnDetails = {
 };
 
 export type IUser = {
+  _id: string;
   name: string;
   email: string;
   password?: string;
   isAdmin: boolean;
   image?: string;
+  latestLoginTime: string;
+  disabled: boolean;
+  createdAt: string;
 };
 
 export type IModificationHistory = {

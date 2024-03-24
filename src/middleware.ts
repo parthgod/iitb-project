@@ -83,5 +83,6 @@ export const config = {
     "/seriesFact/:path*",
     "/shuntFact/:path*",
     "/vscHVDCLink/:path*",
+    "/users",
   ],
 };

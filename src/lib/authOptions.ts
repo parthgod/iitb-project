@@ -1,5 +1,6 @@
 import { connectToDatabase } from "@/lib/database/database";
 import User from "@/lib/database/models/User";
+import { IUser } from "@/utils/defaultTypes";
 import bcryptjs from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -15,7 +16,7 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 5 * 60,
     updateAge: 24 * 60 * 60,
   },
 
@@ -53,6 +54,8 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        await User.findByIdAndUpdate(user._id, { latestLoginTime: new Date() });
+
         return {
           id: user?._id,
           name: user?.name || "Anonymous",
@@ -72,7 +75,13 @@ export const authOptions: NextAuthOptions = {
             name: profile?.name || user.name,
             email: profile?.email || user.email,
             image: profile?.image || user.image,
+            latestLoginTime: new Date(),
           });
+        } else {
+          if (userExists.disabled) {
+            return false;
+          }
+          await User.findByIdAndUpdate(userExists._id, { latestLoginTime: new Date() });
         }
         return true;
       } catch (error) {
@@ -83,7 +92,12 @@ export const authOptions: NextAuthOptions = {
       try {
         await connectToDatabase();
         const existingUser = await User.findOne({ email: session.user?.email });
-        session.user = { ...session.user, isAdmin: existingUser?.isAdmin || false, id: existingUser?._id.toString() };
+        session.user = {
+          ...session.user,
+          isAdmin: existingUser?.isAdmin,
+          id: existingUser?._id.toString(),
+          disabled: existingUser.disabled,
+        };
         if (existingUser.isAdmin) token.role = "admin";
         else token.role = "user";
       } catch (error) {

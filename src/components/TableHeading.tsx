@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { FaFileDownload, FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
 import ImportFromExcel from "./ImportFromExcel";
 import { Button } from "./ui/button";
+import ToggleColumns from "./ToggleColumns";
 
 type TableHeadingProps = {
   totalPages: number;
@@ -174,6 +175,7 @@ const TableHeading = ({
           columns={columns}
           userId={userId}
         />
+        {/* <ToggleColumns columns={columns} /> */}
       </div>
     </div>
   );

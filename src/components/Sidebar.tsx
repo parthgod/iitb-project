@@ -2,11 +2,11 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ISIdeMenu } from "@/utils/defaultTypes";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { FaTable } from "react-icons/fa";
+import { FaTable, FaUser } from "react-icons/fa";
 import { FcElectricity } from "react-icons/fc";
 import { GrDocumentUser } from "react-icons/gr";
 import { MdManageHistory } from "react-icons/md";
@@ -103,16 +103,6 @@ const Sidebar = () => {
       route: "/vscHVDCLink",
       icon: <FaTable />,
     },
-    // {
-    //   name: "Requests",
-    //   route: "/requests",
-    //   icon: <GrDocumentUser />,
-    // },
-    // {
-    //   name: "Edit History",
-    //   route: "/historyLog",
-    //   icon: <MdManageHistory />,
-    // },
   ];
 
   useEffect(() => {
@@ -120,6 +110,16 @@ const Sidebar = () => {
       clickRef.current.click();
     }
   }, []);
+
+  useEffect(() => {
+    const signOutDisabledUser = async () => {
+      if (session?.user.disabled) {
+        await signOut();
+      }
+    };
+
+    signOutDisabledUser();
+  }, [session, pathname]);
 
   return (
     <div
@@ -131,6 +131,20 @@ const Sidebar = () => {
           <p className="font-semibold line-clamp-1">Power Systems</p>
         </div>
         <div className="text-lg w-full scrollbar-hide h-[85vh] p-2 text-center gap-1 flex flex-col items-start pt-3 overflow-auto">
+          {session?.user.isAdmin && (
+            <Link
+              href="/users"
+              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+                pathname === "/users"
+                  ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                  : "hover:bg-[#d7d7d7]"
+              }`}
+            >
+              <FaUser />
+              <p>Users</p>
+            </Link>
+          )}
+
           <Link
             href="/requests"
             className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
@@ -172,7 +186,11 @@ const Sidebar = () => {
                   Tables
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="flex flex-col items-start max-h-[60vh] overflow-auto custom-scrollbar text-left pl-2 text-xs xl:text-base w-full">
+              <AccordionContent
+                className={`flex flex-col items-start ${
+                  session?.user.isAdmin ? "max-h-[53vh]" : "max-h-[60vh]"
+                } overflow-auto custom-scrollbar text-left pl-2 text-xs xl:text-base w-full`}
+              >
                 {sideMenu.map((item) => (
                   <div
                     key={item.route}
