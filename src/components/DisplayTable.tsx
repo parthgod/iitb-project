@@ -87,11 +87,6 @@ type TableProps = {
 
 const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session }: TableProps) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [open, setOpen] = useState(
-    columns.forEach((item) => {
-      return { [item.field]: false };
-    })
-  );
 
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -126,10 +121,12 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     idCellHeading.style.padding = "5px";
 
     columns.forEach((headerText) => {
-      const cell = headingRow.insertCell();
-      cell.textContent = headerText.title;
-      cell.style.border = "1px solid #000";
-      cell.style.padding = "5px";
+      if (!headerText.isRemoved) {
+        const cell = headingRow.insertCell();
+        cell.textContent = headerText.title;
+        cell.style.border = "1px solid #000";
+        cell.style.padding = "5px";
+      }
     });
 
     completeData.forEach((rowData) => {
@@ -139,14 +136,16 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
       idCell.style.border = "1px solid #000";
       idCell.style.padding = "5px";
       columns.forEach((cellData) => {
-        const cell = row.insertCell();
-        cell.style.border = "1px solid #000";
-        cell.style.padding = "5px";
-        // if (cellData.type === "image") {
-        //   cell.innerHTML = `<img src="${encodeURIComponent(rowData[cellData.field])}" width={50} height={50} />`;
-        // } else {
-        cell.textContent = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || "null";
-        // }
+        if (!cellData.isRemoved) {
+          const cell = row.insertCell();
+          cell.style.border = "1px solid #000";
+          cell.style.padding = "5px";
+          // if (cellData.type === "image") {
+          //   cell.innerHTML = `<img src="${encodeURIComponent(rowData[cellData.field])}" width={50} height={50} />`;
+          // } else {
+          cell.textContent = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || "null";
+          // }
+        }
       });
     });
 
@@ -167,8 +166,10 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     const idCellHeading = headingRow.insertCell();
     idCellHeading.textContent = "ID";
     columns.forEach((headerText) => {
-      const cell = headingRow.insertCell();
-      cell.textContent = headerText.title;
+      if (!headerText.isRemoved) {
+        const cell = headingRow.insertCell();
+        cell.textContent = headerText.title;
+      }
     });
 
     completeData.forEach((rowData) => {
@@ -176,8 +177,10 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
       const idCell = row.insertCell();
       idCell.textContent = rowData._id;
       columns.forEach((cellData) => {
-        const cell = row.insertCell();
-        cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
+        if (!cellData.isRemoved) {
+          const cell = row.insertCell();
+          cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
+        }
       });
     });
 
@@ -201,109 +204,127 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           downloadPDF={downloadPDF}
           fnExportToExcel={fnExportToExcel}
           columns={columns}
-          userId={session.user.id}
+          session={session}
         />
-        <Table
-          ref={tableRef}
-          id="tbl_exporttable_to_xls"
-        >
-          <TableCaption className={`w-full ${!data.length && "pb-3"}`}>
-            {data.length ? "" : `No ${type.toLowerCase()} found`}
-          </TableCaption>
-          <TableHeader>
-            <TableRow className="bg-slate-100">
-              <TableHead className="border-[1px] border-gray-300 group max-w-10">ID</TableHead>
-              {columns.map((item, ind: number) => (
-                <TableHead
-                  key={ind}
-                  className={`border-[1px] border-gray-300 group`}
-                >
-                  <div className="flex items-center gap-2 whitespace-nowrap justify-between">
-                    {item.title}
-                    <Popover open={open?.[item.field]}>
-                      <PopoverTrigger
-                        className="p-1 rounded-full hover:bg-gray-200"
-                        id={`popover-btn-${ind}`}
-                      >
-                        <PiDotsThreeVerticalBold />
-                      </PopoverTrigger>
-                      <PopoverContent className="flex flex-col gap-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
-                        <AddColumns
-                          actionType="Add-Column-Left"
-                          columnIndex={ind}
-                          userId={session.user.id}
-                        />
-                        <AddColumns
-                          actionType="Add-Column-Right"
-                          columnIndex={ind}
-                          userId={session.user.id}
-                        />
-                        <AddColumns
-                          actionType="Edit"
-                          columnIndex={ind}
-                          userId={session.user.id}
-                          columnDetails={item}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </TableHead>
-              ))}
-              {session?.user.isAdmin && <TableHead className="border-[1px] border-gray-300">Actions</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item, ind: number) => {
-              return (
-                <TableRow key={ind}>
-                  <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
-                  {columns.map((column, i: number) => (
-                    <TableCell
-                      key={i}
-                      className={`border-[1px] border-gray-300 ${
-                        !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
-                      }`}
-                    >
-                      {column.type === "image" ? (
-                        <Image
-                          src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
-                          alt="image"
-                          width={120}
-                          height={120}
-                          className="object-cover"
-                        />
-                      ) : (
-                        item?.[column.field] || item?.additionalFields?.[column.field] || "null"
-                      )}
-                    </TableCell>
-                  ))}
-
-                  {session?.user.isAdmin ? (
-                    <TableCell className="border-[1px] border-gray-300">
-                      <div className="flex justify-start items-center gap-2.5">
-                        <Link href={`/${convertField(type)}/${item._id}`}>
-                          <div
-                            title="Edit"
-                            className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"
-                          >
-                            <MdEdit className="text-base" />
-                          </div>
-                        </Link>
-                        <DeleteConfirmation
-                          id={item._id}
-                          type={type}
-                          userId={session.user.id}
-                        />
-                      </div>
-                    </TableCell>
-                  ) : (
+        <div className="relative flex items-start justify-start w-full overflow-auto custom-scrollbar max-h-[67vh]">
+          <Table
+            ref={tableRef}
+            id="tbl_exporttable_to_xls"
+          >
+            <TableCaption className={`w-full ${!data.length && "pb-3"}`}>
+              {data.length ? "" : `No ${type} found`}
+            </TableCaption>
+            <TableHeader>
+              <TableRow className="bg-slate-100">
+                <TableHead className="border-[1px] border-gray-300 group max-w-10">ID</TableHead>
+                {columns.map((item, ind: number) =>
+                  item.isRemoved ? (
                     ""
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                  ) : (
+                    <TableHead
+                      key={ind}
+                      className={`border-[1px] border-gray-300 group`}
+                    >
+                      <div className="flex items-center gap-2 whitespace-nowrap justify-between">
+                        {item.title}
+                        {session.user.isAdmin && (
+                          <Popover>
+                            <PopoverTrigger
+                              className="p-1 rounded-full hover:bg-gray-200"
+                              id={`popover-btn-${ind}`}
+                            >
+                              <PiDotsThreeVerticalBold />
+                            </PopoverTrigger>
+                            <PopoverContent className="flex flex-col gap-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
+                              <AddColumns
+                                actionType="Add-Column-Left"
+                                columnIndex={ind}
+                                userId={session.user.id}
+                              />
+                              <AddColumns
+                                actionType="Add-Column-Right"
+                                columnIndex={ind}
+                                userId={session.user.id}
+                              />
+                              <AddColumns
+                                actionType="Edit-Column"
+                                columnIndex={ind}
+                                userId={session.user.id}
+                                columnDetails={item}
+                              />
+                              <AddColumns
+                                actionType="Remove-Column"
+                                columnIndex={ind}
+                                userId={session.user.id}
+                                columnDetails={item}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        )}
+                      </div>
+                    </TableHead>
+                  )
+                )}
+                {session?.user.isAdmin && <TableHead className="border-[1px] border-gray-300">Actions</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((item, ind: number) => {
+                return (
+                  <TableRow key={ind}>
+                    <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
+                    {columns.map((column, i: number) =>
+                      column.isRemoved ? (
+                        ""
+                      ) : (
+                        <TableCell
+                          key={i}
+                          className={`border-[1px] border-gray-300 ${
+                            !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
+                          }`}
+                        >
+                          {column.type === "image" ? (
+                            <Image
+                              src={item?.[column.field] || item?.additionalFields?.[column.field] || noImageUrl}
+                              alt="image"
+                              width={120}
+                              height={120}
+                              className="object-cover"
+                            />
+                          ) : (
+                            item?.[column.field] || item?.additionalFields?.[column.field] || "null"
+                          )}
+                        </TableCell>
+                      )
+                    )}
+
+                    {session?.user.isAdmin ? (
+                      <TableCell className="border-[1px] border-gray-300">
+                        <div className="flex justify-start items-center gap-2.5">
+                          <Link href={`/${convertField(type)}/${item._id}`}>
+                            <div
+                              title="Edit"
+                              className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"
+                            >
+                              <MdEdit className="text-base" />
+                            </div>
+                          </Link>
+                          <DeleteConfirmation
+                            id={item._id}
+                            type={type}
+                            userId={session.user.id}
+                          />
+                        </div>
+                      </TableCell>
+                    ) : (
+                      ""
+                    )}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

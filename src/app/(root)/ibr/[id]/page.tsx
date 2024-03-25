@@ -23,7 +23,8 @@ const calculateDefaultValues = (ibrDetails: INonDefaultDatabases, defaultParams:
   if (Object.keys(ibrDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].ibrColumns.forEach((item) => {
-      values[item.field] = ibrDetails?.[item.field] || ibrDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] = ibrDetails?.[item.field] || ibrDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = ibrDetails._id;
     return values;

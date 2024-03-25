@@ -8,6 +8,7 @@ import { getAllSingleLineDiagrams } from "@/lib/actions/singleLineDiagram.action
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa6";
 
 const SingleLineDiagram = async ({
   searchParams,
@@ -44,7 +45,9 @@ const SingleLineDiagram = async ({
         <Search />
         <div className="flex gap-5">
           <Link href="/singleLineDiagram/create">
-            <Button>Create single line diagram</Button>
+            <Button>
+              Create single line diagram <FaPlus className="text-lg ml-2" />
+            </Button>
           </Link>
           {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>

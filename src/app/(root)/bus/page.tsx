@@ -8,6 +8,7 @@ import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa6";
 
 const Bus = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
@@ -30,8 +31,15 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
         <Search />
         <div className="flex gap-5">
           <Link href="/bus/create">
-            <Button>Create bus</Button>
+            <Button>
+              Create bus <FaPlus className="text-lg ml-2" />
+            </Button>
           </Link>
+          {/* <AddColumns
+            actionType="Add-Column-Left"
+            columnIndex={1}
+            userId={"null"}
+          /> */}
           {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>
       </div>

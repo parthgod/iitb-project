@@ -23,7 +23,8 @@ const calculateDefaultValues = (shuntFactDetails: INonDefaultDatabases, defaultP
   if (Object.keys(shuntFactDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntFactsColumns.forEach((item) => {
-      values[item.field] = shuntFactDetails?.[item.field] || shuntFactDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] = shuntFactDetails?.[item.field] || shuntFactDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = shuntFactDetails._id;
     return values;

@@ -23,8 +23,9 @@ const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDe
   if (Object.keys(turbineGovernorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].turbineGovernorColumns.forEach((item) => {
-      values[item.field] =
-        turbineGovernorDetails?.[item.field] || turbineGovernorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] =
+          turbineGovernorDetails?.[item.field] || turbineGovernorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = turbineGovernorDetails._id;
     return values;

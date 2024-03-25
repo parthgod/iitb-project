@@ -17,8 +17,11 @@ export const convertField = (input: string): string => {
 };
 
 export const reverseUnslug = (input: string): string => {
-  const words = input.match(/[A-Za-z0-9]+/g) || []; // Extract alphanumeric words
-  const result = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  const words = input.replace(/[^a-zA-Z0-9\s']/g, "").split(/(?=[A-Z])/);
+
+  const capitalizedWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+
+  const result = capitalizedWords.join(" ");
 
   return result;
 };

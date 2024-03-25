@@ -18,6 +18,7 @@ import { FaFileDownload, FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
 import ImportFromExcel from "./ImportFromExcel";
 import { Button } from "./ui/button";
 import ToggleColumns from "./ToggleColumns";
+import { Session } from "next-auth";
 
 type TableHeadingProps = {
   totalPages: number;
@@ -27,7 +28,7 @@ type TableHeadingProps = {
   downloadPDF: any;
   limit?: number;
   columns: IColumn[];
-  userId: string;
+  session: Session;
 };
 
 const TableHeading = ({
@@ -38,7 +39,7 @@ const TableHeading = ({
   fnExportToExcel,
   limit = 10,
   columns,
-  userId,
+  session,
 }: TableHeadingProps) => {
   const searchParams = useSearchParams();
   const [page, setPage] = useState(Number(searchParams.get("page") || 1));
@@ -135,47 +136,52 @@ const TableHeading = ({
                 </PaginationContent>
               </Pagination>
             )}
-
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  title="Download table"
-                  className="p-3 bg-gray-200 ml-5 rounded-lg hover:bg-gray-300"
-                >
-                  <FaFileDownload />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                className="flex flex-col gap-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
-              >
-                <Button
-                  onClick={() => fnExportToExcel(type)}
-                  variant="outline"
-                  className="border-[1px] border-[#008744]"
-                >
-                  <FaRegFileExcel className="text-[#008744] mr-2" />
-                  Export as excel (.xlsx)
-                </Button>
-                <Button
-                  onClick={() => downloadPDF(type)}
-                  variant="outline"
-                  className="border-[1px] border-[#d62d20]"
-                >
-                  <FaRegFilePdf className="text-[#d62d20] mr-2" />
-                  Export as PDF (.pdf)
-                </Button>
-              </PopoverContent>
-            </Popover>
           </>
         ) : (
           ""
         )}
+        <Popover>
+          <PopoverTrigger>
+            <div
+              title="Download table"
+              className="p-3 py-2 flex items-center gap-1 bg-gray-200 ml-5 rounded-lg hover:bg-gray-300"
+            >
+              <FaFileDownload />
+              <p>Download</p>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            className="flex flex-col gap-2 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
+          >
+            <Button
+              onClick={() => fnExportToExcel(type)}
+              variant="outline"
+              className="border-[1px] border-[#008744]"
+            >
+              <FaRegFileExcel className="text-[#008744] mr-2" />
+              Export as excel (.xlsx)
+            </Button>
+            <Button
+              onClick={() => downloadPDF(type)}
+              variant="outline"
+              className="border-[1px] border-[#d62d20]"
+            >
+              <FaRegFilePdf className="text-[#d62d20] mr-2" />
+              Export as PDF (.pdf)
+            </Button>
+          </PopoverContent>
+        </Popover>
         <ImportFromExcel
           columns={columns}
-          userId={userId}
+          userId={session.user.id}
         />
-        {/* <ToggleColumns columns={columns} /> */}
+        {session.user.isAdmin && (
+          <ToggleColumns
+            columns={columns}
+            userId={session.user.id}
+          />
+        )}
       </div>
     </div>
   );

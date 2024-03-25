@@ -8,6 +8,7 @@ import { getAllGenerators } from "@/lib/actions/generator.actions";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa6";
 
 const Generators = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
@@ -40,7 +41,9 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
         <Search />
         <div className="flex gap-5">
           <Link href="/generator/create">
-            <Button>Create generator</Button>
+            <Button>
+              Create generator <FaPlus className="text-lg ml-2" />
+            </Button>
           </Link>
           {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>

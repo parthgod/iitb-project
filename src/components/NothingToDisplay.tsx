@@ -1,4 +1,3 @@
-import { MdArrowRightAlt } from "react-icons/md";
 import { TbTableOff } from "react-icons/tb";
 import AddColumns from "./AddColumns";
 
@@ -13,8 +12,9 @@ const NothingToDisplay = ({ userId }: { userId: string }) => {
           <AddColumns
             userId={userId}
             newTable={true}
+            columnIndex={1}
+            actionType="Add-Column-Left"
           />
-          <MdArrowRightAlt className="text-primary -ml-3" />
         </div>
       </div>
     </div>

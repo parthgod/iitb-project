@@ -23,7 +23,8 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
   if (Object.keys(loadDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].loadsColumns.forEach((item) => {
-      values[item.field] = loadDetails?.[item.field] || loadDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] = loadDetails?.[item.field] || loadDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = loadDetails._id;
     return values;

@@ -23,8 +23,9 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
   if (Object.keys(transmissionLineDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transmissionLinesColumns.forEach((item) => {
-      values[item.field] =
-        transmissionLineDetails?.[item.field] || transmissionLineDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] =
+          transmissionLineDetails?.[item.field] || transmissionLineDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = transmissionLineDetails._id;
     return values;

@@ -3,6 +3,22 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { uploadBusFromExcel } from "@/lib/actions/bus.actions";
+import { uploadExcitationSystemFromExcel } from "@/lib/actions/excitationSystem.actions";
+import { uploadGeneratorFromExcel } from "@/lib/actions/generator.actions";
+import { uploadIBRFromExcel } from "@/lib/actions/ibr.actions";
+import { uploadLCCHVDCLinkFromExcel } from "@/lib/actions/lccHVDCLink.actions";
+import { uploadLoadFromExcel } from "@/lib/actions/load.actions";
+import { uploadSeriesCapacitorFromExcel } from "@/lib/actions/seriesCapacitor.actions";
+import { uploadSeriesFactFromExcel } from "@/lib/actions/seriesFact.actions";
+import { uploadShuntCapacitorFromExcel } from "@/lib/actions/shuntCapacitor.actions";
+import { uploadShuntFactFromExcel } from "@/lib/actions/shuntFact.actions";
+import { uploadShuntReactorFromExcel } from "@/lib/actions/shuntReactor.actions";
+import { uploadSingleLineDiagramFromExcel } from "@/lib/actions/singleLineDiagram.actions";
+import { uploadTransformersThreeWindingFromExcel } from "@/lib/actions/transformersThreeWinding.actions";
+import { uploadTransformersTwoWindingFromExcel } from "@/lib/actions/transformersTwoWinding.actions";
+import { uploadTransmissionLineFromExcel } from "@/lib/actions/transmissionLines.actions";
+import { uploadTurbineGovernorFromExcel } from "@/lib/actions/turbineGovernor.actions";
+import { uploadVSCHVDCLinkFromExcel } from "@/lib/actions/vscHVDCLink.actions";
 import { IColumn } from "@/utils/defaultTypes";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,22 +30,6 @@ import * as XLSX from "xlsx/xlsx.mjs";
 import { ExcelFileUploader } from "./ExcelFileUploader";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
-import { uploadExcitationSystemFromExcel } from "@/lib/actions/excitationSystem.actions";
-import { uploadGeneratorFromExcel } from "@/lib/actions/generator.actions";
-import { uploadLoadFromExcel } from "@/lib/actions/load.actions";
-import { uploadSeriesCapacitorFromExcel } from "@/lib/actions/seriesCapacitor.actions";
-import { uploadShuntCapacitorFromExcel } from "@/lib/actions/shuntCapacitor.actions";
-import { uploadShuntReactorFromExcel } from "@/lib/actions/shuntReactor.actions";
-import { uploadSingleLineDiagramFromExcel } from "@/lib/actions/singleLineDiagram.actions";
-import { uploadTransformersThreeWindingFromExcel } from "@/lib/actions/transformersThreeWinding.actions";
-import { uploadTransformersTwoWindingFromExcel } from "@/lib/actions/transformersTwoWinding.actions";
-import { uploadTransmissionLineFromExcel } from "@/lib/actions/transmissionLines.actions";
-import { uploadTurbineGovernorFromExcel } from "@/lib/actions/turbineGovernor.actions";
-import { uploadIBRFromExcel } from "@/lib/actions/ibr.actions";
-import { uploadLCCHVDCLinkFromExcel } from "@/lib/actions/lccHVDCLink.actions";
-import { uploadSeriesFactFromExcel } from "@/lib/actions/seriesFact.actions";
-import { uploadShuntFactFromExcel } from "@/lib/actions/shuntFact.actions";
-import { uploadVSCHVDCLinkFromExcel } from "@/lib/actions/vscHVDCLink.actions";
 
 type HeadersArrayProps = {
   fieldValue: string;
@@ -108,8 +108,10 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         const defaultFields: any = {};
         const additionalFields: any = {};
         columns.forEach((column) => {
-          if (column.isDefault) defaultFields[column.field] = item[column.field];
-          else additionalFields[column.field] = item[column.field];
+          if (!column.isRemoved) {
+            if (column.isDefault) defaultFields[column.field] = item[column.field];
+            else additionalFields[column.field] = item[column.field];
+          }
         });
         if (Object.keys(additionalFields).length) return { ...defaultFields, additionalFields };
         else return { ...defaultFields };
@@ -222,7 +224,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
           const cell = ws[address];
           if (cell.v.toLowerCase() !== "id") {
             const correspondingFieldValue = columns.find(
-              (item) => item.field === cell.v || item.title === cell.v
+              (item) => (item.field === cell.v || item.title === cell.v) && !item.isRemoved
             )?.field;
             setHeadersArray((prev) => [
               ...prev,
@@ -233,7 +235,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         }
       };
     }
-  }, [file]);
+  }, [file, columns]);
 
   return (
     <div className="flex justify-center items-center">
@@ -244,9 +246,10 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         <DialogTrigger>
           <div
             title="Import data from excel"
-            className="p-3 bg-gray-200 rounded-lg hover:bg-gray-300"
+            className="p-3 py-2 flex items-center gap-1 bg-gray-200 rounded-lg hover:bg-gray-300"
           >
             <FaFileUpload />
+            <p>Upload</p>
           </div>
         </DialogTrigger>
         <DialogContent className="bg-white max-h-[80vh] overflow-auto custom-scrollbar">
@@ -263,16 +266,16 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
           </div>
 
           <div className={`${progress === 2 ? "visible" : "hidden"}`}>
-            <p>Configure how the file's columns map to their corresponding table's columns.</p>
+            <p>Configure how the file&apos;s columns map to their corresponding table&apos;s columns.</p>
             <div className="mt-4">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1 w-full">
                   <FaRegFileExcel />
-                  <p>File's column</p>
+                  <p>File&apos;s column</p>
                 </div>
                 <div className="flex items-center gap-1 w-full pl-10">
                   <FaTable />
-                  <p>Table's column</p>
+                  <p>Table&apos;s column</p>
                 </div>
               </div>
               <Separator className="mt-2" />
@@ -307,9 +310,18 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
                           <SelectValue placeholder="Select corresponding column" />
                         </SelectTrigger>
                         <SelectContent>
-                          {columns.map((item, i) => (
-                            <SelectItem value={item.field}>{item.title}</SelectItem>
-                          ))}
+                          {columns.map((item, i) =>
+                            item.isRemoved ? (
+                              ""
+                            ) : (
+                              <SelectItem
+                                value={item.field}
+                                key={i}
+                              >
+                                {item.title}
+                              </SelectItem>
+                            )
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -324,11 +336,11 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1 w-full">
                   <FaRegFileExcel />
-                  <p>File's column</p>
+                  <p>File&apos;s column</p>
                 </div>
                 <div className="flex items-center gap-1 w-full pl-10">
                   <FaTable />
-                  <p>Table's column</p>
+                  <p>Table&apos;s column</p>
                 </div>
               </div>
               <Separator className="mt-2" />

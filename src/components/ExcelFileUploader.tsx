@@ -12,16 +12,13 @@ type ExcelFileUploaderProps = {
 };
 
 export function ExcelFileUploader({ file, setFile }: ExcelFileUploaderProps) {
-  const onDrop = useCallback((acceptedFiles: any) => {
-    console.log(acceptedFiles[0]);
-    setFile(acceptedFiles[0]);
-    // readExcel(acceptedFiles[0]);
-    // setFiles((prev: any) => [
-    //   ...prev,
-    //   { field: field, file: { name: acceptedFiles[0].name, url: convertFileToUrl(acceptedFiles[0]) } },
-    // ]);
-    // onFieldChange(convertFileToUrl(acceptedFiles[0]));
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles: any) => {
+      console.log(acceptedFiles[0]);
+      setFile(acceptedFiles[0]);
+    },
+    [setFile]
+  );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -41,7 +38,7 @@ export function ExcelFileUploader({ file, setFile }: ExcelFileUploaderProps) {
           <FaRegFileExcel className="text-7xl" />
           <p>File selected: {file?.name}</p>
           <p>
-            Please click on <span className="font-semibold">"Proceed"</span> to go ahead.
+            Please click on <span className="font-semibold">&quot;Proceed&quot;</span> to go ahead.
           </p>
         </div>
       ) : (
