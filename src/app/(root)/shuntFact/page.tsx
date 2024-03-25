@@ -9,6 +9,7 @@ import { getAllShuntFacts } from "@/lib/actions/shuntFact.actions";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa6";
 
 const ShuntFact = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
@@ -36,7 +37,9 @@ const ShuntFact = async ({ searchParams }: { searchParams: { query: string; page
             <Search />
             <div className="flex gap-5">
               <Link href="/shuntFact/create">
-                <Button>Create shunt Fact</Button>
+                <Button>
+                  Create shunt Fact <FaPlus className="text-lg ml-2" />
+                </Button>
               </Link>
               {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
             </div>

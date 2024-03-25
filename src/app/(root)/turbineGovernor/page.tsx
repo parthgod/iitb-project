@@ -8,6 +8,7 @@ import { getAllTurbineGovernors } from "@/lib/actions/turbineGovernor.actions";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa6";
 
 const TurbineGovernor = async ({
   searchParams,
@@ -44,7 +45,9 @@ const TurbineGovernor = async ({
         <Search />
         <div className="flex gap-5">
           <Link href="/turbineGovernor/create">
-            <Button>Create turbine governor</Button>
+            <Button>
+              Create turbine governor <FaPlus className="text-lg ml-2" />
+            </Button>
           </Link>
           {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>

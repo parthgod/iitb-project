@@ -23,8 +23,9 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
   if (Object.keys(shuntReactorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntReactorsColumns.forEach((item) => {
-      values[item.field] =
-        shuntReactorDetails?.[item.field] || shuntReactorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] =
+          shuntReactorDetails?.[item.field] || shuntReactorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = shuntReactorDetails._id;
     return values;

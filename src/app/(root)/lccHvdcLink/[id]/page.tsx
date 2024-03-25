@@ -23,7 +23,9 @@ const calculateDefaultValues = (lccHVDCLinkDetails: INonDefaultDatabases, defaul
   if (Object.keys(lccHVDCLinkDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].lccHVDCLinkColumns.forEach((item) => {
-      values[item.field] = lccHVDCLinkDetails?.[item.field] || lccHVDCLinkDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] =
+          lccHVDCLinkDetails?.[item.field] || lccHVDCLinkDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = lccHVDCLinkDetails._id;
     return values;

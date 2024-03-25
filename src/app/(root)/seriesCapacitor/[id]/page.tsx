@@ -23,8 +23,9 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
   if (Object.keys(seriesCapacitorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].seriesCapacitorColumns.forEach((item) => {
-      values[item.field] =
-        seriesCapacitorDetails?.[item.field] || seriesCapacitorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] =
+          seriesCapacitorDetails?.[item.field] || seriesCapacitorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = seriesCapacitorDetails._id;
     return values;

@@ -32,8 +32,7 @@ export const editSpecificDefaultParam = async (
   columnDetails: IColumnDetails,
   itemColumnName: string,
   userId: string,
-  columnIndex: number,
-  isDefault: boolean
+  columnIndex: number
 ) => {
   await connectToDatabase();
   let newColumns: any;
@@ -46,7 +45,6 @@ export const editSpecificDefaultParam = async (
         type: columnDetails.type!,
         tableRef: columnDetails.dropdownTableRef,
         columnRef: columnDetails.dropdownColumnRef,
-        isDefault: false,
       };
     } else {
       const dropdownValues = columnDetails.dropdownValues!.map((item: { name: string }) => item.name);
@@ -54,14 +52,12 @@ export const editSpecificDefaultParam = async (
         title: columnDetails.name,
         type: columnDetails.type,
         dropdownValues: dropdownValues,
-        isDefault: false,
       };
     }
   } else {
     newColumns = {
       title: columnDetails.name,
       type: columnDetails.type!,
-      isDefault: isDefault,
     };
   }
   let modificationHistory: any;
@@ -79,7 +75,9 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.busColumns[columnIndex].field;
-      params.busColumns[columnIndex] = newColumns;
+      newColumns.isDefault = params.busColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.busColumns[columnIndex].isRemoved;
+      newColumns.params.busColumns[columnIndex] = newColumns;
 
       break;
 
@@ -95,6 +93,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.excitationSystemColumns[columnIndex].field;
+      newColumns.isDefault = params.excitationSystemColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.excitationSystemColumns[columnIndex].isRemoved;
       params.excitationSystemColumns[columnIndex] = newColumns;
 
       break;
@@ -111,6 +111,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.generatorColumns[columnIndex].field;
+      newColumns.isDefault = params.generatorColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.generatorColumns[columnIndex].isRemoved;
       params.generatorColumns[columnIndex] = newColumns;
 
       break;
@@ -127,6 +129,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.loadsColumns[columnIndex].field;
+      newColumns.isDefault = params.loadsColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.loadsColumns[columnIndex].isRemoved;
       params.loadsColumns[columnIndex] = newColumns;
 
       break;
@@ -143,6 +147,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.seriesCapacitorColumns[columnIndex].field;
+      newColumns.isDefault = params.seriesCapacitorColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.seriesCapacitorColumns[columnIndex].isRemoved;
       params.seriesCapacitorColumns[columnIndex] = newColumns;
 
       break;
@@ -159,6 +165,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.shuntCapacitorColumns[columnIndex].field;
+      newColumns.isDefault = params.shuntCapacitorColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.shuntCapacitorColumns[columnIndex].isRemoved;
       params.shuntCapacitorColumns[columnIndex] = newColumns;
 
       break;
@@ -175,6 +183,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.shuntReactorsColumns[columnIndex].field;
+      newColumns.isDefault = params.shuntReactorsColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.shuntReactorsColumns[columnIndex].isRemoved;
       params.shuntReactorsColumns[columnIndex] = newColumns;
 
       break;
@@ -191,6 +201,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.singleLineDiagramsColumns[columnIndex].field;
+      newColumns.isDefault = params.singleLineDiagramsColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.singleLineDiagramsColumns[columnIndex].isRemoved;
       params.singleLineDiagramsColumns[columnIndex] = newColumns;
 
       break;
@@ -207,6 +219,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.transformersThreeWindingColumns[columnIndex].field;
+      newColumns.isDefault = params.transformersThreeWindingColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.transformersThreeWindingColumns[columnIndex].isRemoved;
       params.transformersThreeWindingColumns[columnIndex] = newColumns;
 
       break;
@@ -223,6 +237,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.transformersTwoWindingColumns[columnIndex].field;
+      newColumns.isDefault = params.transformersTwoWindingColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.transformersTwoWindingColumns[columnIndex].isRemoved;
       params.transformersTwoWindingColumns[columnIndex] = newColumns;
 
       break;
@@ -239,6 +255,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.transmissionLinesColumns[columnIndex].field;
+      newColumns.isDefault = params.transmissionLinesColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.transmissionLinesColumns[columnIndex].isRemoved;
       params.transmissionLinesColumns[columnIndex] = newColumns;
 
       break;
@@ -255,6 +273,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.turbineGovernorColumns[columnIndex].field;
+      newColumns.isDefault = params.turbineGovernorColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.turbineGovernorColumns[columnIndex].isRemoved;
       params.turbineGovernorColumns[columnIndex] = newColumns;
 
       break;
@@ -271,6 +291,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.ibrColumns[columnIndex].field;
+      newColumns.isDefault = params.ibrColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.ibrColumns[columnIndex].isRemoved;
       params.ibrColumns[columnIndex] = newColumns;
 
       break;
@@ -287,6 +309,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.lccHVDCLinkColumns[columnIndex].field;
+      newColumns.isDefault = params.lccHVDCLinkColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.lccHVDCLinkColumns[columnIndex].isRemoved;
       params.lccHVDCLinkColumns[columnIndex] = newColumns;
 
       break;
@@ -303,6 +327,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.seriesFactsColumns[columnIndex].field;
+      newColumns.isDefault = params.seriesFactsColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.seriesFactsColumns[columnIndex].isRemoved;
       params.seriesFactsColumns[columnIndex] = newColumns;
 
       break;
@@ -319,6 +345,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.shuntFactsColumns[columnIndex].field;
+      newColumns.isDefault = params.shuntFactsColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.shuntFactsColumns[columnIndex].isRemoved;
       params.shuntFactsColumns[columnIndex] = newColumns;
 
       break;
@@ -335,6 +363,8 @@ export const editSpecificDefaultParam = async (
         },
       };
       newColumns.field = params.vscHVDCLinkColumns[columnIndex].field;
+      newColumns.isDefault = params.vscHVDCLinkColumns[columnIndex].isDefault;
+      newColumns.isRemoved = params.vscHVDCLinkColumns[columnIndex].isRemoved;
       params.vscHVDCLinkColumns[columnIndex] = newColumns;
 
       break;
@@ -493,6 +523,7 @@ export const updateDefaultParams = async (
           tableRef: columnDetails.dropdownTableRef,
           columnRef: columnDetails.dropdownColumnRef,
           isDefault: false,
+          isRemoved: false,
         };
       } else {
         const dropdownValues = columnDetails.dropdownValues!.map((item: { name: string }) => item.name);
@@ -502,6 +533,7 @@ export const updateDefaultParams = async (
           type: columnDetails.type,
           dropdownValues: dropdownValues,
           isDefault: false,
+          isRemoved: false,
         };
       }
     } else {
@@ -510,6 +542,7 @@ export const updateDefaultParams = async (
         title: columnDetails.name,
         type: columnDetails.type!,
         isDefault: false,
+        isRemoved: false,
       };
     }
 
@@ -764,6 +797,334 @@ export const updateDefaultParams = async (
 
     await ModificationHistory.create(modificationHistory);
 
+    return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const toggleDefaultParam = async (
+  itemColumnName: string,
+  userId: string,
+  columnIndex: number,
+  operationType: "Remove-One" | "Remove-Many" | "Update-Many",
+  newColumns?: IColumn[]
+) => {
+  try {
+    await connectToDatabase();
+    const data: IDefaultParamSchema[] = await DefaultParam.find();
+    const params = data[0];
+    let modificationHistory: any;
+    switch (itemColumnName) {
+      case "/bus":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Bus",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange: operationType === "Remove-One" ? params.busColumns[columnIndex] : params.busColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.busColumns[columnIndex].isRemoved = true;
+        else params.busColumns = newColumns!;
+
+        break;
+
+      case "/excitationSystem":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Excitation system",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One"
+                ? params.excitationSystemColumns[columnIndex]
+                : params.excitationSystemColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.excitationSystemColumns[columnIndex].isRemoved = true;
+        else params.excitationSystemColumns = newColumns!;
+        break;
+
+      case "/generator":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Generator",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.generatorColumns[columnIndex] : params.generatorColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.generatorColumns[columnIndex].isRemoved = true;
+        else params.generatorColumns = newColumns!;
+        break;
+
+      case "/load":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Load",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.loadsColumns[columnIndex] : params.loadsColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.loadsColumns[columnIndex].isRemoved = true;
+        else params.loadsColumns = newColumns!;
+        break;
+
+      case "/seriesCapacitor":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Series Capacitor",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One"
+                ? params.seriesCapacitorColumns[columnIndex]
+                : params.seriesCapacitorColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.seriesCapacitorColumns[columnIndex].isRemoved = true;
+        else params.seriesCapacitorColumns = newColumns!;
+        break;
+
+      case "/shuntCapacitor":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Shunt Capacitor",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.shuntCapacitorColumns[columnIndex] : params.shuntCapacitorColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.shuntCapacitorColumns[columnIndex].isRemoved = true;
+        else params.shuntCapacitorColumns = newColumns!;
+        break;
+
+      case "/shuntReactor":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Shunt Reactor",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.shuntReactorsColumns[columnIndex] : params.shuntReactorsColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.shuntReactorsColumns[columnIndex].isRemoved = true;
+        else params.shuntReactorsColumns = newColumns!;
+        break;
+
+      case "/singleLineDiagram":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Single Line Diagram",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One"
+                ? params.singleLineDiagramsColumns[columnIndex]
+                : params.singleLineDiagramsColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.singleLineDiagramsColumns[columnIndex].isRemoved = true;
+        else params.singleLineDiagramsColumns = newColumns!;
+        break;
+
+      case "/transformersThreeWinding":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Transformers Three Winding",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One"
+                ? params.transformersThreeWindingColumns[columnIndex]
+                : params.transformersThreeWindingColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.transformersThreeWindingColumns[columnIndex].isRemoved = true;
+        else params.transformersThreeWindingColumns = newColumns!;
+        break;
+
+      case "/transformersTwoWinding":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Transformers Two Winding",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One"
+                ? params.transformersTwoWindingColumns[columnIndex]
+                : params.transformersTwoWindingColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.transformersTwoWindingColumns[columnIndex].isRemoved = true;
+        else params.transformersTwoWindingColumns = newColumns!;
+        break;
+
+      case "/transmissionLine":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Transmission Line",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One"
+                ? params.transmissionLinesColumns[columnIndex]
+                : params.transmissionLinesColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.transmissionLinesColumns[columnIndex].isRemoved = true;
+        else params.transmissionLinesColumns = newColumns!;
+        break;
+
+      case "/turbineGovernor":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Turbine Governor",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One"
+                ? params.turbineGovernorColumns[columnIndex]
+                : params.turbineGovernorColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.turbineGovernorColumns[columnIndex].isRemoved = true;
+        else params.turbineGovernorColumns = newColumns!;
+        break;
+
+      case "/ibr":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "IBR",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange: operationType === "Remove-One" ? params.ibrColumns[columnIndex] : params.ibrColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.ibrColumns[columnIndex].isRemoved = true;
+        else params.ibrColumns = newColumns!;
+        break;
+
+      case "/lccHVDCLink":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "LCC-HVDC Link",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.lccHVDCLinkColumns[columnIndex] : params.lccHVDCLinkColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.lccHVDCLinkColumns[columnIndex].isRemoved = true;
+        else params.lccHVDCLinkColumns = newColumns!;
+        break;
+
+      case "/seriesFact":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Series Fact",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.seriesFactsColumns[columnIndex] : params.seriesFactsColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.seriesFactsColumns[columnIndex].isRemoved = true;
+        else params.seriesFactsColumns = newColumns!;
+        break;
+
+      case "/shuntFact":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "Shunt Fact",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.shuntFactsColumns[columnIndex] : params.shuntFactsColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.shuntFactsColumns[columnIndex].isRemoved = true;
+        else params.shuntFactsColumns = newColumns!;
+        break;
+
+      case "/vscHVDCLink":
+        modificationHistory = {
+          userId: new ObjectId(userId),
+          databaseName: "VSC-HVDC Link",
+          operationType: operationType === "Update-Many" ? "Update" : "Delete",
+          date: new Date(),
+          document: {
+            documentBeforeChange:
+              operationType === "Remove-One" ? params.vscHVDCLinkColumns[columnIndex] : params.vscHVDCLinkColumns,
+            documentAfterChange: operationType === "Remove-One" ? null : newColumns,
+          },
+        };
+        if (operationType === "Remove-One") params.vscHVDCLinkColumns[columnIndex].isRemoved = true;
+        else params.vscHVDCLinkColumns = newColumns!;
+        break;
+
+      default:
+        break;
+    }
+
+    const newDefaultParams = await DefaultParam.findByIdAndUpdate(params._id, {
+      busColumns: params.busColumns,
+      excitationSystemColumns: params.excitationSystemColumns,
+      generatorColumns: params.generatorColumns,
+      loadsColumns: params.loadsColumns,
+      seriesCapacitorColumns: params.seriesCapacitorColumns,
+      shuntCapacitorColumns: params.shuntCapacitorColumns,
+      shuntReactorsColumns: params.shuntReactorsColumns,
+      singleLineDiagramsColumns: params.singleLineDiagramsColumns,
+      transformersThreeWindingColumns: params.transformersThreeWindingColumns,
+      transformersTwoWindingColumns: params.transformersTwoWindingColumns,
+      transmissionLinesColumns: params.transmissionLinesColumns,
+      turbineGovernorColumns: params.turbineGovernorColumns,
+      ibrColumns: params.ibrColumns,
+      lccHVDCLinkColumns: params.lccHVDCLinkColumns,
+      seriesFactsColumns: params.seriesFactsColumns,
+      shuntFactsColumns: params.shuntFactsColumns,
+      vscHVDCLinkColumns: params.vscHVDCLinkColumns,
+    });
+    await ModificationHistory.create(modificationHistory);
     return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));

@@ -23,7 +23,8 @@ const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDe
   if (Object.keys(generatorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].generatorColumns.forEach((item) => {
-      values[item.field] = generatorDetails?.[item.field] || generatorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] = generatorDetails?.[item.field] || generatorDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = generatorDetails._id;
     return values;

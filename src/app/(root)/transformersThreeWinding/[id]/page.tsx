@@ -23,10 +23,11 @@ const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultPa
   if (Object.keys(transformersThreeWindingDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transformersThreeWindingColumns.forEach((item) => {
-      values[item.field] =
-        transformersThreeWindingDetails?.[item.field] ||
-        transformersThreeWindingDetails?.additionalFields?.[item.field] ||
-        "";
+      if (!item.isRemoved)
+        values[item.field] =
+          transformersThreeWindingDetails?.[item.field] ||
+          transformersThreeWindingDetails?.additionalFields?.[item.field] ||
+          "";
     });
     values["_id"] = transformersThreeWindingDetails._id;
     return values;

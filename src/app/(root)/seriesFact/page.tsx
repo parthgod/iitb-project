@@ -9,6 +9,7 @@ import { getAllSeriesFacts } from "@/lib/actions/seriesFact.actions";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa6";
 
 const SeriesFact = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
@@ -36,7 +37,9 @@ const SeriesFact = async ({ searchParams }: { searchParams: { query: string; pag
             <Search />
             <div className="flex gap-5">
               <Link href="/seriesFact/create">
-                <Button>Create Series Fact</Button>
+                <Button>
+                  Create Series Fact <FaPlus className="text-lg ml-2" />
+                </Button>
               </Link>
               {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
             </div>

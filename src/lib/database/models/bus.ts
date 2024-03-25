@@ -4,11 +4,9 @@ const busSchema = new Schema(
   {
     busName: {
       type: String,
-      required: true,
     },
     nominalKV: {
       type: String,
-      required: true,
     },
     additionalFields: {
       type: Schema.Types.Mixed,

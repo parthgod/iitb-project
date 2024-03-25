@@ -23,10 +23,11 @@ const calculateDefaultValues = (transformersTwoWindingDetails: IBus, defaultPara
   if (Object.keys(transformersTwoWindingDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transformersTwoWindingColumns.forEach((item) => {
-      values[item.field] =
-        transformersTwoWindingDetails?.[item.field] ||
-        transformersTwoWindingDetails?.additionalFields?.[item.field] ||
-        "";
+      if (!item.isRemoved)
+        values[item.field] =
+          transformersTwoWindingDetails?.[item.field] ||
+          transformersTwoWindingDetails?.additionalFields?.[item.field] ||
+          "";
     });
     values["_id"] = transformersTwoWindingDetails._id;
     return values;

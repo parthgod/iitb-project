@@ -23,7 +23,8 @@ const calculateDefaultValues = (seriesFactDetails: INonDefaultDatabases, default
   if (Object.keys(seriesFactDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].seriesFactsColumns.forEach((item) => {
-      values[item.field] = seriesFactDetails?.[item.field] || seriesFactDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] = seriesFactDetails?.[item.field] || seriesFactDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = seriesFactDetails._id;
     return values;

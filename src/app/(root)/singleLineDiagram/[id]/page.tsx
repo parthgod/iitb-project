@@ -23,8 +23,9 @@ const calculateDefaultValues = (singleLineDiagramDetails: IBus, defaultParams: I
   if (Object.keys(singleLineDiagramDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].singleLineDiagramsColumns.forEach((item) => {
-      values[item.field] =
-        singleLineDiagramDetails?.[item.field] || singleLineDiagramDetails?.additionalFields?.[item.field] || "";
+      if (!item.isRemoved)
+        values[item.field] =
+          singleLineDiagramDetails?.[item.field] || singleLineDiagramDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = singleLineDiagramDetails._id;
     return values;

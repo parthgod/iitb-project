@@ -76,7 +76,7 @@ const generateFormSchema = (fields: IColumn[]) => {
   const schema: any = {};
 
   fields.forEach((field) => {
-    schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
+    if (!field.isRemoved) schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
   });
   return z.object(schema);
 };
@@ -104,22 +104,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     resolver: zodResolver(FormSchema),
     defaultValues: formDetails,
   });
-
-  const getParams = async (tableRef: "Bus" | "Generator") => {
-    let response;
-    switch (tableRef) {
-      case "Bus":
-        response = await getAllBuses(0, 0, "", formFields);
-        return response.completeData;
-
-      case "Generator":
-        response = await getAllGenerators(0, 0, "", formFields);
-        return response.completeData;
-
-      default:
-        break;
-    }
-  };
 
   const filterBuses = (columnName: string, event: any) => {
     const { value } = event.target;
@@ -151,7 +135,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     setIsLoading(true);
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
-      if (item.type === "image") {
+      if (item.type === "image" && !item.isRemoved) {
         uploadedImageUrl[item.field] = data[item.field];
       }
     });
@@ -166,10 +150,12 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     const defaultFields: any = {};
     const additionalFields: any = {};
     formFields.map((item) => {
-      if (item.isDefault) {
-        defaultFields[item.field] = data[item.field];
-      } else {
-        additionalFields[item.field] = data[item.field];
+      if (!item.isRemoved) {
+        if (item.isDefault) {
+          defaultFields[item.field] = data[item.field];
+        } else {
+          additionalFields[item.field] = data[item.field];
+        }
       }
     });
 
@@ -342,7 +328,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
 
   useEffect(() => {
     formFields.forEach(async (item) => {
-      if (item.type === "dropdown" && item?.tableRef) {
+      if (!item.isRemoved && item.type === "dropdown" && item?.tableRef) {
         if (item.tableRef === "Bus") {
           const response = await getAllBuses(0, 0, "", formFields);
           setBusDropdownData(response.completeData);
@@ -371,180 +357,182 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         <div className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto custom-scrollbar">
             {formFields.map((item, ind: number) => {
-              if (item.type === "text" || item.type === "number")
-                return (
-                  <FormField
-                    key={ind}
-                    control={form.control}
-                    name={item?.field}
-                    render={({ field }) => (
-                      <FormItem className="h-fit space-y-0">
-                        <FormLabel className="mb-3">{item?.title}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={item?.title}
-                            {...field}
-                            type={item.type}
-                            className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                );
-              else if (item.type === "dropdown") {
-                if (item.tableRef) {
+              if (!item.isRemoved) {
+                if (item.type === "text" || item.type === "number")
+                  return (
+                    <FormField
+                      key={ind}
+                      control={form.control}
+                      name={item?.field}
+                      render={({ field }) => (
+                        <FormItem className="h-fit space-y-0">
+                          <FormLabel className="mb-3">{item?.title}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={item?.title}
+                              {...field}
+                              type={item.type}
+                              className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  );
+                else if (item.type === "dropdown") {
+                  if (item.tableRef) {
+                    return (
+                      <FormField
+                        key={ind}
+                        control={form.control}
+                        name={item.field}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col gap-0.5">
+                            <FormLabel>{item.title}</FormLabel>
+                            <Popover>
+                              <PopoverTrigger
+                                asChild
+                                id={`${item.tableRef}-${ind}`}
+                                className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                              >
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className="text-left justify-between font-normal"
+                                  >
+                                    {field.value || "Select device..."}
+                                    <ChevronsUpDown />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-[40vw] p-1 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
+                                <div className="flex gap-1 items-center px-1">
+                                  <IoSearch className="ml-2" />
+                                  <Input
+                                    type="text"
+                                    value={searchDevice}
+                                    onChange={(e) =>
+                                      item.tableRef === "Bus"
+                                        ? filterBuses(item.columnRef!, e)
+                                        : filterGenerators(item.columnRef!, e)
+                                    }
+                                    placeholder="Search device..."
+                                    className="border-0 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:outline-none"
+                                  />
+                                </div>
+                                <Separator />
+                                <div className="max-h-[40vh] overflow-auto custom-scrollbar">
+                                  {item.tableRef === "Bus" &&
+                                    filteredBusDropdownData.map((selectValue, index) => (
+                                      <Button
+                                        variant="ghost"
+                                        key={index}
+                                        className={`w-full justify-start font-normal ${
+                                          selectValue[item.columnRef!] === field.value && "bg-gray-100"
+                                        }`}
+                                        onClick={() => handleChange(item, ind, field, selectValue[item.columnRef!])}
+                                      >
+                                        {selectValue[item.columnRef!]}
+                                        <Check
+                                          className={cn(
+                                            "ml-auto h-4 w-4",
+                                            selectValue[item.columnRef!] === field.value ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                      </Button>
+                                    ))}
+                                  {item.tableRef === "Bus" && !filteredBusDropdownData.length && (
+                                    <p className="px-4 py-1">No such device found</p>
+                                  )}
+                                  {item.tableRef === "Generator" &&
+                                    filteredGeneratorDropdownData.map((selectValue, index) => (
+                                      <Button
+                                        variant="ghost"
+                                        key={index}
+                                        className={`w-full justify-start font-normal ${
+                                          selectValue[item.columnRef!] === field.value && "bg-gray-100"
+                                        }`}
+                                        onClick={() => handleChange(item, ind, field, selectValue[item.columnRef!])}
+                                      >
+                                        {selectValue[item.columnRef!]}
+                                        <Check
+                                          className={cn(
+                                            "ml-auto h-4 w-4",
+                                            selectValue[item.columnRef!] === field.value ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                      </Button>
+                                    ))}
+                                  {item.tableRef === "Generator" && !filteredGeneratorDropdownData.length && (
+                                    <p className="px-4 py-1">No such device found</p>
+                                  )}
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    );
+                  }
                   return (
                     <FormField
                       key={ind}
                       control={form.control}
                       name={item.field}
                       render={({ field }) => (
-                        <FormItem className="flex flex-col gap-0.5">
+                        <FormItem className="space-y-0">
                           <FormLabel>{item.title}</FormLabel>
-                          <Popover>
-                            <PopoverTrigger
-                              asChild
-                              id={`${item.tableRef}-${ind}`}
-                              className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-                            >
-                              <FormControl>
-                                <Button
-                                  variant="outline"
-                                  className="text-left justify-between font-normal"
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
+                                <SelectValue placeholder="Select a value" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {item.dropdownValues.map((selectValue: string, index: number) => (
+                                <SelectItem
+                                  value={selectValue}
+                                  key={index}
+                                  className="select-item"
                                 >
-                                  {field.value || "Select device..."}
-                                  <ChevronsUpDown />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[40vw] p-1 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
-                              <div className="flex gap-1 items-center px-1">
-                                <IoSearch className="ml-2" />
-                                <Input
-                                  type="text"
-                                  value={searchDevice}
-                                  onChange={(e) =>
-                                    item.tableRef === "Bus"
-                                      ? filterBuses(item.columnRef!, e)
-                                      : filterGenerators(item.columnRef!, e)
-                                  }
-                                  placeholder="Search device..."
-                                  className="border-0 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:outline-none"
-                                />
-                              </div>
-                              <Separator />
-                              <div className="max-h-[40vh] overflow-auto custom-scrollbar">
-                                {item.tableRef === "Bus" &&
-                                  filteredBusDropdownData.map((selectValue, index) => (
-                                    <Button
-                                      variant="ghost"
-                                      key={index}
-                                      className={`w-full justify-start font-normal ${
-                                        selectValue[item.columnRef!] === field.value && "bg-gray-100"
-                                      }`}
-                                      onClick={() => handleChange(item, ind, field, selectValue[item.columnRef!])}
-                                    >
-                                      {selectValue[item.columnRef!]}
-                                      <Check
-                                        className={cn(
-                                          "ml-auto h-4 w-4",
-                                          selectValue[item.columnRef!] === field.value ? "opacity-100" : "opacity-0"
-                                        )}
-                                      />
-                                    </Button>
-                                  ))}
-                                {item.tableRef === "Bus" && !filteredBusDropdownData.length && (
-                                  <p className="px-4 py-1">No such device found</p>
-                                )}
-                                {item.tableRef === "Generator" &&
-                                  filteredGeneratorDropdownData.map((selectValue, index) => (
-                                    <Button
-                                      variant="ghost"
-                                      key={index}
-                                      className={`w-full justify-start font-normal ${
-                                        selectValue[item.columnRef!] === field.value && "bg-gray-100"
-                                      }`}
-                                      onClick={() => handleChange(item, ind, field, selectValue[item.columnRef!])}
-                                    >
-                                      {selectValue[item.columnRef!]}
-                                      <Check
-                                        className={cn(
-                                          "ml-auto h-4 w-4",
-                                          selectValue[item.columnRef!] === field.value ? "opacity-100" : "opacity-0"
-                                        )}
-                                      />
-                                    </Button>
-                                  ))}
-                                {item.tableRef === "Generator" && !filteredGeneratorDropdownData.length && (
-                                  <p className="px-4 py-1">No such device found</p>
-                                )}
-                              </div>
-                            </PopoverContent>
-                          </Popover>
+                                  {selectValue}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   );
-                }
-                return (
-                  <FormField
-                    key={ind}
-                    control={form.control}
-                    name={item.field}
-                    render={({ field }) => (
-                      <FormItem className="space-y-0">
-                        <FormLabel>{item.title}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                } else if (item.type === "image")
+                  return (
+                    <FormField
+                      key={ind}
+                      control={form.control}
+                      name={item?.field}
+                      render={({ field }) => (
+                        <FormItem className="h-fit">
+                          <FormLabel>{item?.title}</FormLabel>
                           <FormControl>
-                            <SelectTrigger className="select-field focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none">
-                              <SelectValue placeholder="Select a value" />
-                            </SelectTrigger>
+                            <FileUploader
+                              onFieldChange={field.onChange}
+                              imageUrl={field.value}
+                              setFiles={setFiles}
+                              field={item.field}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            {item.dropdownValues.map((selectValue: string, index: number) => (
-                              <SelectItem
-                                value={selectValue}
-                                key={index}
-                                className="select-item"
-                              >
-                                {selectValue}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                );
-              } else if (item.type === "image")
-                return (
-                  <FormField
-                    key={ind}
-                    control={form.control}
-                    name={item?.field}
-                    render={({ field }) => (
-                      <FormItem className="h-fit">
-                        <FormLabel>{item?.title}</FormLabel>
-                        <FormControl>
-                          <FileUploader
-                            onFieldChange={field.onChange}
-                            imageUrl={field.value}
-                            setFiles={setFiles}
-                            field={item.field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                );
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  );
+              }
             })}
           </div>
           <div className="flex gap-5 pt-3">

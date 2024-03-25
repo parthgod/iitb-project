@@ -1,5 +1,16 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -9,20 +20,21 @@ import {
   createDefaultParams,
   editSpecificDefaultParam,
   getDefaultParams,
+  toggleDefaultParam,
   updateDefaultParams,
 } from "@/lib/actions/defaultParams.actions";
 import { IColumn } from "@/utils/defaultTypes";
+import { reverseUnslug } from "@/utils/helperFunctions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { IoMdAdd } from "react-icons/io";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "./ui/input";
-import { IoMdAdd } from "react-icons/io";
-import { FaAngleDoubleRight } from "react-icons/fa";
-import { MdEdit } from "react-icons/md";
 
 const FormSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be empty" }),
@@ -52,14 +64,13 @@ const AddColumns = ({
   userId: string;
   newTable?: boolean;
   columnIndex: number;
-  actionType: "Edit" | "Add-Column-Left" | "Add-Column-Right" | "Hide-Column";
+  actionType: "Edit-Column" | "Add-Column-Left" | "Add-Column-Right" | "Remove-Column";
 }) => {
   const pathname = usePathname();
-  // console.log(pathname);
+
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [dropdownColumnData, setDropdownColumnData] = useState<IColumn[]>([]);
-  // const [columnIndex, setColumnIndex] = useState(0);
 
   let defaultValues = {};
   if (columnDetails?.type === "dropdown") {
@@ -116,7 +127,7 @@ const AddColumns = ({
         columnDetails?.dropdownValues?.map((item: string) => ({ name: item })) || [{ name: "" }]
       );
     }
-  }, [dropdown, setValue, dropdownFromExistingTable]);
+  }, [dropdown, setValue, dropdownFromExistingTable, columnDetails]);
 
   useEffect(() => {
     const fetchColumnData = async () => {
@@ -136,7 +147,7 @@ const AddColumns = ({
       const popoverTrigger = document.getElementById(`popover-btn-${columnIndex}`);
       if (popoverTrigger) popoverTrigger.click();
     }
-  }, [open]);
+  }, [open, columnIndex]);
 
   const dummy = async () => {
     try {
@@ -192,17 +203,11 @@ const AddColumns = ({
           response = await updateDefaultParams(data, pathname, userId, columnIndex + 1);
           break;
 
-        case "Edit":
-          response = await editSpecificDefaultParam(
-            data,
-            pathname,
-            userId,
-            columnIndex,
-            columnDetails!.isDefault || false
-          );
+        case "Edit-Column":
+          response = await editSpecificDefaultParam(data, pathname, userId, columnIndex);
           break;
 
-        case "Hide-Column":
+        case "Remove-Column":
           response = await updateDefaultParams(data, pathname, userId, columnIndex - 1 < 0 ? 0 : columnIndex - 1);
           break;
 
@@ -224,8 +229,22 @@ const AddColumns = ({
     }
   };
 
+  const removeColumn = async () => {
+    try {
+      const response = await toggleDefaultParam(pathname, userId, columnIndex, "Remove-One");
+      if (response.status === 200) {
+        toast.success(`Column '${columnDetails?.title}' removed successfully`);
+        router.refresh();
+        // const popoverTrigger = document.getElementById(`popover-btn-${columnIndex}`);
+        // if (popoverTrigger) popoverTrigger.click();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col gap-0">
       {/* {!columnDetails && (
         <Button
           variant={"destructive"}
@@ -234,33 +253,73 @@ const AddColumns = ({
           Add new column
         </Button>
       )} */}
+      {actionType === "Remove-Column" && (
+        <AlertDialog>
+          <AlertDialogTrigger>
+            <Button
+              variant="outline"
+              className="w-full flex items-center gap-3"
+            >
+              <MdDeleteForever className="text-lg" />
+              <p>Remove column</p>
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-white">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will remove{" "}
+                <span className="font-semibold">{columnDetails?.title}</span> from{" "}
+                <span className="font-semibold">{reverseUnslug(pathname)}</span> table.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-500 hover:bg-red-700"
+                onClick={removeColumn}
+              >
+                Remove
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
       <Dialog
         open={open}
         onOpenChange={setOpen}
       >
-        <DialogTrigger className={`${newTable && "text-[1.15rem]"} w-full`}>
-          {actionType === "Add-Column-Left" && (
-            <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
-              <IoMdAdd />
-              <p>Add column to left</p>
-            </div>
-          )}
-          {actionType === "Add-Column-Right" && (
-            <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
-              <IoMdAdd />
-              <p>Add column to right</p>
-            </div>
-          )}
-          {actionType === "Edit" && (
-            <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
-              <MdEdit />
-              <p>Edit column details</p>
-            </div>
+        <DialogTrigger className="w-full">
+          {newTable ? (
+            <p className={buttonVariants({ variant: "link" }) + " text-lg"}>Add columns &rarr;</p>
+          ) : (
+            <>
+              {actionType === "Add-Column-Left" && (
+                <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
+                  <IoMdAdd />
+                  <p>Add column to left</p>
+                </div>
+              )}
+              {actionType === "Add-Column-Right" && (
+                <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
+                  <IoMdAdd />
+                  <p>Add column to right</p>
+                </div>
+              )}
+              {actionType === "Edit-Column" && (
+                <div className={buttonVariants({ variant: "outline" }) + " w-full flex items-center gap-3"}>
+                  <MdEdit />
+                  <p>Edit column details</p>
+                </div>
+              )}
+            </>
           )}
         </DialogTrigger>
         <DialogContent className="bg-white max-h-[80vh] overflow-auto custom-scrollbar">
           <DialogHeader>
-            <DialogTitle className="font-bold text-center">Add a new column</DialogTitle>
+            <DialogTitle className="font-bold text-center">
+              {actionType === "Edit-Column" ? "Edit column" : "Add a new column"}
+            </DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form

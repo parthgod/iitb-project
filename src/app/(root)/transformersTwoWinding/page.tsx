@@ -8,6 +8,7 @@ import { getAllTransformersTwoWindings } from "@/lib/actions/transformersTwoWind
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { FaPlus } from "react-icons/fa6";
 
 const TransformersTwoWinding = async ({
   searchParams,
@@ -47,7 +48,9 @@ const TransformersTwoWinding = async ({
         <Search />
         <div className="flex gap-5">
           <Link href="/transformersTwoWinding/create">
-            <Button>Create transformers two winding</Button>
+            <Button>
+              Create transformers two winding <FaPlus className="text-lg ml-2" />
+            </Button>
           </Link>
           {!session?.user.isAdmin && <RequestChange userId={session?.user.id!} />}
         </div>
