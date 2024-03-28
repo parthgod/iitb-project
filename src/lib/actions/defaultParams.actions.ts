@@ -1130,3 +1130,106 @@ export const toggleDefaultParam = async (
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
+
+export const deleteDefaultParam = async (indexToRemove: number, itemColumnName: string) => {
+  try {
+    await connectToDatabase();
+    const oldParams: IDefaultParamSchema[] = await DefaultParam.find();
+    const params = oldParams[0];
+    switch (itemColumnName) {
+      case "/bus":
+        params.busColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/excitationSystem":
+        params.excitationSystemColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/generator":
+        params.generatorColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/load":
+        params.loadsColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/seriesCapacitor":
+        params.seriesCapacitorColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/shuntCapacitor":
+        params.shuntCapacitorColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/shuntReactor":
+        params.shuntReactorsColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/singleLineDiagram":
+        params.singleLineDiagramsColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/transformersThreeWinding":
+        params.transformersThreeWindingColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/transformersTwoWinding":
+        params.transformersTwoWindingColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/transmissionLine":
+        params.transmissionLinesColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/turbineGovernor":
+        params.turbineGovernorColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/ibr":
+        params.ibrColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/lccHVDCLink":
+        params.lccHVDCLinkColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/seriesFact":
+        params.seriesFactsColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/shuntFact":
+        params.shuntFactsColumns.splice(indexToRemove, 1);
+        break;
+
+      case "/vscHVDCLink":
+        params.vscHVDCLinkColumns.splice(indexToRemove, 1);
+        break;
+
+      default:
+        break;
+    }
+
+    const newDefaultParams = await DefaultParam.findByIdAndUpdate(params._id, {
+      busColumns: params.busColumns,
+      excitationSystemColumns: params.excitationSystemColumns,
+      generatorColumns: params.generatorColumns,
+      loadsColumns: params.loadsColumns,
+      seriesCapacitorColumns: params.seriesCapacitorColumns,
+      shuntCapacitorColumns: params.shuntCapacitorColumns,
+      shuntReactorsColumns: params.shuntReactorsColumns,
+      singleLineDiagramsColumns: params.singleLineDiagramsColumns,
+      transformersThreeWindingColumns: params.transformersThreeWindingColumns,
+      transformersTwoWindingColumns: params.transformersTwoWindingColumns,
+      transmissionLinesColumns: params.transmissionLinesColumns,
+      turbineGovernorColumns: params.turbineGovernorColumns,
+      ibrColumns: params.ibrColumns,
+      lccHVDCLinkColumns: params.lccHVDCLinkColumns,
+      seriesFactsColumns: params.seriesFactsColumns,
+      shuntFactsColumns: params.shuntFactsColumns,
+      vscHVDCLinkColumns: params.vscHVDCLinkColumns,
+    });
+    return { data: JSON.parse(JSON.stringify(newDefaultParams)), status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};

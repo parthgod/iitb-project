@@ -30,6 +30,7 @@ import * as XLSX from "xlsx/xlsx.mjs";
 import { ExcelFileUploader } from "./ExcelFileUploader";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type HeadersArrayProps = {
   fieldValue: string;
@@ -244,13 +245,19 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         onOpenChange={setOpen}
       >
         <DialogTrigger>
-          <div
-            title="Import data from excel"
-            className="p-3 py-2 flex items-center gap-1 bg-gray-200 rounded-lg hover:bg-gray-300"
-          >
-            <FaFileUpload />
-            <p>Upload</p>
-          </div>
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger>
+                <div className="p-3 py-2 flex items-center gap-1 bg-gray-200 rounded-lg hover:bg-gray-300">
+                  <FaFileUpload />
+                  <p>Upload</p>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Import data from excel</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </DialogTrigger>
         <DialogContent className="bg-white max-h-[80vh] overflow-auto custom-scrollbar">
           <DialogHeader className="flex flex-col gap-2">

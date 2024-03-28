@@ -11,9 +11,13 @@ const UsersPage = async ({ searchParams }: { searchParams: { query: string; stat
     <div className="flex flex-col gap-6">
       <h1 className="text-4xl font-bold p-3">Users registered</h1>
       <UsersFilter />
-      <div className="flex flex-col gap-4 h-[77vh] overflow-auto custom-scrollbar px-3 pr-4">
-        <UsersTable users={users} />
-      </div>
+      {users.length ? (
+        <div className="flex flex-col gap-4 h-[77vh] overflow-auto custom-scrollbar px-3 pr-4">
+          <UsersTable users={users} />
+        </div>
+      ) : (
+        <p className="w-full text-center">No users found</p>
+      )}
     </div>
   );
 };

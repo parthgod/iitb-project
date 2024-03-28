@@ -391,22 +391,15 @@ body {
   height: 6px;
 }
 
-/* Define the track (the background of the scrollbar) */
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
-  /* Change the background color */
 }
 
-/* Define the thumb (the draggable part of the scrollbar) */
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #b9b9b9;
-  /* Change the color of the thumb */
   border-radius: 6px;
-  /* Round the corners of the thumb */
 }
 
-/* Define the hover styles for the thumb */
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #a3a3a3;
-  /* Change the color on hover */
 }

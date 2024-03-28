@@ -32,6 +32,7 @@ import TableHeading from "./TableHeading";
 import TableSkeleton from "./TableSkeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type TableProps = {
   columns: IColumn[];
@@ -301,14 +302,24 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                     {session?.user.isAdmin ? (
                       <TableCell className="border-[1px] border-gray-300">
                         <div className="flex justify-start items-center gap-2.5">
-                          <Link href={`/${convertField(type)}/${item._id}`}>
-                            <div
-                              title="Edit"
-                              className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"
-                            >
-                              <MdEdit className="text-base" />
-                            </div>
-                          </Link>
+                          <TooltipProvider>
+                            <Tooltip delayDuration={0}>
+                              <TooltipTrigger>
+                                <Link href={`/${convertField(type)}/${item._id}`}>
+                                  <div
+                                    title="Edit"
+                                    className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"
+                                  >
+                                    <MdEdit className="text-base" />
+                                  </div>
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent side="bottom">
+                                <p>Edit</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
                           <DeleteConfirmation
                             id={item._id}
                             type={type}

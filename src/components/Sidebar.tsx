@@ -15,7 +15,8 @@ import ProfileIcon from "./ProfileIcon";
 const Sidebar = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const clickRef = useRef<HTMLButtonElement>(null);
+  const clickTableRef = useRef<HTMLButtonElement>(null);
+  const clickRequestRef = useRef<HTMLButtonElement>(null);
 
   const sideMenu: ISIdeMenu[] = [
     {
@@ -106,8 +107,12 @@ const Sidebar = () => {
   ];
 
   useEffect(() => {
-    if (clickRef.current) {
-      clickRef.current.click();
+    if (clickRequestRef.current) {
+      clickRequestRef.current.click();
+    }
+
+    if (clickTableRef.current) {
+      clickTableRef.current.click();
     }
   }, []);
 
@@ -130,7 +135,7 @@ const Sidebar = () => {
           <FcElectricity />
           <p className="font-semibold line-clamp-1">Power Systems</p>
         </div>
-        <div className="text-lg w-full scrollbar-hide h-[85vh] p-2 text-center gap-1 flex flex-col items-start pt-3 overflow-auto">
+        <div className="text-lg w-full custom-scrollbar h-[85vh] p-2 text-center gap-1 flex flex-col items-start pt-3 overflow-auto">
           {session?.user.isAdmin && (
             <Link
               href="/users"
@@ -146,18 +151,6 @@ const Sidebar = () => {
           )}
 
           <Link
-            href="/requests"
-            className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
-              pathname === "/requests"
-                ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
-                : "hover:bg-[#d7d7d7]"
-            }`}
-          >
-            <GrDocumentUser />
-            <p>Requests</p>
-          </Link>
-
-          <Link
             href="/historyLog"
             className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
               pathname === "/historyLog"
@@ -168,6 +161,72 @@ const Sidebar = () => {
             <MdManageHistory />
             <p className="whitespace-nowrap">History</p>
           </Link>
+
+          {session?.user.isAdmin ? (
+            <Accordion
+              type="single"
+              className="flex w-full justify-between gap-3 p-2 pl-5 items-center rounded-lg"
+              collapsible
+            >
+              <AccordionItem
+                value="item-1"
+                className="w-full"
+              >
+                <AccordionTrigger
+                  className="w-full"
+                  ref={clickRequestRef}
+                >
+                  <div className="flex items-center gap-3">
+                    <GrDocumentUser />
+                    <p>Requests</p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent
+                  className={`flex flex-col items-start scrollbar-hide h-full overflow-auto text-left pl-2 text-xs xl:text-base w-full`}
+                >
+                  <div className="w-full border-l-[1px] border-black pl-4">
+                    <Link href="/dataRequests">
+                      <p
+                        className={`rounded-lg transition-colors duration-300 ease-in-out p-2 ${
+                          pathname === "/dataRequests"
+                            ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                            : "hover:bg-[#d7d7d7]"
+                        }`}
+                      >
+                        Data requests
+                      </p>
+                    </Link>
+                  </div>
+                  <div className="w-full border-l-[1px] border-black pl-4 pb-0">
+                    <Link href="/loginRequests">
+                      <p
+                        className={`rounded-lg transition-colors duration-300 ease-in-out p-2 ${
+                          pathname === "/loginRequests"
+                            ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                            : "hover:bg-[#d7d7d7]"
+                        }`}
+                      >
+                        Login requests
+                      </p>
+                    </Link>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ) : (
+            <Link
+              href="/dataRequests"
+              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+                pathname === "/dataRequests"
+                  ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
+                  : "hover:bg-[#d7d7d7]"
+              }`}
+            >
+              <GrDocumentUser />
+              <p>Requests</p>
+            </Link>
+          )}
+
           <Accordion
             type="single"
             className="flex w-full justify-between gap-3 p-2 pl-5 items-center rounded-lg"
@@ -179,7 +238,7 @@ const Sidebar = () => {
             >
               <AccordionTrigger
                 className="w-full"
-                ref={clickRef}
+                ref={clickTableRef}
               >
                 <div className="flex items-center gap-3">
                   <FaTable />
@@ -187,9 +246,7 @@ const Sidebar = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent
-                className={`flex flex-col items-start ${
-                  session?.user.isAdmin ? "max-h-[53vh]" : "max-h-[60vh]"
-                } overflow-auto custom-scrollbar text-left pl-2 text-xs xl:text-base w-full`}
+                className={`flex flex-col items-start h-full scrollbar-hide overflow-auto text-left pl-2 text-xs xl:text-base w-full`}
               >
                 {sideMenu.map((item) => (
                   <div

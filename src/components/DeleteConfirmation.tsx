@@ -30,6 +30,7 @@ import { deleteLCCHVDCLink } from "@/lib/actions/lccHVDCLink.actions";
 import { deleteSeriesFact } from "@/lib/actions/seriesFact.actions";
 import { deleteShuntFact } from "@/lib/actions/shuntFact.actions";
 import { deleteVSCHVDCLink } from "@/lib/actions/vscHVDCLink.actions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type DeleteConfirmationProps = {
   id: string;
@@ -61,12 +62,18 @@ const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <div
-          title="Delete"
-          className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"
-        >
-          <MdDelete className="text-gray-500 text-base" />
-        </div>
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger>
+              <div className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5">
+                <MdDelete className="text-gray-500 text-base" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>Delete</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-white">
         <AlertDialogHeader>

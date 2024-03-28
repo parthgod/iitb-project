@@ -15,3 +15,11 @@ export async function uploadImagesToFirebase(images: any) {
 
   return response;
 }
+
+export const uploadAvatarImages = async (image: ArrayBuffer, name: string) => {
+  const filePath = `avatars/${name}`;
+  const newImageRef = ref(storage, filePath);
+  await uploadBytesResumable(newImageRef, image);
+  const url = await getDownloadURL(newImageRef);
+  return url;
+};

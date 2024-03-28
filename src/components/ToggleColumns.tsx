@@ -9,9 +9,22 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { toggleDefaultParam } from "@/lib/actions/defaultParams.actions";
+import { deleteDefaultParam, toggleDefaultParam } from "@/lib/actions/defaultParams.actions";
 import { toast } from "sonner";
 import { FaColumns } from "react-icons/fa";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { FaXmark } from "react-icons/fa6";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string }) => {
   const [tempColumns, setTempColumns] = useState<IColumn[]>([]);
@@ -29,7 +42,7 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
     setTempColumns(newColumns);
   };
 
-  const handleSubmit = async () => {
+  const removeColumn = async () => {
     try {
       let operationType: "Remove-One" | "Remove-Many" | "Update-Many" = "Remove-Many";
       for (let ind = 0; ind < tempColumns.length; ind++) {
@@ -50,6 +63,19 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
     }
   };
 
+  const deleteColumnPermanently = async (index: number) => {
+    try {
+      const response = await deleteDefaultParam(index, pathname);
+      if (response.status === 200) {
+        toast.success("Column deleted successfully.");
+        router.refresh();
+        // setOpen(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     setTempColumns(columns);
   }, [columns]);
@@ -64,10 +90,19 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
       onOpenChange={setOpen}
     >
       <DialogTrigger className="bg-gray-200 flex items-center gap-1 rounded-lg hover:bg-gray-300 p-2">
-        <FaColumns />
-        <p>Columns</p>
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger className="flex items-center gap-1">
+              <FaColumns />
+              <p>Columns</p>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>Column details</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </DialogTrigger>
-      <DialogContent className="bg-white max-h-full overflow-auto custom-scrollbar">
+      <DialogContent className="bg-white max-h-full max-w-[70vw] overflow-auto custom-scrollbar">
         <DialogHeader className="flex flex-col gap-2">
           <DialogTitle className="text-center">Details of all columns</DialogTitle>
           <Separator />
@@ -84,7 +119,10 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
             </TableHeader>
             <TableBody>
               {tempColumns.map((column, ind) => (
-                <TableRow key={ind}>
+                <TableRow
+                  key={ind}
+                  className="group"
+                >
                   <TableCell>{column.title}</TableCell>
                   <TableCell>{reverseUnslug(column.type)}</TableCell>
                   <TableCell>
@@ -93,7 +131,7 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
+                    <div className="flex justify-between items-center gap-2">
                       {column.isRemoved ? (
                         <Button
                           variant="outline"
@@ -111,6 +149,35 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
                           Remove column
                         </Button>
                       )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <div className="rounded-full p-2 hover:bg-gray-300 cursor-pointer opacity-0 group-hover:opacity-100">
+                            <FaXmark
+                              title="Delete permanently"
+                              className="text-lg"
+                            />
+                          </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-white">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently remove column{" "}
+                              <span className="font-semibold">{column?.title}</span> from{" "}
+                              <span className="font-semibold">{reverseUnslug(pathname)}</span> table.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-500 hover:bg-red-700"
+                              onClick={() => deleteColumnPermanently(ind)}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -119,7 +186,7 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
           </Table>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleSubmit}>Confirm</Button>
+          <Button onClick={removeColumn}>Confirm</Button>
           <Button
             variant="destructive"
             onClick={() => {
