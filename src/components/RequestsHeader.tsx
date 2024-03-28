@@ -3,7 +3,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Search from "./Search";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
 import { Skeleton } from "./ui/skeleton";
 
@@ -12,6 +12,7 @@ const RequestsHeader = () => {
   const [status, setStatus] = useState(searchParams.get("status") || "All");
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsMounted(true);
@@ -58,7 +59,7 @@ const RequestsHeader = () => {
           <SelectContent>
             <SelectItem value="All">All</SelectItem>
             <SelectItem value="Pending">Pending</SelectItem>
-            <SelectItem value="Completed">Completed</SelectItem>
+            {pathname !== "/loginRequests" && <SelectItem value="Completed">Completed</SelectItem>}
             <SelectItem value="Rejected">Rejected</SelectItem>
           </SelectContent>
         </Select>

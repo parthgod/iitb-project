@@ -8,12 +8,11 @@ import bcryptjs from "bcryptjs";
 export const createNewUser = async (req: {
   name: string;
   email: string;
-  password: string;
 }): Promise<{ data: string; status: number }> => {
   try {
     await connectToDatabase();
-    const { name, email, password } = req;
-    if (!name || !email || !password) {
+    const { name, email } = req;
+    if (!name || !email) {
       return { data: "Missing Fields", status: 400 };
     }
 
@@ -23,7 +22,7 @@ export const createNewUser = async (req: {
     }
 
     const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    const hashedPassword = await bcryptjs.hash("12345", salt);
     const savedUser = await new User({ name, email, password: hashedPassword }).save();
 
     return { data: "User created successfully", status: 200 };
@@ -64,15 +63,15 @@ export const getAllUsers = async ({
 }): Promise<{ data: IUser[]; status: number }> => {
   try {
     await connectToDatabase();
-    const searchConditions: any = {
-      isAdmin: false,
-    };
+    const conditions: any = [];
     if (query) {
-      searchConditions.name = { $regex: `.*${query}.*`, $options: "i" };
-      searchConditions.email = { $regex: `.*${query}.*`, $options: "i" };
+      conditions.push({ name: { $regex: `.*${query}.*`, $options: "i" } });
+      conditions.push({ email: { $regex: `.*${query}.*`, $options: "i" } });
     }
-    if (status) searchConditions.disabled = status === "disabled" ? true : false;
-    const users = await User.find(searchConditions);
+    if (status) conditions.push({ disabled: status === "disabled" ? true : false });
+    let searchConditions: any = {};
+    if (conditions.length) searchConditions.$or = [...conditions];
+    const users = await User.find({ ...searchConditions, isAdmin: false });
     return { data: JSON.parse(JSON.stringify(users)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
@@ -84,6 +83,18 @@ export const updateUserStatus = async (userId: string, disabled: boolean) => {
     await connectToDatabase();
     const updatedUser = await User.findByIdAndUpdate(userId, { disabled: disabled });
     return { data: "User status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const createAdmin = async (req: any) => {
+  try {
+    await connectToDatabase();
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(req.password, salt);
+    await User.create({ ...req, password: hashedPassword });
+    return { status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

@@ -19,6 +19,7 @@ import ImportFromExcel from "./ImportFromExcel";
 import { Button } from "./ui/button";
 import ToggleColumns from "./ToggleColumns";
 import { Session } from "next-auth";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type TableHeadingProps = {
   totalPages: number;
@@ -142,13 +143,19 @@ const TableHeading = ({
         )}
         <Popover>
           <PopoverTrigger>
-            <div
-              title="Download table"
-              className="p-3 py-2 flex items-center gap-1 bg-gray-200 ml-5 rounded-lg hover:bg-gray-300"
-            >
-              <FaFileDownload />
-              <p>Download</p>
-            </div>
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger>
+                  <div className="p-3 py-2 flex items-center gap-1 bg-gray-200 rounded-lg hover:bg-gray-300">
+                    <FaFileDownload />
+                    <p>Download</p>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Download table</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </PopoverTrigger>
           <PopoverContent
             align="end"

@@ -7,7 +7,7 @@ import { pfp } from "@/lib/constants";
 import { getServerSession } from "next-auth";
 import React from "react";
 import { PrintModification } from "../historyLog/page";
-import { getAllRequests } from "@/lib/actions/requests.actions";
+import { getAllDataRequests } from "@/lib/actions/dataRequest.actions";
 import SecuritySetting from "@/components/SecuritySetting";
 import Link from "next/link";
 import PrintRequests from "@/components/PrintRequests";
@@ -20,7 +20,7 @@ const ProfilePage = async () => {
     query: session?.user.name!,
   });
   const { data: defaultParams } = await getDefaultParams();
-  const { data: requests } = await getAllRequests({ query: session?.user.name! });
+  const { data: requests } = await getAllDataRequests({ query: session?.user.name! });
 
   return (
     <main className="p-10 w-full flex flex-col gap-2">
@@ -62,7 +62,7 @@ const ProfilePage = async () => {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold mb-3">Recent requests made by you:</h1>
             <Link
-              href={`/requests`}
+              href={`/dataRequests`}
               className="text-lg text-gray-500"
             >
               See all &rarr;
@@ -79,7 +79,7 @@ const ProfilePage = async () => {
       ) : (
         ""
       )}
-      {!session?.user.image && <SecuritySetting session={session!} />}
+      <SecuritySetting session={session!} />
       <Separator className="mt-2" />
     </main>
   );

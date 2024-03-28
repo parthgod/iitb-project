@@ -1,5 +1,4 @@
 import LoginForm from "@/components/LoginForm";
-import LoginProvider from "@/components/LoginProvider";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -18,7 +17,6 @@ export default async function LoginPage() {
             <CardTitle className="text-2xl">Login your account</CardTitle>
             <CardDescription>Enter your email below to login your account</CardDescription>
           </CardHeader>
-          <LoginProvider />
           <LoginForm />
         </Card>
       </div>

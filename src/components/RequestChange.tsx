@@ -3,7 +3,7 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { createRequest } from "@/lib/actions/requests.actions";
+import { createDataRequest } from "@/lib/actions/dataRequest.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ const RequestChange = ({ userId }: { userId: string }) => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const response = await createRequest({ userId: userId, message: data.message });
+      const response = await createDataRequest({ userId: userId, message: data.message });
       if (response?.status === 200) {
         toast.success("Request sent successfully");
         form.resetField("message");

@@ -1,11 +1,8 @@
 import { connectToDatabase } from "@/lib/database/database";
 import User from "@/lib/database/models/User";
-import { IUser } from "@/utils/defaultTypes";
 import bcryptjs from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GitHubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -16,20 +13,11 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 5 * 60,
+    maxAge: 60 * 60,
     updateAge: 24 * 60 * 60,
   },
 
   providers: [
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    }),
-
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -94,6 +82,7 @@ export const authOptions: NextAuthOptions = {
         const existingUser = await User.findOne({ email: session.user?.email });
         session.user = {
           ...session.user,
+          image: existingUser.image,
           isAdmin: existingUser?.isAdmin,
           id: existingUser?._id.toString(),
           disabled: existingUser.disabled,

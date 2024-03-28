@@ -52,7 +52,7 @@ export const middleware = async (req: NextRequest) => {
       pathname === "/vscHVDCLink/create" ||
       pathname === "/historyLog" ||
       pathname === "/profile" ||
-      pathname === "/requests"
+      pathname === "/dataRequests"
     )
       return NextResponse.next();
     else return NextResponse.redirect(new URL("/", req.url));
@@ -75,7 +75,8 @@ export const config = {
     "/transformersTwoWinding/:path*",
     "/transmissionLine/:path*",
     "/turbineGovernor/:path*",
-    "/requests",
+    "/dataRequests",
+    "/loginRequests",
     "/historyLog",
     "/profile",
     "/ibr/:path*",

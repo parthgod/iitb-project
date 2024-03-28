@@ -1,7 +1,9 @@
 "use client";
 
+import { createAdmin } from "@/lib/actions/users.actions";
+import { uploadAvatarImages } from "@/lib/firebase/storage";
 import { Label } from "@radix-ui/react-label";
-import { getSession, signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -48,6 +50,7 @@ export default function LoginForm() {
   });
 
   const handleSubmitForm = async (data: IUserRegister) => {
+    setIsLoading(true);
     try {
       const response = await signIn("credentials", {
         email: data.email,
@@ -59,13 +62,50 @@ export default function LoginForm() {
 
       if (response?.status === 401) return toast.error("Incorrect email or password. Please try again");
 
-      setIsLoading(true);
-      // toast.success("Successfully signed in");
-      // toast("Please wait while you are being redirected...", {
-      //   position: "bottom-right",
-      //   closeButton: false,
-      // });
+      toast.success("Successfully signed in");
+
       router.push("/");
+    } catch (error: any) {
+      console.log(error);
+      toast.error("Failed!");
+    }
+  };
+
+  const handleAddAdmin = async () => {
+    setIsLoading(true);
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 100;
+      canvas.height = 100;
+      const ctx = canvas.getContext("2d");
+
+      if (ctx) {
+        const randomColor = "#2C3333";
+
+        ctx.fillStyle = randomColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 48px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "alphabetic";
+
+        ctx.fillText("AD", canvas.width / 2, canvas.height - 33);
+
+        const dataUrl = canvas.toDataURL();
+        const image = await fetch(dataUrl);
+        const arrayBuffer = await image.arrayBuffer();
+        const imgUrl = await uploadAvatarImages(arrayBuffer, "Admin");
+        const response = await createAdmin({
+          name: "Admin",
+          email: "admin@gmail.com",
+          password: "123",
+          image: imgUrl,
+          isAdmin: true,
+        });
+        if (response.status === 200) toast.success("Success!!!");
+        setIsLoading(false);
+      }
     } catch (error: any) {
       console.log(error);
       toast.error("Failed!");
@@ -106,11 +146,18 @@ export default function LoginForm() {
           >
             Login
           </Button>
+          {/* <Button
+            className="w-full"
+            variant="destructive"
+            onClick={handleAddAdmin}
+          >
+            Login admin
+          </Button> */}
           <p className="text-gray-500">
             Don&apos;t have an account?{" "}
             <span className="text-blue-500 underline">
               {" "}
-              <Link href="/register">Create new account</Link>
+              <Link href="/requestLogin">Request access</Link>
             </span>
           </p>
         </CardFooter>
@@ -123,7 +170,7 @@ export default function LoginForm() {
             <div className="circle"></div>
             <div className="circle"></div>
           </div>
-          <p className="mt-12 text-3xl font-bold text-gray-100">Please wait while you are being redirected...</p>
+          <p className="mt-12 text-3xl font-bold text-gray-100">Please wait...</p>
         </div>
       ) : (
         ""

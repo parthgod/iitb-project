@@ -16,6 +16,15 @@ export type INonDefaultDatabases = {
   [key: string]: any;
 };
 
+export type ILoginRequest = {
+  _id: string;
+  name: string;
+  email: string;
+  image: string;
+  status: string;
+  time: string;
+};
+
 export type ISIdeMenu = {
   name: string;
   route: string;

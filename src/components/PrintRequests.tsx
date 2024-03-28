@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { updateRequest } from "@/lib/actions/requests.actions";
+import { updateDataRequest } from "@/lib/actions/dataRequest.actions";
 import { pfp } from "@/lib/constants";
 import { IRequest } from "@/utils/defaultTypes";
 import { convertDate } from "@/utils/helperFunctions";
@@ -65,7 +65,7 @@ const PrintRequests = ({ requests, isAdmin }: { requests: IRequest[]; isAdmin: b
                   variant="outline"
                   title="Accept request"
                   onClick={async () => {
-                    await updateRequest({ id: request._id, status: true });
+                    await updateDataRequest({ id: request._id, status: true });
                     toast.success("Request updated successfully");
                     router.refresh();
                   }}
@@ -79,7 +79,7 @@ const PrintRequests = ({ requests, isAdmin }: { requests: IRequest[]; isAdmin: b
                   variant="outline"
                   title="Reject request"
                   onClick={async () => {
-                    await updateRequest({ id: request._id, status: false });
+                    await updateDataRequest({ id: request._id, status: false });
                     toast.success("Request updated successfully");
                     router.refresh();
                   }}
