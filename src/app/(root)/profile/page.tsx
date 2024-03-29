@@ -1,16 +1,14 @@
-import { authOptions } from "@/lib/authOptions";
+import PrintModificationHistory from "@/components/PrintModificationHistory";
+import PrintDataRequests from "@/components/PrintDataRequests";
+import SecuritySetting from "@/components/SecuritySetting";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
+import { getAllDataRequests } from "@/lib/actions/dataRequest.actions";
 import { getAllModificationsHistory } from "@/lib/actions/modificationHistory.actions";
+import { authOptions } from "@/lib/authOptions";
 import { pfp } from "@/lib/constants";
 import { getServerSession } from "next-auth";
-import React from "react";
-import { PrintModification } from "../historyLog/page";
-import { getAllDataRequests } from "@/lib/actions/dataRequest.actions";
-import SecuritySetting from "@/components/SecuritySetting";
 import Link from "next/link";
-import PrintRequests from "@/components/PrintRequests";
 
 const ProfilePage = async () => {
   const session = await getServerSession(authOptions);
@@ -18,9 +16,10 @@ const ProfilePage = async () => {
     type: "",
     databaseName: "",
     query: session?.user.name!,
+    limit: 10,
+    page: 1,
   });
-  const { data: defaultParams } = await getDefaultParams();
-  const { data: requests } = await getAllDataRequests({ query: session?.user.name! });
+  const { data: requests } = await getAllDataRequests({ query: session?.user.name!, limit: 10, page: 1, status: "" });
 
   return (
     <main className="p-10 w-full flex flex-col gap-2">
@@ -47,9 +46,9 @@ const ProfilePage = async () => {
             </Link>
           </div>
           <div className="flex flex-col gap-4">
-            <PrintModification
+            <PrintModificationHistory
               modificationHistory={modifications.slice(0, 3)}
-              defaultParams={defaultParams}
+              isAdmin={session?.user.isAdmin!}
             />
           </div>
           <Separator className="mt-5" />
@@ -69,7 +68,7 @@ const ProfilePage = async () => {
             </Link>
           </div>
           <div className="flex flex-col gap-4">
-            <PrintRequests
+            <PrintDataRequests
               requests={requests.slice(0, 3)}
               isAdmin={session?.user.isAdmin!}
             />

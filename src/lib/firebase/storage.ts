@@ -17,7 +17,7 @@ export async function uploadImagesToFirebase(images: any) {
 }
 
 export const uploadAvatarImages = async (image: ArrayBuffer, name: string) => {
-  const filePath = `avatars/${name}`;
+  const filePath = `avatars/${name}.jpg`;
   const newImageRef = ref(storage, filePath);
   await uploadBytesResumable(newImageRef, image);
   const url = await getDownloadURL(newImageRef);

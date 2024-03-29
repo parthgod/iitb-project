@@ -281,7 +281,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                         <TableCell
                           key={i}
                           className={`border-[1px] border-gray-300 ${
-                            !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400"
+                            !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400 italic"
                           }`}
                         >
                           {column.type === "image" ? (

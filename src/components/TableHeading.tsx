@@ -20,6 +20,7 @@ import { Button } from "./ui/button";
 import ToggleColumns from "./ToggleColumns";
 import { Session } from "next-auth";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import PaginationComponent from "./PaginationComponent";
 
 type TableHeadingProps = {
   totalPages: number;
@@ -47,30 +48,6 @@ const TableHeading = ({
   const router = useRouter();
   const totalEntries = (Number(page) - 1) * limit + limit;
 
-  useEffect(() => {
-    let newUrl = "";
-    if (page > 1) {
-      if (page > totalPages) {
-        newUrl = removeKeysFromQuery({
-          params: searchParams.toString(),
-          keysToRemove: ["page"],
-        });
-        setPage(1);
-      } else
-        newUrl = formUrlQuery({
-          params: searchParams.toString(),
-          key: "page",
-          value: page,
-        });
-    } else {
-      newUrl = removeKeysFromQuery({
-        params: searchParams.toString(),
-        keysToRemove: ["page"],
-      });
-    }
-    router.push(newUrl, { scroll: false });
-  }, [page, searchParams, router, totalPages]);
-
   return (
     <div className="p-3 py-1.5 flex items-center justify-between border-b-[1px] border-b-gray-300">
       {totalDocuments ? (
@@ -82,65 +59,11 @@ const TableHeading = ({
         <p className="font-semibold whitespace-nowrap">No records to display</p>
       )}
       <div className="flex items-center gap-3">
-        {totalDocuments ? (
-          <>
-            {totalPages > 1 && (
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      aria-disabled={page <= 1}
-                      tabIndex={page <= 1 ? -1 : undefined}
-                      onClick={() => page > 1 && setPage(page - 1)}
-                      className={`${
-                        page <= 1 ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"
-                      }`}
-                    />
-                  </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, ind) => {
-                    if (
-                      ind + 1 <= 3 ||
-                      ind + 1 >= totalPages - 2 ||
-                      (page >= 3 && page <= totalPages - 2 && Math.abs(page - (ind + 1)) <= 1)
-                    ) {
-                      return (
-                        <PaginationItem
-                          key={ind}
-                          className={`cursor-pointer ${page === ind + 1 ? "active" : ""}`}
-                          onClick={() => setPage(ind + 1)}
-                        >
-                          <PaginationLink
-                            isActive={page === ind + 1}
-                            className="p-0"
-                          >
-                            {ind + 1}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    } else if (ind + 1 === 4 && page > 4) {
-                      return <PaginationEllipsis key="ellipsis1" />;
-                    } else if (ind + 1 === totalPages - 3 && page < totalPages - 3) {
-                      return <PaginationEllipsis key="ellipsis2" />;
-                    }
-                    return null;
-                  })}
-                  <PaginationItem>
-                    <PaginationNext
-                      aria-disabled={page >= totalPages}
-                      tabIndex={page >= totalPages ? -1 : undefined}
-                      onClick={() => page < totalPages && setPage(page + 1)}
-                      className={`${
-                        page >= totalPages ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"
-                      }`}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
-          </>
-        ) : (
-          ""
-        )}
+        <PaginationComponent
+          limit={limit}
+          totalDocuments={totalDocuments}
+          totalPages={totalPages}
+        />
         <Popover>
           <PopoverTrigger>
             <TooltipProvider>

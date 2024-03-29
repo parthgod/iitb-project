@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { updateDataRequest } from "@/lib/actions/dataRequest.actions";
+import { deleteDataRequest, updateDataRequest } from "@/lib/actions/dataRequest.actions";
 import { pfp } from "@/lib/constants";
 import { IRequest } from "@/utils/defaultTypes";
 import { convertDate } from "@/utils/helperFunctions";
@@ -13,10 +13,37 @@ import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { MdDeleteOutline } from "react-icons/md";
 
-const PrintRequests = ({ requests, isAdmin }: { requests: IRequest[]; isAdmin: boolean }) => {
+const PrintDataRequests = ({ requests, isAdmin }: { requests: IRequest[]; isAdmin: boolean }) => {
   const [isMounted, SetIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const handleDeleteDataRequest = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const response = await deleteDataRequest(id);
+      if (response.status === 200) {
+        toast.success(response.data);
+        setIsLoading(false);
+        router.refresh();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     SetIsMounted(true);
@@ -26,13 +53,46 @@ const PrintRequests = ({ requests, isAdmin }: { requests: IRequest[]; isAdmin: b
 
   return requests.map((request, i: number) => (
     <Card
-      className="w-full flex py-4 p-5"
+      className="w-full flex py-4 p-5 group"
       key={i}
     >
-      <Avatar className="scale-100 mr-4">
-        <AvatarImage src={request.user.image || pfp} />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
+      <div className="flex flex-col justify-between items-center mr-4">
+        <Avatar className="scale-100">
+          <AvatarImage src={request.user.image || pfp} />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        {!isLoading && isAdmin ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <div
+                title="Delete modification history"
+                className="rounded-full hover:bg-gray-200 p-2 cursor-pointer invisible group-hover:visible"
+              >
+                <MdDeleteOutline className="text-gray-500 text-2xl" />
+              </div>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-white">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently this request.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-500 hover:bg-red-700"
+                  onClick={() => handleDeleteDataRequest(request._id)}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          ""
+        )}
+      </div>
       <div className="w-full">
         <CardHeader className="p-0 pb-4">
           <div className="flex w-full justify-between items-center">
@@ -98,4 +158,4 @@ const PrintRequests = ({ requests, isAdmin }: { requests: IRequest[]; isAdmin: b
   ));
 };
 
-export default PrintRequests;
+export default PrintDataRequests;

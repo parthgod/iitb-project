@@ -46,7 +46,7 @@ const RequestsHeader = () => {
 
   return (
     <div className="flex gap-8">
-      <Search placeholder="Search by username..." />
+      <Search placeholder={`Search by username ${pathname === "/loginRequests" ? "or email" : ""}... `} />
       <div className="flex items-center gap-1">
         <p className="whitespace-nowrap">Status:</p>
         <Select

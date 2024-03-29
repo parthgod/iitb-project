@@ -2,7 +2,7 @@
 
 import { ObjectId } from "mongodb";
 import { IColumn, IColumnDetails, IDefaultParamSchema } from "../../utils/defaultTypes";
-import { convertField } from "../../utils/helperFunctions";
+import { convertField, reverseUnslug } from "../../utils/helperFunctions";
 import { connectToDatabase } from "../database/database";
 import DefaultParam from "../database/models/defaultParams";
 import ModificationHistory from "../database/models/modificationHistory";
@@ -60,8 +60,10 @@ export const editSpecificDefaultParam = async (
       type: columnDetails.type!,
     };
   }
+
   let modificationHistory: any;
   const params = oldParams[0];
+
   switch (itemColumnName) {
     case "/bus":
       modificationHistory = {
@@ -69,6 +71,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Bus",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.busColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Bus</span> table. ${
+          params.busColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.busColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -77,7 +101,7 @@ export const editSpecificDefaultParam = async (
       newColumns.field = params.busColumns[columnIndex].field;
       newColumns.isDefault = params.busColumns[columnIndex].isDefault;
       newColumns.isRemoved = params.busColumns[columnIndex].isRemoved;
-      newColumns.params.busColumns[columnIndex] = newColumns;
+      params.busColumns[columnIndex] = newColumns;
 
       break;
 
@@ -87,6 +111,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Excitation system",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.excitationSystemColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Excitation system</span> table. ${
+          params.excitationSystemColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.excitationSystemColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -105,6 +151,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Generator",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.generatorColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Generator</span> table. ${
+          params.generatorColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.generatorColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -123,6 +191,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Load",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.loadsColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Load</span> table. ${
+          params.loadsColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.loadsColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -141,6 +231,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Series Capacitor",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.seriesCapacitorColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Series Capacitor</span> table. ${
+          params.seriesCapacitorColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.seriesCapacitorColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -159,6 +271,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Shunt Capacitor",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.shuntCapacitorColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Shunt Capacitor</span> table. ${
+          params.shuntCapacitorColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.shuntCapacitorColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -177,6 +311,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Shunt Reactor",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.shuntReactorsColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Shunt Reactor</span> table. ${
+          params.shuntReactorsColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.shuntReactorsColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -195,6 +351,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Single Line Diagram",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.singleLineDiagramsColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Single Line Diagram</span> table. ${
+          params.singleLineDiagramsColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.singleLineDiagramsColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -213,6 +391,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Transformers Three Winding",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.transformersThreeWindingColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Transformers Three Winding</span> table. ${
+          params.transformersThreeWindingColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.transformersThreeWindingColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -231,6 +431,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Transformers Two Winding",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.transformersTwoWindingColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Transformers Two Winding</span> table. ${
+          params.transformersTwoWindingColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.transformersTwoWindingColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -249,6 +471,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Transmission Line",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.transmissionLinesColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Transmission Line</span> table. ${
+          params.transmissionLinesColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.transmissionLinesColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -267,6 +511,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Turbine Governor",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.turbineGovernorColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Turbine Governor</span> table. ${
+          params.turbineGovernorColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.turbineGovernorColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -285,6 +551,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "IBR",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.ibrColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">IBR</span> table. ${
+          params.ibrColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.ibrColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -303,6 +591,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "LCC-HVDC Link",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.lccHVDCLinkColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">LCC-HVDC Link</span> table. ${
+          params.lccHVDCLinkColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.lccHVDCLinkColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -321,6 +631,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Series Fact",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.seriesFactsColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Series Fact</span> table. ${
+          params.seriesFactsColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.seriesFactsColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -339,6 +671,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "Shunt Fact",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.shuntFactsColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">Shunt Fact</span> table. ${
+          params.shuntFactsColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.shuntFactsColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -357,6 +711,28 @@ export const editSpecificDefaultParam = async (
         databaseName: "VSC-HVDC Link",
         operationType: "Update",
         date: new Date(),
+        message: `Column <span style="font-weight: 610">${
+          params.vscHVDCLinkColumns[columnIndex].title
+        }</span> was updated for <span style="font-weight: 610">VSC-HVDC Link</span> table. ${
+          params.vscHVDCLinkColumns[columnIndex].title !== newColumns.title
+            ? `It's new name is <span style="font-weight: 610">${newColumns.title}</span> and is`
+            : `It is now`
+        } of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+          newColumns.type === "dropdown"
+            ? newColumns.tableRef
+              ? `linked to <span style="font-weight: 610"> ${
+                  newColumns.tableRef === "Bus"
+                    ? params.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                    : params.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                } </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table.`
+              : `having dropdown values:<span style="font-weight: 610">${
+                  newColumns.dropdownValues &&
+                  newColumns.dropdownValues.map((dropdownValue: string) => ` ${dropdownValue}`)
+                }
+              </span>
+            `
+            : ""
+        }.`,
         document: {
           documentBeforeChange: params.vscHVDCLinkColumns[columnIndex],
           documentAfterChange: newColumns,
@@ -557,6 +933,27 @@ export const updateDefaultParams = async (
           databaseName: "Bus",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Bus</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -570,6 +967,27 @@ export const updateDefaultParams = async (
           databaseName: "Excitation System",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Excitation System</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -583,6 +1001,27 @@ export const updateDefaultParams = async (
           databaseName: "Generator",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Generator</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -596,6 +1035,27 @@ export const updateDefaultParams = async (
           databaseName: "Load",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Load</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -609,6 +1069,27 @@ export const updateDefaultParams = async (
           databaseName: "Series Capacitor",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Series Capacitor</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -622,6 +1103,27 @@ export const updateDefaultParams = async (
           databaseName: "Shunt Capacitor",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Shunt Capacitor</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -635,6 +1137,27 @@ export const updateDefaultParams = async (
           databaseName: "Shunt Reactor",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Shunt Reactor</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -648,6 +1171,27 @@ export const updateDefaultParams = async (
           databaseName: "Single Line Diagram",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Single Line Diagram</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -661,6 +1205,27 @@ export const updateDefaultParams = async (
           databaseName: "Transformers Three Winding",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Transformers Three Winding</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -674,6 +1239,27 @@ export const updateDefaultParams = async (
           databaseName: "Transformers Two Winding",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Transformers Two Winding</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -687,6 +1273,27 @@ export const updateDefaultParams = async (
           databaseName: "Transmission Line",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Transmission Line</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -700,6 +1307,27 @@ export const updateDefaultParams = async (
           databaseName: "Turbine Governor",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Turbine Governor</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -713,6 +1341,27 @@ export const updateDefaultParams = async (
           databaseName: "IBR",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">IBR</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -726,6 +1375,27 @@ export const updateDefaultParams = async (
           databaseName: "LCC-HVDC Link",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">LCC-HVDC Link</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -739,6 +1409,27 @@ export const updateDefaultParams = async (
           databaseName: "Series Fact",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Series Fact</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -752,6 +1443,27 @@ export const updateDefaultParams = async (
           databaseName: "Shunt Fact",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">Shunt Fact</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -765,6 +1477,27 @@ export const updateDefaultParams = async (
           databaseName: "VSC-HVDC Link",
           operationType: "Create",
           date: new Date(),
+          message: `New column named <span style="font-weight: 610">${
+            newColumns.title
+          }</span> of type <span style="font-weight: 610">${reverseUnslug(newColumns.type)}</span> ${
+            newColumns.type === "dropdown"
+              ? newColumns.tableRef
+                ? `linked to <span style="font-weight: 610">
+                  ${
+                    newColumns.tableRef === "Bus"
+                      ? newParams.busColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                      : newParams.generatorColumns?.find((column) => column.field === newColumns.columnRef)?.title
+                  }
+                </span> of <span style="font-weight: 610">${newColumns.tableRef}</span> table`
+                : `having dropdown values:<span style="font-weight: 610">${
+                    newColumns.dropdownValues &&
+                    newColumns.dropdownValues.map(
+                      (dropdownValue: string) => `<span style="font-weight: 610"> ${dropdownValue}</span>`
+                    )
+                  }
+                </span>`
+              : ""
+          } was added to <span style="font-weight: 610">VSC-HVDC Link</span>.`,
           document: {
             columnDetails: newColumns,
           },
@@ -822,6 +1555,39 @@ export const toggleDefaultParam = async (
           databaseName: "Bus",
           operationType: operationType === "Update-Many" ? "Update" : "Delete",
           date: new Date(),
+          message: `${
+            operationType === "Remove-One"
+              ? `Column <span style="font-weight: 610">${params.busColumns[columnIndex].title}</span> was removed`
+              : operationType === "Remove-Many"
+              ? `Column(s) ${newColumns
+                  ?.map((item) => {
+                    if (
+                      params.busColumns.find((changedColumn) => changedColumn.title == item.title)?.isRemoved !==
+                      item.isRemoved
+                    ) {
+                      return `<span style="font-weight: 610"> ${item.title},</span>`;
+                    }
+                    return null;
+                  })
+                  .filter(Boolean)
+                  .join(" ")} was/were removed`
+              : `Column(s) ${newColumns
+                  ?.map((item) => {
+                    if (
+                      params.busColumns.find((changedColumn) => changedColumn.title == item.title)?.isRemoved !==
+                      item.isRemoved
+                    ) {
+                      return `<span style="font-weight: 610"> ${item.title}</span> was ${
+                        item.isRemoved
+                          ? `<span style="font-weight: 610">Removed, </span>`
+                          : `<span style="font-weight: 610">Restored, </span>`
+                      }`;
+                    }
+                    return null;
+                  })
+                  .filter(Boolean)
+                  .join(" ")}`
+          } from <span style="font-weight: 610">Bus</span> table.`,
           document: {
             documentBeforeChange: operationType === "Remove-One" ? params.busColumns[columnIndex] : params.busColumns,
             documentAfterChange: operationType === "Remove-One" ? null : newColumns,
