@@ -15,6 +15,9 @@ const modificationHistorySchema = new Schema(
     date: {
       type: Date,
     },
+    message: {
+      type: String,
+    },
     document: {
       id: { type: String },
       documentBeforeChange: { type: Schema.Types.Mixed },

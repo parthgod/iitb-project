@@ -1,24 +1,58 @@
 "use client";
 
-import { pfp } from "@/lib/constants";
-import { convertDate } from "@/utils/helperFunctions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { deleteUser, updateUserStatus } from "@/lib/actions/users.actions";
+import { pfp } from "@/lib/constants";
 import { IUser } from "@/utils/defaultTypes";
-import { updateUserStatus } from "@/lib/actions/users.actions";
-import { toast } from "sonner";
+import { convertDate } from "@/utils/helperFunctions";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { FaXmark } from "react-icons/fa6";
+import { toast } from "sonner";
 
 const UsersTable = ({ users }: { users: IUser[] }) => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const accountActions = async (typeOfAction: "disable" | "enable", userId: string) => {
+    const toastLoading = toast.loading("Processing...");
+    setIsLoading(true);
     try {
       const response = await updateUserStatus(userId, typeOfAction === "disable" ? true : false);
       if (response.status === 200) {
+        toast.dismiss(toastLoading);
         toast.success(response.data);
+        setIsLoading(false);
+        router.refresh();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteUser = async (id: string) => {
+    const toastLoading = toast.loading("Processing...");
+    setIsLoading(true);
+    try {
+      const response = await deleteUser(id);
+      if (response.status === 200) {
+        toast.dismiss(toastLoading);
+        toast.success(response.data);
+        setIsLoading(false);
         router.refresh();
       }
     } catch (error) {
@@ -41,7 +75,10 @@ const UsersTable = ({ users }: { users: IUser[] }) => {
         </TableHeader>
         <TableBody>
           {users.map((user, ind) => (
-            <TableRow key={user._id}>
+            <TableRow
+              key={user._id}
+              className="group"
+            >
               <TableCell className="flex items-center gap-2">
                 <Avatar className="scale-90">
                   <AvatarImage src={user.image || pfp} />
@@ -51,30 +88,114 @@ const UsersTable = ({ users }: { users: IUser[] }) => {
               </TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{convertDate(user.createdAt)}</TableCell>
-              <TableCell>{convertDate(user.latestLoginTime)}</TableCell>
+              <TableCell className={`${!user.latestLoginTime && "italic text-gray-400"}`}>
+                {user.latestLoginTime ? convertDate(user.latestLoginTime) : "null"}
+              </TableCell>
               <TableCell>
                 <Badge className={`${user.disabled ? "bg-red-600" : "bg-green-600"}`}>
                   {user.disabled ? "Disabled" : "Active"}
                 </Badge>
               </TableCell>
               <TableCell>
-                {!user.disabled ? (
-                  <Button
-                    variant="outline"
-                    className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    onClick={() => accountActions("disable", user._id)}
-                  >
-                    Disable user
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    className="border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
-                    onClick={() => accountActions("enable", user._id)}
-                  >
-                    Enable user
-                  </Button>
-                )}
+                <div className="flex justify-between items-center w-full">
+                  {!user.disabled ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          disabled={isLoading}
+                          variant="outline"
+                          className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        >
+                          Disable user
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-white">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            User <span className="font-semibold">{user.name}</span> will be disabled won&apos;t be able
+                            to access the application.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-700"
+                            onClick={() => accountActions("disable", user._id)}
+                          >
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          disabled={isLoading}
+                          variant="outline"
+                          className="border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
+                        >
+                          Enable user
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-white">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            User <span className="font-semibold">{user.name}</span> won&apos;t be disabled anymore and
+                            they can access the application.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-700"
+                            onClick={() => accountActions("enable", user._id)}
+                          >
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                  {!isLoading ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <div
+                          title="Delete permanently"
+                          className="rounded-full p-2 hover:bg-gray-300 cursor-pointer opacity-0 group-hover:opacity-100"
+                        >
+                          <FaXmark
+                            title="Delete permanently"
+                            className="text-lg"
+                          />
+                        </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-white">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            <span className="font-semibold">This action cannot be undone</span>. This will permanently
+                            remove user <span className="font-semibold">{user.name}</span>. The user will have to once
+                            again request for accessing the application.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-700"
+                            onClick={() => handleDeleteUser(user._id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    ""
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}

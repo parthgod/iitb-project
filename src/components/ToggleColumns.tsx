@@ -162,9 +162,9 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently remove column{" "}
-                              <span className="font-semibold">{column?.title}</span> from{" "}
-                              <span className="font-semibold">{reverseUnslug(pathname)}</span> table.
+                              This will permanently remove column <span className="font-semibold">{column?.title}</span>{" "}
+                              from <span className="font-semibold">{reverseUnslug(pathname)}</span> table. To change
+                              it&apos;s settings, click on column details.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

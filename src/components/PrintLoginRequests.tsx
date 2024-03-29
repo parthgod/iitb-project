@@ -1,7 +1,7 @@
 "use client";
 
 import { ILoginRequest } from "@/utils/defaultTypes";
-import React from "react";
+import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { pfp } from "@/lib/constants";
@@ -30,12 +30,17 @@ type IPrintLoginRequests = {
 
 const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRequestChange = async (id: string, status: string) => {
+    const toastLoading = toast.loading("Processing...");
+    setIsLoading(true);
     try {
       const response = await updateLoginRequestStatus(status, id);
       if (response.status === 200) {
+        toast.dismiss(toastLoading);
         toast.success(response.data);
+        setIsLoading(false);
         router.refresh();
       }
     } catch (error) {
@@ -44,10 +49,14 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
   };
 
   const handleRemoveRequest = async (id: string) => {
+    const toastLoading = toast.loading("Processing...");
+    setIsLoading(true);
     try {
       const response = await deleteLoginRequest(id);
       if (response.status === 200) {
+        toast.dismiss(toastLoading);
         toast.success(response.data);
+        setIsLoading(false);
         router.refresh();
       }
     } catch (error) {
@@ -92,6 +101,7 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
+                            disabled={isLoading}
                             variant="outline"
                             className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-700"
                           >
@@ -103,7 +113,7 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
                               User <span className="font-semibold">{item.name}</span> won&apos;t be able to access the
-                              database.
+                              application.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -121,6 +131,7 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
+                          disabled={isLoading}
                           variant="outline"
                           className="border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
                         >
@@ -132,8 +143,8 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                           <AlertDialogDescription>
                             <span className="font-semibold">This action cannot be undone</span>. User{" "}
-                            <span className="font-semibold">{item.name}</span> will be able to access the database. If
-                            you want to disable this user, please go to <span className="font-semibold">Users</span>{" "}
+                            <span className="font-semibold">{item.name}</span> will be able to access the application.
+                            If you want to disable this user, please go to <span className="font-semibold">Users</span>{" "}
                             tab.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
@@ -149,35 +160,42 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <div className="rounded-full p-2 hover:bg-gray-300 cursor-pointer opacity-0 group-hover:opacity-100">
-                        <FaXmark
+                  {!isLoading ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <div
                           title="Delete permanently"
-                          className="text-lg"
-                        />
-                      </div>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-white">
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          <span className="font-semibold">This action cannot be undone</span>. This will permanently
-                          remove user <span className="font-semibold">{item.name}&apos;s</span> login request. The user
-                          will have to once again request for access.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          className="bg-red-500 hover:bg-red-700"
-                          onClick={() => handleRemoveRequest(item._id)}
+                          className="rounded-full p-2 hover:bg-gray-300 cursor-pointer opacity-0 group-hover:opacity-100"
                         >
-                          Confirm
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                          <FaXmark
+                            title="Delete permanently"
+                            className="text-lg"
+                          />
+                        </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-white">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            <span className="font-semibold">This action cannot be undone</span>. This will permanently
+                            remove user <span className="font-semibold">{item.name}&apos;s</span> login request. The
+                            user will have to once again request for access.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-700"
+                            onClick={() => handleRemoveRequest(item._id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </TableCell>
             </TableRow>

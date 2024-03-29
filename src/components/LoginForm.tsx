@@ -58,12 +58,17 @@ export default function LoginForm() {
         redirect: false,
       });
 
-      if (response?.error === "AccessDenied") return toast.error("Account is disabled. Please contact admin.");
+      if (response?.error === "AccessDenied") {
+        setIsLoading(false);
+        return toast.error("Account is disabled. Please contact admin.");
+      }
 
-      if (response?.status === 401) return toast.error("Incorrect email or password. Please try again");
+      if (response?.status === 401) {
+        setIsLoading(false);
+        return toast.error("Incorrect email or password. Please try again");
+      }
 
       toast.success("Successfully signed in");
-
       router.push("/");
     } catch (error: any) {
       console.log(error);

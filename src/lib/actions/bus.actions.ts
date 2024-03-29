@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import Bus from "../database/models/bus";
-import { IBus, IColumn, ICreateUpdateParams } from "../../utils/defaultTypes";
+import { IBus, IColumn, ICreateUpdateParams, IDefaultParamSchema } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
+import DefaultParam from "../database/models/defaultParams";
 
 export const getAllBuses = async (
   limit = 10,
@@ -56,12 +57,12 @@ export const createBus = async (req: ICreateUpdateParams, userId: string) => {
     });
     await newBus.save();
 
-    let modificationHistory: any;
-    modificationHistory = {
+    let modificationHistory = {
       userId: new ObjectId(userId),
       databaseName: "Bus",
       operationType: "Create",
       date: new Date(),
+      message: `New record with ID <span style="font-weight: 610">${newBus._id}</span> was added to <span style="font-weight: 610">Bus</span>.`,
       document: {
         id: newBus._id,
       },
@@ -95,17 +96,56 @@ export const updateBus = async (req: ICreateUpdateParams, id: string, userId: st
       ...defaultFields,
       additionalFields,
     });
-    const documentAfterChange = await Bus.findById(id);
+    const updatedResponse = await Bus.findById(id);
 
-    let modificationHistory: any;
-    modificationHistory = {
+    const params: IDefaultParamSchema[] = await DefaultParam.find();
+    const fields = params[0].busColumns;
+
+    const documentBeforeChange = JSON.parse(JSON.stringify(response));
+    const documentAfterChange = JSON.parse(JSON.stringify(updatedResponse));
+
+    let modificationHistory = {
       userId: new ObjectId(userId),
       databaseName: "Bus",
       operationType: "Update",
       date: new Date(),
+      message: `Record with ID <span style="font-weight: 610">${id}</span> was updated. Field${fields
+        .map((item) => {
+          if (documentBeforeChange.hasOwnProperty(item.field) && documentAfterChange.hasOwnProperty(item.field)) {
+            if (documentBeforeChange[item.field] !== documentAfterChange[item.field]) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed,`;
+              return ` <span style="font-weight: 610">${
+                item.title
+              }</span> was changed from <span style="font-weight: 610">${
+                documentBeforeChange[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange[item.field]},</span>`;
+            }
+            return null;
+          } else if (
+            documentBeforeChange?.additionalFields.hasOwnProperty(item.field) &&
+            documentAfterChange?.additionalFields.hasOwnProperty(item.field)
+          ) {
+            if (
+              documentBeforeChange.additionalFields[item.field] !== documentAfterChange.additionalFields[item.field]
+            ) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed, `;
+              return ` <span style="font-weight: 610">${item.title}</span> was changed from{" "}
+              <span style="font-weight: 610">${
+                documentBeforeChange.additionalFields[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange.additionalFields[item.field]},</span>`;
+            }
+            return null;
+          } else {
+            return ` <span style="font-weight: 610">${item.title}</span> was updated to <span style="font-weight: 610">
+              ${documentBeforeChange?.[item.field] || documentAfterChange.additionalFields?.[item.field]},
+            </span>`;
+          }
+        })
+        .filter(Boolean)
+        .join(" ")}`,
       document: {
         id: id,
-        documentBeforeChange: response,
+        documentBeforeChange: documentBeforeChange,
         documentAfterChange: documentAfterChange,
       },
     };
@@ -122,12 +162,12 @@ export const deleteBus = async (id: string, path: string, userId: string) => {
     await connectToDatabase();
     const response = await Bus.findByIdAndDelete(id);
     if (response) {
-      let modificationHistory: any;
-      modificationHistory = {
+      let modificationHistory = {
         userId: new ObjectId(userId),
         databaseName: "Bus",
         operationType: "Delete",
         date: new Date(),
+        message: `Record with ID <span style="font-weight: 610">${response._id}</span> was deleted from <span style="font-weight: 610">Bus</span>.`,
         document: {
           id: id,
           documentBeforeChange: response,
@@ -152,6 +192,7 @@ export const uploadBusFromExcel = async (data: any, userId: string) => {
         databaseName: "Bus",
         operationType: "Create",
         date: new Date(),
+        message: `<span style="font-weight: 610">${data.length}</span> records were added to Bus from an excel file.`,
         document: {
           documentAfterChange: `${data.length}`,
         },

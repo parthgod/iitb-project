@@ -53,6 +53,7 @@ export type IUser = {
 };
 
 export type IModificationHistory = {
+  _id: string;
   userId: IUser;
   databaseName:
     | "Bus"
@@ -74,6 +75,7 @@ export type IModificationHistory = {
     | "Shunt Fact";
   operationType: "Create" | "Update" | "Delete";
   date: string;
+  message: string;
   document: {
     id?: string;
     documentBeforeChange?: any;

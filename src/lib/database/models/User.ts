@@ -24,7 +24,6 @@ const UserSchema = new Schema(
     },
     latestLoginTime: {
       type: Date,
-      default: new Date(),
     },
     disabled: {
       type: Boolean,

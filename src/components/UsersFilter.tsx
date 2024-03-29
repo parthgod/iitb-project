@@ -38,7 +38,7 @@ const UsersFilter = () => {
   if (!isMounted) return null;
 
   return (
-    <div className="px-4 flex items-center gap-8">
+    <div className="px-3 flex items-center gap-8">
       <Search placeholder="Search by username or email..." />
       <div className="flex items-center gap-1">
         <p className="whitespace-nowrap">Status:</p>

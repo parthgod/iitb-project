@@ -25,7 +25,7 @@ const ProfileIcon = ({ session }: { session: Session }) => {
         >
           <div className="flex gap-2 pr-2 ml-3 mb-2 items-center">
             <PopoverTrigger>
-              <Avatar className="scale-95">
+              <Avatar className="scale-90">
                 <AvatarImage src={session?.user.image || pfp} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>

@@ -131,7 +131,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   };
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
     setIsLoading(true);
     let uploadedImageUrl: any = {};
     formFields.map((item) => {

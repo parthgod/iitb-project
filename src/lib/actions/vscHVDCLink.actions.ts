@@ -2,10 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
-import { INonDefaultDatabases, IColumn, ICreateUpdateParams } from "../../utils/defaultTypes";
+import { INonDefaultDatabases, IColumn, ICreateUpdateParams, IDefaultParamSchema } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 import VSCHVDCLink from "../database/models/vscHVDCLink";
+import DefaultParam from "../database/models/defaultParams";
 
 export const getAllVSCHVDCLinks = async (
   limit = 10,
@@ -68,6 +69,7 @@ export const createVSCHVDCLink = async (req: ICreateUpdateParams, userId: string
       databaseName: "VSC-HVDC Link",
       operationType: "Create",
       date: new Date(),
+      message: `New record with ID <span style="font-weight: 610">${newVSCHVDCLink._id}</span> was added to <span style="font-weight: 610">VSC-HVDC Link</span>.`,
       document: {
         id: newVSCHVDCLink._id,
       },
@@ -103,7 +105,13 @@ export const updateVSCHVDCLink = async (req: ICreateUpdateParams, id: string, us
       ...defaultFields,
       additionalFields,
     });
-    const documentAfterChange = await VSCHVDCLink.findById(id);
+    const updatedResponse = await VSCHVDCLink.findById(id);
+
+    const params: IDefaultParamSchema[] = await DefaultParam.find();
+    const fields = params[0].vscHVDCLinkColumns;
+
+    const documentBeforeChange = JSON.parse(JSON.stringify(response));
+    const documentAfterChange = JSON.parse(JSON.stringify(updatedResponse));
 
     let modificationHistory: any;
     modificationHistory = {
@@ -111,9 +119,43 @@ export const updateVSCHVDCLink = async (req: ICreateUpdateParams, id: string, us
       databaseName: "VSC-HVDC Link",
       operationType: "Update",
       date: new Date(),
+      message: `Record with ID <span style="font-weight: 610">${id}</span> was updated. Field${fields
+        .map((item) => {
+          if (documentBeforeChange.hasOwnProperty(item.field) && documentAfterChange.hasOwnProperty(item.field)) {
+            if (documentBeforeChange[item.field] !== documentAfterChange[item.field]) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed,`;
+              return ` <span style="font-weight: 610">${
+                item.title
+              }</span> was changed from <span style="font-weight: 610">${
+                documentBeforeChange[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange[item.field]},</span>`;
+            }
+            return null;
+          } else if (
+            documentBeforeChange?.additionalFields.hasOwnProperty(item.field) &&
+            documentAfterChange?.additionalFields.hasOwnProperty(item.field)
+          ) {
+            if (
+              documentBeforeChange.additionalFields[item.field] !== documentAfterChange.additionalFields[item.field]
+            ) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed, `;
+              return ` <span style="font-weight: 610">${item.title}</span> was changed from{" "}
+              <span style="font-weight: 610">${
+                documentBeforeChange.additionalFields[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange.additionalFields[item.field]},</span>`;
+            }
+            return null;
+          } else {
+            return ` <span style="font-weight: 610">${item.title}</span> was updated to <span style="font-weight: 610">
+              ${documentBeforeChange?.[item.field] || documentAfterChange.additionalFields?.[item.field]},
+            </span>`;
+          }
+        })
+        .filter(Boolean)
+        .join(" ")}`,
       document: {
         id: id,
-        documentBeforeChange: response,
+        documentBeforeChange: documentBeforeChange,
         documentAfterChange: documentAfterChange,
       },
     };
@@ -136,6 +178,7 @@ export const deleteVSCHVDCLink = async (id: string, path: string, userId: string
         databaseName: "VSC-HVDC Link",
         operationType: "Delete",
         date: new Date(),
+        message: `Record with ID <span style="font-weight: 610">${response._id}</span> was deleted from <span style="font-weight: 610">VSC-HVDC Link</span>.`,
         document: {
           id: id,
           documentBeforeChange: response,
@@ -160,6 +203,7 @@ export const uploadVSCHVDCLinkFromExcel = async (data: any, userId: string) => {
         databaseName: "VSC-HVDC Link",
         operationType: "Create",
         date: new Date(),
+        message: `<span style="font-weight: 610">${data.length}</span> records were added to VSC-HVDC Link from an excel file.`,
         document: {
           documentAfterChange: `${data.length}`,
         },

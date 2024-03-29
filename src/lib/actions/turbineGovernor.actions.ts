@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import TurbineGovernor from "../database/models/turbineGovernorColumns";
-import { IColumn, ICreateUpdateParams, ITurbineGovernor } from "../../utils/defaultTypes";
+import { IColumn, ICreateUpdateParams, IDefaultParamSchema, ITurbineGovernor } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
+import DefaultParam from "../database/models/defaultParams";
 
 export const getAllTurbineGovernors = async (
   limit = 10,
@@ -68,6 +69,7 @@ export const createTurbineGovernor = async (req: ICreateUpdateParams, userId: st
       databaseName: "Turbine Governor",
       operationType: "Create",
       date: new Date(),
+      message: `New record with ID <span style="font-weight: 610">${newTurbineGovernor._id}</span> was added to <span style="font-weight: 610">Turbine Governor</span>.`,
       document: {
         id: newTurbineGovernor._id,
       },
@@ -104,7 +106,13 @@ export const updateTurbineGovernor = async (req: ICreateUpdateParams, id: string
       additionalFields,
     });
 
-    const documentAfterChange = await TurbineGovernor.findById(id);
+    const updatedResponse = await TurbineGovernor.findById(id);
+
+    const params: IDefaultParamSchema[] = await DefaultParam.find();
+    const fields = params[0].turbineGovernorColumns;
+
+    const documentBeforeChange = JSON.parse(JSON.stringify(response));
+    const documentAfterChange = JSON.parse(JSON.stringify(updatedResponse));
 
     let modificationHistory: any;
     modificationHistory = {
@@ -112,9 +120,43 @@ export const updateTurbineGovernor = async (req: ICreateUpdateParams, id: string
       databaseName: "Turbine Governor",
       operationType: "Update",
       date: new Date(),
+      message: `Record with ID <span style="font-weight: 610">${id}</span> was updated. Field${fields
+        .map((item) => {
+          if (documentBeforeChange.hasOwnProperty(item.field) && documentAfterChange.hasOwnProperty(item.field)) {
+            if (documentBeforeChange[item.field] !== documentAfterChange[item.field]) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed,`;
+              return ` <span style="font-weight: 610">${
+                item.title
+              }</span> was changed from <span style="font-weight: 610">${
+                documentBeforeChange[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange[item.field]},</span>`;
+            }
+            return null;
+          } else if (
+            documentBeforeChange?.additionalFields.hasOwnProperty(item.field) &&
+            documentAfterChange?.additionalFields.hasOwnProperty(item.field)
+          ) {
+            if (
+              documentBeforeChange.additionalFields[item.field] !== documentAfterChange.additionalFields[item.field]
+            ) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed, `;
+              return ` <span style="font-weight: 610">${item.title}</span> was changed from{" "}
+              <span style="font-weight: 610">${
+                documentBeforeChange.additionalFields[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange.additionalFields[item.field]},</span>`;
+            }
+            return null;
+          } else {
+            return ` <span style="font-weight: 610">${item.title}</span> was updated to <span style="font-weight: 610">
+              ${documentBeforeChange?.[item.field] || documentAfterChange.additionalFields?.[item.field]},
+            </span>`;
+          }
+        })
+        .filter(Boolean)
+        .join(" ")}`,
       document: {
         id: id,
-        documentBeforeChange: response,
+        documentBeforeChange: documentBeforeChange,
         documentAfterChange: documentAfterChange,
       },
     };
@@ -137,6 +179,7 @@ export const deleteTurbineGovernor = async (id: string, path: string, userId: st
         databaseName: "Turbine Governor",
         operationType: "Delete",
         date: new Date(),
+        message: `Record with ID <span style="font-weight: 610">${response._id}</span> was deleted from <span style="font-weight: 610">Turbine Governor</span>.`,
         document: {
           id: id,
           documentBeforeChange: response,
@@ -161,6 +204,7 @@ export const uploadTurbineGovernorFromExcel = async (data: any, userId: string) 
         databaseName: "Turbine Governor",
         operationType: "Create",
         date: new Date(),
+        message: `<span style="font-weight: 610">${data.length}</span> records were added to Turbine Governor from an excel file.`,
         document: {
           documentAfterChange: `${data.length}`,
         },

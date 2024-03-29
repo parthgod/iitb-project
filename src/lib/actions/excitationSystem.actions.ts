@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { connectToDatabase } from "../database/database";
 import ExcitationSystem from "../database/models/excitationSystem";
-import { IColumn, ICreateUpdateParams, IExcitationSystem } from "../../utils/defaultTypes";
+import { IColumn, ICreateUpdateParams, IDefaultParamSchema, IExcitationSystem } from "../../utils/defaultTypes";
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
+import DefaultParam from "../database/models/defaultParams";
 
 export const getAllExcitationSystems = async (
   limit = 10,
@@ -68,6 +69,7 @@ export const createExcitationSystem = async (req: ICreateUpdateParams, userId: s
       databaseName: "Excitation System",
       operationType: "Create",
       date: new Date(),
+      message: `New record with ID <span style="font-weight: 610">${newExcitationSystem._id}</span> was added to <span style="font-weight: 610">Excitation System</span>.`,
       document: {
         id: newExcitationSystem._id,
       },
@@ -103,7 +105,13 @@ export const updateExcitationSystem = async (req: ICreateUpdateParams, id: strin
       ...defaultFields,
       additionalFields,
     });
-    const documentAfterChange = await ExcitationSystem.findById(id);
+    const updatedResponse = await ExcitationSystem.findById(id);
+
+    const params: IDefaultParamSchema[] = await DefaultParam.find();
+    const fields = params[0].excitationSystemColumns;
+
+    const documentBeforeChange = JSON.parse(JSON.stringify(response));
+    const documentAfterChange = JSON.parse(JSON.stringify(updatedResponse));
 
     let modificationHistory: any;
     modificationHistory = {
@@ -111,9 +119,43 @@ export const updateExcitationSystem = async (req: ICreateUpdateParams, id: strin
       databaseName: "Excitation System",
       operationType: "Update",
       date: new Date(),
+      message: `Record with ID <span style="font-weight: 610">${id}</span> was updated. Field${fields
+        .map((item) => {
+          if (documentBeforeChange.hasOwnProperty(item.field) && documentAfterChange.hasOwnProperty(item.field)) {
+            if (documentBeforeChange[item.field] !== documentAfterChange[item.field]) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed,`;
+              return ` <span style="font-weight: 610">${
+                item.title
+              }</span> was changed from <span style="font-weight: 610">${
+                documentBeforeChange[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange[item.field]},</span>`;
+            }
+            return null;
+          } else if (
+            documentBeforeChange?.additionalFields.hasOwnProperty(item.field) &&
+            documentAfterChange?.additionalFields.hasOwnProperty(item.field)
+          ) {
+            if (
+              documentBeforeChange.additionalFields[item.field] !== documentAfterChange.additionalFields[item.field]
+            ) {
+              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed, `;
+              return ` <span style="font-weight: 610">${item.title}</span> was changed from{" "}
+              <span style="font-weight: 610">${
+                documentBeforeChange.additionalFields[item.field]
+              }</span> to <span style="font-weight: 610">${documentAfterChange.additionalFields[item.field]},</span>`;
+            }
+            return null;
+          } else {
+            return ` <span style="font-weight: 610">${item.title}</span> was updated to <span style="font-weight: 610">
+              ${documentBeforeChange?.[item.field] || documentAfterChange.additionalFields?.[item.field]},
+            </span>`;
+          }
+        })
+        .filter(Boolean)
+        .join(" ")}`,
       document: {
         id: id,
-        documentBeforeChange: response,
+        documentBeforeChange: documentBeforeChange,
         documentAfterChange: documentAfterChange,
       },
     };
@@ -136,6 +178,7 @@ export const deleteExcitationSystem = async (id: string, path: string, userId: s
         databaseName: "Excitation System",
         operationType: "Delete",
         date: new Date(),
+        message: `Record with ID <span style="font-weight: 610">${response._id}</span> was deleted from <span style="font-weight: 610">Excitation System</span>.`,
         document: {
           id: id,
           documentBeforeChange: response,
@@ -160,6 +203,7 @@ export const uploadExcitationSystemFromExcel = async (data: any, userId: string)
         databaseName: "Excitation System",
         operationType: "Create",
         date: new Date(),
+        message: `<span style="font-weight: 610">${data.length}</span> records were added to Excitation System from an excel file.`,
         document: {
           documentAfterChange: `${data.length}`,
         },
