@@ -1,9 +1,13 @@
 "use server";
 
-import { IUser } from "@/utils/defaultTypes";
+import { IUser } from "../../utils/defaultTypes";
 import { connectToDatabase } from "../database/database";
 import User from "../database/models/User";
 import bcryptjs from "bcryptjs";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
+import { passwordResetEmail } from "../../utils/emailHtmlTemplate";
+import { ObjectId } from "mongodb";
 
 export const createNewUser = async (req: {
   name: string;
@@ -44,7 +48,7 @@ export const changePassword = async (req: {
     if (!user) return { data: "User not found", status: 404 };
     const salt = await bcryptjs.genSalt(10);
     const isSamePassword = await bcryptjs.compare(password, user?.password);
-    if (isSamePassword) return { data: "Password is same as before. Please use a different password", status: 500 };
+    if (isSamePassword) return { data: "Password is same as before. Please use a different password.", status: 500 };
 
     const hashedPassword = await bcryptjs.hash(password, salt);
 
@@ -125,6 +129,63 @@ export const deleteUser = async (id: string) => {
     await connectToDatabase();
     const response = await User.findByIdAndDelete(id);
     return { data: `User '${response.name}' removed permanently from application.`, status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const resetPassword = async (email: string) => {
+  try {
+    await connectToDatabase();
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) return { data: "User with this email address does not exist.", status: 404 };
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const currentTime = new Date();
+    const expirationTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
+
+    await User.findByIdAndUpdate(user._id, { resetPasswordToken: token, resetPasswordExpiry: expirationTime });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "parthgenius.gps@gmail.com",
+        pass: "szktlhaxuvxzehco",
+      },
+    });
+
+    const mailOptions = {
+      from: "VoltVault <parthgenius.gps@gmail.com>",
+      to: user.email,
+      subject: "Reset your password",
+      text: "Email content",
+      html: passwordResetEmail(`${process.env.BASE_URL}/resetPassword/${user._id}?token=${token}`),
+    };
+
+    const response = await transporter.sendMail(mailOptions);
+
+    return { data: "Email sent successfully", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const getUserById = async (id: string): Promise<{ data: IUser | null; status: number }> => {
+  try {
+    await connectToDatabase();
+    if (!ObjectId.isValid(id)) {
+      return { data: null, status: 404 };
+    }
+    const user = await User.findById(id);
+
+    if (!user) return { data: null, status: 404 };
+
+    return { data: JSON.parse(JSON.stringify(user)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

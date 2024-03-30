@@ -1,39 +1,42 @@
-import RequestLoginForm from "@/components/RequestLoginForm";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import ForgotPasswordEmailForm from "@/components/ForgotPasswordEmailForm";
 
-export default async function RequestLoginPage({ searchParams }: { searchParams: { status: string } }) {
-  const status = searchParams.status || "";
+const ResetPasswordPage = async ({ searchParams }: { searchParams: { status: string } }) => {
   const session = await getServerSession();
   if (session) {
     redirect("/");
   }
+
+  const status = searchParams.status;
+
   return (
     <div className="flex h-screen items-center justify-center pr-10">
       {status === "sent" ? (
         <Card className="bg-[#b2b2b2] w-full bg-opacity-[0.25] backdrop-blur-md border-0 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-white">Request Sent successfully</CardTitle>
+            <CardTitle className="text-2xl text-white">Email sent successfully</CardTitle>
             <CardDescription className="text-gray-300">
-              Your request to login has been sent successfully to the user. Please wait for admin&apos;s approval. You
-              will receive the updated status of request in your mail. Thank you
+              An email has been sent to given email address containing a link to reset password. Please wait for the
+              email and ensure to check your spam folder as well.
             </CardDescription>
-            {/* <Link href="/login">Login</Link> */}
           </CardHeader>
         </Card>
       ) : (
         <Card className="bg-[#b2b2b2] w-full bg-opacity-[0.25] backdrop-blur-md border-0 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-white">Request Login Access</CardTitle>
+            <CardTitle className="text-2xl text-white">Forgot your password?</CardTitle>
             <CardDescription className="text-gray-300">
-              Enter your name and email below to request access
+              Enter the email address associated with your account below and we will send you a link to reset your
+              password.
             </CardDescription>
           </CardHeader>
-          <RequestLoginForm />
+          <ForgotPasswordEmailForm />
         </Card>
       )}
     </div>
   );
-}
+};
+
+export default ResetPasswordPage;

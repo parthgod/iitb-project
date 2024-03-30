@@ -67,6 +67,7 @@ module.exports = withUt({
       backgroundImage: {
         "dotted-pattern": "url('/assets/images/dotted-pattern.png')",
         "hero-img": "url('/assets/images/hero.png')",
+        "bulb-img": "url('/images/light-bulb.jpg')",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -82,10 +83,30 @@ module.exports = withUt({
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        slideup: {
+          from: { opacity: "0", transform: "translateY(25%)" },
+          to: { opacity: "1", transform: "none" },
+        },
+        slidedown: {
+          from: { opacity: "0", transform: "translateY(-25%)" },
+          to: { opacity: "1", transform: "none" },
+        },
+        slideleft: {
+          from: { opacity: "0", transform: "translateX(-20px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+        slideright: {
+          from: { opacity: "0", transform: "translateX(20px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        slideup: "slideup 2s ease-in-out",
+        slidedown: "slidedown 2s ease-in-out",
+        slideleft: "slideleft 2s ease-in-out",
+        slideright: "slideright 2s ease-in-out",
       },
     },
   },

@@ -29,6 +29,12 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpiry: {
+      type: String,
+    },
   },
   { timestamps: true, collectionOptions: { changeStreamPreAndPostImages: { enabled: true } } }
 );

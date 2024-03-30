@@ -21,12 +21,9 @@ interface IUserRegister {
 export default function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setIsSuccess] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IUserRegister>({
+  const { register, handleSubmit } = useForm<IUserRegister>({
     defaultValues: {
       email: "",
       password: "",
@@ -51,6 +48,7 @@ export default function LoginForm() {
 
   const handleSubmitForm = async (data: IUserRegister) => {
     setIsLoading(true);
+    const toastLoading = toast.loading("Processing...");
     try {
       const response = await signIn("credentials", {
         email: data.email,
@@ -60,16 +58,20 @@ export default function LoginForm() {
 
       if (response?.error === "AccessDenied") {
         setIsLoading(false);
+        toast.dismiss(toastLoading);
         return toast.error("Account is disabled. Please contact admin.");
       }
 
       if (response?.status === 401) {
         setIsLoading(false);
+        toast.dismiss(toastLoading);
         return toast.error("Incorrect email or password. Please try again");
       }
 
+      toast.dismiss(toastLoading);
       toast.success("Successfully signed in");
-      router.push("/");
+      setIsSuccess(true);
+      router.push("/bus");
     } catch (error: any) {
       console.log(error);
       toast.error("Failed!");
@@ -118,68 +120,101 @@ export default function LoginForm() {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(handleSubmitForm)}>
-        <CardContent className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="abc@xyz.com"
-              className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_33px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-              {...register("email")}
-            />
-            {errors?.email && <span className="text-red-500 text-sm"> {errors?.email?.message} </span>}
+    <form onSubmit={handleSubmit(handleSubmitForm)}>
+      {success ? (
+        <div className="flex items-center gap-2 px-6 py-2">
+          <div className="flex-col gap-4 flex items-center justify-center">
+            <div className="w-10 h-10 border-4 text-blue-400 text-4xl animate-spin border-gray-300 flex items-center justify-center border-t-yellow-600 rounded-full">
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                height="1em"
+                width="1em"
+                className="animate-ping"
+              ></svg>
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Pawwsord"
-              className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_33px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
-              {...register("password")}
-            />
-            {errors?.password && <span className="text-red-500 text-sm"> {errors?.password?.message} </span>}
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-5">
-          <Button
-            className="w-full"
-            type="submit"
-          >
-            Login
-          </Button>
-          {/* <Button
+          <p className="text-gray-300 whitespace-nowrap">Please wait, you will be redirected soon...</p>
+        </div>
+      ) : (
+        <>
+          <CardContent className="grid gap-4">
+            <div className="grid gap-2">
+              <Label
+                htmlFor="email"
+                className="text-white"
+              >
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                disabled={isLoading}
+                placeholder="abc@xyz.com"
+                required
+                className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_33px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                {...register("email")}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label
+                htmlFor="password"
+                className="text-white"
+              >
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                disabled={isLoading}
+                required
+                placeholder="Password"
+                className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_33px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                {...register("password")}
+              />
+              <Link
+                href="/resetPassword"
+                className={`text-sm underline text-gray-200 text-right ${
+                  isLoading && "pointer-events-none cursor-not-allowed text-gray-400"
+                } `}
+              >
+                Forgot password?
+              </Link>
+            </div>
+          </CardContent>
+          <CardFooter className="flex gap-5 px-6">
+            <Button
+              className="w-full active:scale-95"
+              type="submit"
+              disabled={isLoading}
+            >
+              {!isLoading ? "Login" : "Processing..."}
+            </Button>
+            <Button
+              className="w-full bg-yellow-500 hover:bg-yellow-500/80 active:scale-95"
+              disabled={isLoading}
+              type="button"
+              onClick={() => router.push("/requestLogin")}
+            >
+              Request access
+            </Button>
+
+            {/* <Button
             className="w-full"
             variant="destructive"
             onClick={handleAddAdmin}
           >
             Login admin
           </Button> */}
-          <p className="text-gray-500">
-            Don&apos;t have an account?{" "}
-            <span className="text-blue-500 underline">
-              {" "}
-              <Link href="/requestLogin">Request access</Link>
-            </span>
-          </p>
-        </CardFooter>
-      </form>
-      {isLoading ? (
-        <div className="z-10 absolute top-0 left-0 flex flex-col justify-center items-center w-screen h-screen bg-black bg-opacity-50">
-          <div className="loader">
-            <div className="circle"></div>
-            <div className="circle"></div>
-            <div className="circle"></div>
-            <div className="circle"></div>
-          </div>
-          <p className="mt-12 text-3xl font-bold text-gray-100">Please wait...</p>
-        </div>
-      ) : (
-        ""
+            {/* <p className="text-gray-200">
+              Don&apos;t have an account?
+              <span className="text-[#25226f] underline ml-1.5">
+                <Link href="/requestLogin">Request access</Link>
+              </span>
+            </p> */}
+          </CardFooter>
+        </>
       )}
-    </>
+    </form>
   );
 }
