@@ -53,6 +53,7 @@ const vscHVDCLink = async ({ searchParams }: { searchParams: { query: string; pa
               totalDocuments={totalDocuments}
               completeData={completeData}
               session={session!}
+              page={page}
             />
           ) : (
             <TableSkeleton />

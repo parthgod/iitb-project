@@ -53,6 +53,7 @@ const SeriesFact = async ({ searchParams }: { searchParams: { query: string; pag
               totalDocuments={totalDocuments}
               completeData={completeData}
               session={session!}
+              page={page}
             />
           ) : (
             <TableSkeleton />

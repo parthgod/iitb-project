@@ -23,7 +23,7 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
   if (Object.keys(seriesCapacitorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].seriesCapacitorColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           seriesCapacitorDetails?.[item.field] || seriesCapacitorDetails?.additionalFields?.[item.field] || "";
     });

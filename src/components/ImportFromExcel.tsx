@@ -67,7 +67,10 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         break;
       } else if (
         updatedArray.find(
-          (duplicate, ind) => duplicate.correspondingFieldValue === item.correspondingFieldValue && ind !== i
+          (duplicate, ind) =>
+            duplicate.correspondingFieldValue !== "null" &&
+            duplicate.correspondingFieldValue === item.correspondingFieldValue &&
+            ind !== i
         )
       ) {
         setError(true);
@@ -80,6 +83,8 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
     setIsLoading(true);
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file!);
+    console.log(headersArray);
+    // return;
 
     fileReader.onload = async (e: any) => {
       const bufferArray = e?.target.result;
@@ -90,7 +95,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
 
       for (let C = range.s.c; C <= range.e.c; ++C) {
         const address = XLSX.utils.encode_cell({ r: range.s.r, c: C });
-        if (headersArray.find((item) => item.fieldValue === ws[address].v)) {
+        if (headersArray.find((item) => item.fieldValue === ws[address].v && item.correspondingFieldValue !== "null")) {
           ws[address].t = "s";
           const newHeader = headersArray.find((item) => item.fieldValue === ws[address].v)?.correspondingFieldValue;
           ws[address].v = newHeader;
@@ -109,7 +114,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         const defaultFields: any = {};
         const additionalFields: any = {};
         columns.forEach((column) => {
-          if (!column.isRemoved) {
+          if (!column.isHidden) {
             if (column.isDefault) defaultFields[column.field] = item[column.field];
             else additionalFields[column.field] = item[column.field];
           }
@@ -118,6 +123,11 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         else return { ...defaultFields };
       });
       console.log(dataToImport);
+
+      if (!dataToImport.length) {
+        setIsLoading(false);
+        return toast.error("No data to upload");
+      }
 
       try {
         let res;
@@ -220,23 +230,22 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         const ws = wb.Sheets[wsname];
 
         const range = XLSX.utils.decode_range(ws["!ref"]);
+        const headers = [];
         for (let C = range.s.c; C <= range.e.c; ++C) {
           const address = XLSX.utils.encode_cell({ r: range.s.r, c: C });
           const cell = ws[address];
           if (cell.v.toLowerCase() !== "id") {
             const correspondingFieldValue = columns.find(
-              (item) => (item.field === cell.v || item.title === cell.v) && !item.isRemoved
+              (item) => (item.field === cell.v || item.title === cell.v) && !item.isHidden
             )?.field;
-            setHeadersArray((prev) => [
-              ...prev,
-              { fieldValue: cell.v, correspondingFieldValue: correspondingFieldValue || "" },
-            ]);
+            headers.push({ fieldValue: cell.v, correspondingFieldValue: correspondingFieldValue || "" });
             if (!correspondingFieldValue) setError(true);
           }
         }
+        setHeadersArray(headers);
       };
     }
-  }, [file, columns]);
+  }, [file]);
 
   return (
     <div className="flex justify-center items-center">
@@ -309,7 +318,9 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
                             header.correspondingFieldValue === "" ||
                             (headersArray.find(
                               (duplicate, i) =>
-                                duplicate.correspondingFieldValue === header.correspondingFieldValue && i !== ind
+                                duplicate.correspondingFieldValue !== "null" &&
+                                duplicate.correspondingFieldValue === header.correspondingFieldValue &&
+                                i !== ind
                             ) &&
                               "border border-red-500 focus:border-red-500")
                           }`}
@@ -318,7 +329,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
                         </SelectTrigger>
                         <SelectContent>
                           {columns.map((item, i) =>
-                            item.isRemoved ? (
+                            item.isHidden ? (
                               ""
                             ) : (
                               <SelectItem
@@ -329,6 +340,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
                               </SelectItem>
                             )
                           )}
+                          <SelectItem value="null">Don't map to any column</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -366,7 +378,9 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
                     <FaArrowRightLong className="text-3xl text-gray-400" />
                     <div className="pl-5 w-full">
                       <p className="w-full rounded-md h-10 px-3 py-1 border border-input flex items-center text-sm">
-                        {columns.find((item) => item.field === header.correspondingFieldValue)?.title}
+                        {columns.find((item) => item.field === header.correspondingFieldValue)?.title || (
+                          <span className="text-gray-400 italic">null</span>
+                        )}
                       </p>
                     </div>
                   </div>

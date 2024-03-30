@@ -58,7 +58,7 @@ const PrintDataRequests = ({ requests, isAdmin }: { requests: IRequest[]; isAdmi
     >
       <div className="flex flex-col justify-between items-center mr-4">
         <Avatar className="scale-100">
-          <AvatarImage src={request.user.image || pfp} />
+          <AvatarImage src={request?.user?.image || pfp} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         {!isLoading && isAdmin ? (

@@ -23,7 +23,7 @@ const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultPa
   if (Object.keys(transformersThreeWindingDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transformersThreeWindingColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           transformersThreeWindingDetails?.[item.field] ||
           transformersThreeWindingDetails?.additionalFields?.[item.field] ||

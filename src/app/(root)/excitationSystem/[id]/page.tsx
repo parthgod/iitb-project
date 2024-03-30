@@ -23,7 +23,7 @@ const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defa
   if (Object.keys(excitationSystemDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].excitationSystemColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           excitationSystemDetails?.[item.field] || excitationSystemDetails?.additionalFields?.[item.field] || "";
     });

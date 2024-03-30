@@ -23,7 +23,7 @@ const calculateDefaultValues = (singleLineDiagramDetails: IBus, defaultParams: I
   if (Object.keys(singleLineDiagramDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].singleLineDiagramsColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           singleLineDiagramDetails?.[item.field] || singleLineDiagramDetails?.additionalFields?.[item.field] || "";
     });

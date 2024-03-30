@@ -57,6 +57,7 @@ const Loads = async ({ searchParams }: { searchParams: { query: string; page?: n
           totalDocuments={totalDocuments}
           completeData={completeData}
           session={session!}
+          page={page}
         />
       ) : (
         <TableSkeleton />

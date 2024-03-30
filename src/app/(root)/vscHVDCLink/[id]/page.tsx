@@ -23,7 +23,7 @@ const calculateDefaultValues = (vscHVDCLinkDetails: INonDefaultDatabases, defaul
   if (Object.keys(vscHVDCLinkDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].vscHVDCLinkColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           vscHVDCLinkDetails?.[item.field] || vscHVDCLinkDetails?.additionalFields?.[item.field] || "";
     });

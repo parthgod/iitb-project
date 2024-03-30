@@ -23,8 +23,8 @@ const calculateDefaultValues = (busDetails: IBus, defaultParams: IDefaultParamSc
   if (Object.keys(busDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].busColumns.forEach((item) => {
-      if (!item.isRemoved)
-        if (!item.isRemoved)
+      if (!item.isHidden)
+        if (!item.isHidden)
           values[item.field] = busDetails?.[item.field] || busDetails?.additionalFields?.[item.field] || "";
     });
     values["_id"] = busDetails._id;

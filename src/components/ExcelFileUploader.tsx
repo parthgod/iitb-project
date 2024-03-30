@@ -14,7 +14,6 @@ type ExcelFileUploaderProps = {
 export function ExcelFileUploader({ file, setFile }: ExcelFileUploaderProps) {
   const onDrop = useCallback(
     (acceptedFiles: any) => {
-      console.log(acceptedFiles[0]);
       setFile(acceptedFiles[0]);
     },
     [setFile]

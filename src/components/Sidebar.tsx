@@ -5,7 +5,7 @@ import { ISIdeMenu } from "@/utils/defaultTypes";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { FaTable, FaUser } from "react-icons/fa";
 import { FcElectricity } from "react-icons/fc";
 import { GrDocumentUser } from "react-icons/gr";
@@ -14,7 +14,6 @@ import ProfileIcon from "./ProfileIcon";
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const [isMounted, setIsMounted] = useState(false);
   const { data: session } = useSession();
   const clickTableRef = useRef<HTMLButtonElement>(null);
   const clickRequestRef = useRef<HTMLButtonElement>(null);
@@ -108,20 +107,14 @@ const Sidebar = () => {
   ];
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted) {
-      if (clickTableRef.current) {
-        clickTableRef.current.click();
-      }
-
-      if (clickRequestRef.current) {
-        clickRequestRef.current.click();
-      }
+    if (clickTableRef.current) {
+      clickTableRef.current.click();
     }
-  }, [isMounted]);
+
+    if (clickRequestRef.current) {
+      clickRequestRef.current.click();
+    }
+  }, []);
 
   useEffect(() => {
     const signOutDisabledUser = async () => {
