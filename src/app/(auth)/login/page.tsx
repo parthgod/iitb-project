@@ -10,16 +10,16 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="bg-zinc-900">
-      <div className="flex w-full h-screen items-center justify-center">
-        <Card className="w-1/2">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">Login your account</CardTitle>
-            <CardDescription>Enter your email below to login your account</CardDescription>
-          </CardHeader>
-          <LoginForm />
-        </Card>
-      </div>
+    <div className="flex h-screen items-center justify-center pr-10">
+      <Card className="bg-[#b2b2b2] w-full bg-opacity-[0.25] backdrop-blur-md border-0 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px]">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-white">Login to your account</CardTitle>
+          <CardDescription className="text-gray-300">
+            Enter your email and password below to login your account
+          </CardDescription>
+        </CardHeader>
+        <LoginForm />
+      </Card>
     </div>
   );
 }

@@ -50,6 +50,8 @@ export type IUser = {
   latestLoginTime: string;
   disabled: boolean;
   createdAt: string;
+  resetPasswordToken: string;
+  resetPasswordExpiry: string;
 };
 
 export type IModificationHistory = {

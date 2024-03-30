@@ -140,7 +140,7 @@ const Sidebar = () => {
       <div className="flex flex-col w-full items-center">
         <div className="flex bg-white items-center h-[8vh] justify-start px-3 py-3 self-start text-2xl gap-1 shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] w-full">
           <FcElectricity />
-          <p className="font-semibold line-clamp-1">Power Systems</p>
+          <p className="font-semibold line-clamp-1">VoltVault</p>
         </div>
         <div className="text-lg w-full custom-scrollbar h-[85vh] p-2 text-center gap-1 flex flex-col items-start pt-3 overflow-auto">
           {session?.user.isAdmin && (

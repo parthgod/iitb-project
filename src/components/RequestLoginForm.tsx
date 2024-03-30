@@ -4,6 +4,7 @@ import { createLoginRequest } from "@/lib/actions/loginRequest.actions";
 import { uploadAvatarImages } from "@/lib/firebase/storage";
 import { Label } from "@radix-ui/react-label";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
@@ -16,11 +17,7 @@ interface IUserRegister {
 }
 
 export default function RequestLoginForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IUserRegister>({
+  const { register, handleSubmit } = useForm<IUserRegister>({
     defaultValues: {
       name: "",
       email: "",
@@ -28,6 +25,8 @@ export default function RequestLoginForm() {
   });
 
   const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   register("name", { required: "Name is required" });
 
@@ -40,7 +39,7 @@ export default function RequestLoginForm() {
   });
 
   const handleSubmitForm = async (data: IUserRegister) => {
-    // toast loading
+    setIsLoading(true);
     const toastLoading = toast.loading("Processing...");
     try {
       const canvas = document.createElement("canvas");
@@ -77,9 +76,11 @@ export default function RequestLoginForm() {
 
         const response = await createLoginRequest({ ...data, image: imgUrl });
         if (response.status === 400 || response.status === 403) {
+          setIsLoading(false);
           toast.error(response.data);
           return;
         } else {
+          setIsLoading(false);
           toast.success(response.data);
           router.push("/requestLogin?status=sent");
         }
@@ -96,33 +97,46 @@ export default function RequestLoginForm() {
     <form onSubmit={handleSubmit(handleSubmitForm)}>
       <CardContent className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="email">Name</Label>
+          <Label
+            htmlFor="email"
+            className="text-white"
+          >
+            Name
+          </Label>
           <Input
             id="text"
             type="name"
             placeholder="Name"
+            disabled={isLoading}
+            required
             className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_33px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
             {...register("name")}
           />
-          {errors?.name && <span className="text-red-500 text-sm"> {errors?.name?.message} </span>}
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
+          <Label
+            htmlFor="email"
+            className="text-white"
+          >
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
             placeholder="abc@xyz.com"
+            disabled={isLoading}
+            required
             className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_33px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
             {...register("email")}
           />
-          {errors?.email && <span className="text-red-500 text-sm"> {errors?.email?.message} </span>}
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-5">
+      <CardFooter className="flex gap-5 w-full px-6">
         <Button
-          className="w-full"
           type="submit"
+          className="w-full bg-yellow-500 hover:bg-yellow-500/80 active:scale-95"
+          disabled={isLoading}
         >
           Submit
         </Button>
@@ -132,6 +146,14 @@ export default function RequestLoginForm() {
               <Link href="/login">Login here</Link>
             </span>
           </p> */}
+        <Button
+          className="w-full active:scale-95"
+          disabled={isLoading}
+          type="button"
+          onClick={() => router.push("/login")}
+        >
+          Go back
+        </Button>
       </CardFooter>
     </form>
   );

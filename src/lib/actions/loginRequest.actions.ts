@@ -1,12 +1,12 @@
 "use server";
 
-import { loginAcceptEmailHTML } from "../../utils/loginRequestEmailHTML";
+import nodemailer from "nodemailer";
 import { ILoginRequest } from "../../utils/defaultTypes";
+import { loginAcceptEmailHTML } from "../../utils/emailHtmlTemplate";
 import { connectToDatabase } from "../database/database";
 import LoginRequest from "../database/models/loginRequests";
 import User from "../database/models/User";
 import { createNewUser } from "./users.actions";
-import nodemailer from "nodemailer";
 
 export const getAllLoginRequests = async ({
   query,
@@ -55,7 +55,7 @@ export const createLoginRequest = async (data: any) => {
 
     const doesUserExist = await User.findOne({ email: data.email });
     if (doesUserExist) {
-      return { data: "User already exists. Try logging in instead", status: 403 };
+      return { data: "User already exists with this email. Try logging in instead", status: 403 };
     }
 
     const doesRequestExist = await LoginRequest.findOne({ email: data.email });
@@ -95,9 +95,9 @@ export const updateLoginRequestStatus = async (status: string, id: string) => {
       });
 
       const mailOptions = {
-        from: "Power Systems <parthgenius.gps@gmail.com>",
+        from: "VoltVault <parthgenius.gps@gmail.com>",
         to: user.email,
-        subject: "Login Request approved for Power Systems",
+        subject: "Login Request approved",
         text: "Email content",
         html: loginAcceptEmailHTML({ email: user.email }),
       };
