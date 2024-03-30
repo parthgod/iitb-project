@@ -61,6 +61,7 @@ const SeriesCapacitor = async ({
           totalDocuments={totalDocuments}
           completeData={completeData}
           session={session!}
+          page={page}
         />
       ) : (
         <TableSkeleton />

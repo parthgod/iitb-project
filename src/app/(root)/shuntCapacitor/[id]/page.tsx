@@ -23,7 +23,7 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
   if (Object.keys(shuntCapacitorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntCapacitorColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           shuntCapacitorDetails?.[item.field] || shuntCapacitorDetails?.additionalFields?.[item.field] || "";
     });

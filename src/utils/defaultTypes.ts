@@ -3,7 +3,7 @@ export type IColumn = {
   title: string;
   type: string;
   isDefault: boolean;
-  isRemoved: boolean;
+  isHidden: boolean;
   dropdownValues?: any;
   tableRef?: string;
   columnRef?: string;

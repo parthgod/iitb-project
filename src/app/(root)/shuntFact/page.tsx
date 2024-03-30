@@ -53,6 +53,7 @@ const ShuntFact = async ({ searchParams }: { searchParams: { query: string; page
               totalDocuments={totalDocuments}
               completeData={completeData}
               session={session!}
+              page={page}
             />
           ) : (
             <TableSkeleton />

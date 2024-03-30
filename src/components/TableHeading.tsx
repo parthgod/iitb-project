@@ -1,26 +1,15 @@
 "use client";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { IColumn } from "@/utils/defaultTypes";
-import { formUrlQuery, removeKeysFromQuery } from "@/utils/helperFunctions";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Session } from "next-auth";
+import { useSearchParams } from "next/navigation";
 import { FaFileDownload, FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
 import ImportFromExcel from "./ImportFromExcel";
-import { Button } from "./ui/button";
-import ToggleColumns from "./ToggleColumns";
-import { Session } from "next-auth";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import PaginationComponent from "./PaginationComponent";
+import ToggleColumns from "./ToggleColumns";
+import { Button } from "./ui/button";
 
 type TableHeadingProps = {
   totalPages: number;
@@ -31,6 +20,7 @@ type TableHeadingProps = {
   limit?: number;
   columns: IColumn[];
   session: Session;
+  page: number;
 };
 
 const TableHeading = ({
@@ -42,10 +32,9 @@ const TableHeading = ({
   limit = 10,
   columns,
   session,
+  page,
 }: TableHeadingProps) => {
   const searchParams = useSearchParams();
-  const [page, setPage] = useState(Number(searchParams.get("page") || 1));
-  const router = useRouter();
   const totalEntries = (Number(page) - 1) * limit + limit;
 
   return (

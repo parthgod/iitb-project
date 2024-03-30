@@ -76,7 +76,7 @@ const generateFormSchema = (fields: IColumn[]) => {
   const schema: any = {};
 
   fields.forEach((field) => {
-    if (!field.isRemoved) schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
+    if (!field.isHidden) schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
   });
   return z.object(schema);
 };
@@ -108,7 +108,9 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   const filterBuses = (columnName: string, event: any) => {
     const { value } = event.target;
     setSearchDevice(value);
-    const filteredData = busDropdownData.filter((item) => item[columnName].toLowerCase().includes(value.toLowerCase()));
+    const filteredData = busDropdownData.filter((item) =>
+      item[columnName]?.toLowerCase().includes(value.toLowerCase())
+    );
     setFilteredBusDropdownData(filteredData);
   };
 
@@ -116,7 +118,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     const { value } = event.target;
     setSearchDevice(value);
     const filteredData = generatorDropdownData.filter((item) =>
-      item[columnName].toLowerCase().includes(value.toLowerCase())
+      item[columnName]?.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredGeneratorDropdownData(filteredData);
   };
@@ -132,9 +134,27 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
+
+    if (formDetails) {
+      let duplicate = false;
+      Object.keys(data).forEach((field) => {
+        if (data[field] !== formDetails[field]) duplicate = true;
+      });
+      if (!duplicate) {
+        router.push(`/${type}`);
+        router.refresh();
+        toast.success(
+          formDetails
+            ? `${reverseUnslug(type)} edited successfully`
+            : `New ${reverseUnslug(type).toLowerCase()} created successfully`
+        );
+        return;
+      }
+    }
+
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
-      if (item.type === "image" && !item.isRemoved) {
+      if (item.type === "image" && !item.isHidden) {
         uploadedImageUrl[item.field] = data[item.field];
       }
     });
@@ -149,7 +169,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     const defaultFields: any = {};
     const additionalFields: any = {};
     formFields.map((item) => {
-      if (!item.isRemoved) {
+      if (!item.isHidden) {
         if (item.isDefault) {
           defaultFields[item.field] = data[item.field];
         } else {
@@ -327,7 +347,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
 
   useEffect(() => {
     formFields.forEach(async (item) => {
-      if (!item.isRemoved && item.type === "dropdown" && item?.tableRef) {
+      if (!item.isHidden && item.type === "dropdown" && item?.tableRef) {
         if (item.tableRef === "Bus") {
           const response = await getAllBuses(0, 0, "", formFields);
           setBusDropdownData(response.completeData);
@@ -356,7 +376,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
         <div className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto custom-scrollbar">
             {formFields.map((item, ind: number) => {
-              if (!item.isRemoved) {
+              if (!item.isHidden) {
                 if (item.type === "text" || item.type === "number")
                   return (
                     <FormField

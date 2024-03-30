@@ -29,9 +29,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { BiHide } from "react-icons/bi";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
-import { MdDeleteForever, MdEdit } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "./ui/input";
@@ -64,7 +65,7 @@ const AddColumns = ({
   userId: string;
   newTable?: boolean;
   columnIndex: number;
-  actionType: "Edit-Column" | "Add-Column-Left" | "Add-Column-Right" | "Remove-Column";
+  actionType: "Edit-Column" | "Add-Column-Left" | "Add-Column-Right" | "Hide-Column";
 }) => {
   const pathname = usePathname();
 
@@ -207,10 +208,6 @@ const AddColumns = ({
           response = await editSpecificDefaultParam(data, pathname, userId, columnIndex);
           break;
 
-        case "Remove-Column":
-          response = await updateDefaultParams(data, pathname, userId, columnIndex - 1 < 0 ? 0 : columnIndex - 1);
-          break;
-
         default:
           break;
       }
@@ -231,9 +228,9 @@ const AddColumns = ({
 
   const removeColumn = async () => {
     try {
-      const response = await toggleDefaultParam(pathname, userId, columnIndex, "Remove-One");
+      const response = await toggleDefaultParam(pathname, userId, columnIndex, "Hide-One");
       if (response.status === 200) {
-        toast.success(`Column '${columnDetails?.title}' removed successfully`);
+        toast.success(`Column '${columnDetails?.title}' hidden successfully`);
         router.refresh();
         // const popoverTrigger = document.getElementById(`popover-btn-${columnIndex}`);
         // if (popoverTrigger) popoverTrigger.click();
@@ -253,24 +250,24 @@ const AddColumns = ({
           Add new column
         </Button>
       )} */}
-      {actionType === "Remove-Column" && (
+      {actionType === "Hide-Column" && (
         <AlertDialog>
           <AlertDialogTrigger>
             <Button
               variant="outline"
               className="w-full flex items-center gap-3"
             >
-              <MdDeleteForever className="text-lg" />
-              <p>Remove column</p>
+              <BiHide className="text-lg" />
+              <p>Hide column</p>
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent className="bg-white">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will remove{" "}
-                <span className="font-semibold">{columnDetails?.title}</span> from{" "}
-                <span className="font-semibold">{reverseUnslug(pathname)}</span> table.
+                This will hide <span className="font-semibold">{columnDetails?.title}</span> from{" "}
+                <span className="font-semibold">{reverseUnslug(pathname)}</span> table. To change it, you need to go to
+                column details section.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

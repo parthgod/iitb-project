@@ -57,6 +57,7 @@ const ShuntCapacitor = async ({ searchParams }: { searchParams: { query: string;
           totalDocuments={totalDocuments}
           completeData={completeData}
           session={session!}
+          page={page}
         />
       ) : (
         <TableSkeleton />

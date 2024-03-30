@@ -35,23 +35,26 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
   const toggleTempColumns = (index: number, operationType: "Remove" | "Restore") => {
     const newColumns = tempColumns.map((item, ind) => {
       if (ind === index) {
-        if (operationType === "Remove") return { ...item, isRemoved: true };
-        else return { ...item, isRemoved: false };
+        if (operationType === "Remove") return { ...item, isHidden: true };
+        else return { ...item, isHidden: false };
       } else return item;
     });
     setTempColumns(newColumns);
   };
 
-  const removeColumn = async () => {
+  const updateColumns = async () => {
     try {
-      let operationType: "Remove-One" | "Remove-Many" | "Update-Many" = "Remove-Many";
+      let operationType: "Hide-One" | "Hide-Many" | "Update-Many" = "Hide-Many";
+      let flag = false;
       for (let ind = 0; ind < tempColumns.length; ind++) {
         const item = tempColumns[ind];
-        if (columns.find((subItem) => subItem.title == item.title)?.isRemoved !== item.isRemoved && !item.isRemoved) {
+        if (columns.find((subItem) => subItem.title == item.title)?.isHidden !== item.isHidden) flag = true;
+        if (columns.find((subItem) => subItem.title == item.title)?.isHidden !== item.isHidden && !item.isHidden) {
           operationType = "Update-Many";
           break;
         }
       }
+      if (!flag) return setOpen(false);
       const response = await toggleDefaultParam(pathname, userId, 0, operationType, tempColumns);
       if (response.status === 200) {
         toast.success("Columns updated successfully.");
@@ -65,7 +68,7 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
 
   const deleteColumnPermanently = async (index: number) => {
     try {
-      const response = await deleteDefaultParam(index, pathname);
+      const response = await deleteDefaultParam(index, pathname, userId);
       if (response.status === 200) {
         toast.success("Column deleted successfully.");
         router.refresh();
@@ -89,12 +92,14 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
       open={open}
       onOpenChange={setOpen}
     >
-      <DialogTrigger className="bg-gray-200 flex items-center gap-1 rounded-lg hover:bg-gray-300 p-2">
+      <DialogTrigger>
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger className="flex items-center gap-1">
-              <FaColumns />
-              <p>Columns</p>
+              <div className="bg-gray-200 flex items-center gap-1 rounded-lg hover:bg-gray-300 p-2">
+                <FaColumns />
+                <p>Columns</p>
+              </div>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               <p>Column details</p>
@@ -126,13 +131,13 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
                   <TableCell>{column.title}</TableCell>
                   <TableCell>{reverseUnslug(column.type)}</TableCell>
                   <TableCell>
-                    <Badge className={`${column.isRemoved ? "bg-red-600" : "bg-green-600"}`}>
-                      {column.isRemoved ? "Removed" : "Active"}
+                    <Badge className={`${column.isHidden ? "bg-red-600" : "bg-green-600"}`}>
+                      {column.isHidden ? "Hidden" : "Active"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex justify-between items-center gap-2">
-                      {column.isRemoved ? (
+                      {column.isHidden ? (
                         <Button
                           variant="outline"
                           className="border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
@@ -146,7 +151,7 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
                           className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-700"
                           onClick={() => toggleTempColumns(ind, "Remove")}
                         >
-                          Remove column
+                          Hide column
                         </Button>
                       )}
                       <AlertDialog>
@@ -186,7 +191,7 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
           </Table>
         </div>
         <div className="flex gap-2">
-          <Button onClick={removeColumn}>Confirm</Button>
+          <Button onClick={updateColumns}>Confirm</Button>
           <Button
             variant="destructive"
             onClick={() => {

@@ -85,9 +85,9 @@ export default function RequestLoginForm() {
           router.push("/requestLogin?status=sent");
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
-      return toast.error("Failed!", error?.message);
+      return toast.error("Failed!");
     } finally {
       toast.dismiss(toastLoading);
     }

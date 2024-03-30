@@ -57,6 +57,7 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
           totalDocuments={totalDocuments}
           totalPages={totalPages}
           session={session!}
+          page={page}
         />
       ) : (
         <TableSkeleton />

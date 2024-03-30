@@ -72,7 +72,7 @@ export default function LoginForm() {
       toast.success("Successfully signed in");
       setIsSuccess(true);
       router.push("/bus");
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
       toast.error("Failed!");
     }
@@ -113,7 +113,7 @@ export default function LoginForm() {
         if (response.status === 200) toast.success("Success!!!");
         setIsLoading(false);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
       toast.error("Failed!");
     }

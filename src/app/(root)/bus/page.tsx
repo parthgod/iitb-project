@@ -52,6 +52,7 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
           totalDocuments={totalDocuments}
           completeData={completeData}
           session={session!}
+          page={page}
         />
       ) : (
         <TableSkeleton />

@@ -124,9 +124,10 @@ export const updateTransformersThreeWinding = async (req: ICreateUpdateParams, i
       date: new Date(),
       message: `Record with ID <span style="font-weight: 610">${id}</span> was updated. Field${fields
         .map((item) => {
-          if (documentBeforeChange.hasOwnProperty(item.field) && documentAfterChange.hasOwnProperty(item.field)) {
+          if (documentBeforeChange?.hasOwnProperty(item.field) && documentAfterChange?.hasOwnProperty(item.field)) {
             if (documentBeforeChange[item.field] !== documentAfterChange[item.field]) {
-              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed,`;
+              if (item.type === "image")
+                return ` <span style="font-weight: 610">${item.title}'s</span> image was changed,`;
               return ` <span style="font-weight: 610">${
                 item.title
               }</span> was changed from <span style="font-weight: 610">${
@@ -135,13 +136,14 @@ export const updateTransformersThreeWinding = async (req: ICreateUpdateParams, i
             }
             return null;
           } else if (
-            documentBeforeChange?.additionalFields.hasOwnProperty(item.field) &&
-            documentAfterChange?.additionalFields.hasOwnProperty(item.field)
+            documentBeforeChange?.additionalFields?.hasOwnProperty(item.field) &&
+            documentAfterChange?.additionalFields?.hasOwnProperty(item.field)
           ) {
             if (
               documentBeforeChange.additionalFields[item.field] !== documentAfterChange.additionalFields[item.field]
             ) {
-              if (item.type === "image") return ` <span style="font-weight: 610">${item.title}</span> was changed, `;
+              if (item.type === "image")
+                return ` <span style="font-weight: 610">${item.title}'s</span> image was changed, `;
               return ` <span style="font-weight: 610">${item.title}</span> was changed from{" "}
               <span style="font-weight: 610">${
                 documentBeforeChange.additionalFields[item.field]
@@ -149,13 +151,15 @@ export const updateTransformersThreeWinding = async (req: ICreateUpdateParams, i
             }
             return null;
           } else {
+            if (item.type === "image")
+              return ` <span style="font-weight: 610">${item.title}'s</span> image was changed,`;
             return ` <span style="font-weight: 610">${item.title}</span> was updated to <span style="font-weight: 610">
-              ${documentBeforeChange?.[item.field] || documentAfterChange.additionalFields?.[item.field]},
+              ${documentBeforeChange?.[item.field] || documentAfterChange?.additionalFields?.[item.field]},
             </span>`;
           }
         })
         .filter(Boolean)
-        .join(" ")}`,
+        .join(" ")}.`,
       document: {
         id: id,
         documentBeforeChange: documentBeforeChange,
@@ -206,7 +210,7 @@ export const uploadTransformersThreeWindingFromExcel = async (data: any, userId:
         databaseName: "Transformers Three Winding",
         operationType: "Create",
         date: new Date(),
-        message: `<span style="font-weight: 610">${data.length}</span> records were added to Transformers Three Winding from an excel file.`,
+        message: `<span style="font-weight: 610">${data.length}</span> records were added to <span style="font-weight: 610">Transformers Three Winding</span> from an excel file.`,
         document: {
           documentAfterChange: `${data.length}`,
         },

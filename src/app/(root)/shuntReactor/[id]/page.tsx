@@ -23,7 +23,7 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
   if (Object.keys(shuntReactorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntReactorsColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           shuntReactorDetails?.[item.field] || shuntReactorDetails?.additionalFields?.[item.field] || "";
     });

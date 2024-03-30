@@ -84,9 +84,10 @@ type TableProps = {
   totalPages: number;
   totalDocuments: number;
   session: Session;
+  page: number;
 };
 
-const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session }: TableProps) => {
+const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session, page }: TableProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -122,7 +123,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     idCellHeading.style.padding = "5px";
 
     columns.forEach((headerText) => {
-      if (!headerText.isRemoved) {
+      if (!headerText.isHidden) {
         const cell = headingRow.insertCell();
         cell.textContent = headerText.title;
         cell.style.border = "1px solid #000";
@@ -137,7 +138,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
       idCell.style.border = "1px solid #000";
       idCell.style.padding = "5px";
       columns.forEach((cellData) => {
-        if (!cellData.isRemoved) {
+        if (!cellData.isHidden) {
           const cell = row.insertCell();
           cell.style.border = "1px solid #000";
           cell.style.padding = "5px";
@@ -167,7 +168,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     const idCellHeading = headingRow.insertCell();
     idCellHeading.textContent = "ID";
     columns.forEach((headerText) => {
-      if (!headerText.isRemoved) {
+      if (!headerText.isHidden) {
         const cell = headingRow.insertCell();
         cell.textContent = headerText.title;
       }
@@ -178,7 +179,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
       const idCell = row.insertCell();
       idCell.textContent = rowData._id;
       columns.forEach((cellData) => {
-        if (!cellData.isRemoved) {
+        if (!cellData.isHidden) {
           const cell = row.insertCell();
           cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
         }
@@ -206,6 +207,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           fnExportToExcel={fnExportToExcel}
           columns={columns}
           session={session}
+          page={page}
         />
         <div className="relative flex items-start justify-start w-full overflow-auto custom-scrollbar max-h-[67vh]">
           <Table
@@ -219,7 +221,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
               <TableRow className="bg-slate-100">
                 <TableHead className="border-[1px] border-gray-300 group max-w-10">ID</TableHead>
                 {columns.map((item, ind: number) =>
-                  item.isRemoved ? (
+                  item.isHidden ? (
                     ""
                   ) : (
                     <TableHead
@@ -254,7 +256,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                                 columnDetails={item}
                               />
                               <AddColumns
-                                actionType="Remove-Column"
+                                actionType="Hide-Column"
                                 columnIndex={ind}
                                 userId={session.user.id}
                                 columnDetails={item}
@@ -275,7 +277,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                   <TableRow key={ind}>
                     <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
                     {columns.map((column, i: number) =>
-                      column.isRemoved ? (
+                      column.isHidden ? (
                         ""
                       ) : (
                         <TableCell

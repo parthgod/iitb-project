@@ -23,7 +23,7 @@ const calculateDefaultValues = (transformersTwoWindingDetails: IBus, defaultPara
   if (Object.keys(transformersTwoWindingDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transformersTwoWindingColumns.forEach((item) => {
-      if (!item.isRemoved)
+      if (!item.isHidden)
         values[item.field] =
           transformersTwoWindingDetails?.[item.field] ||
           transformersTwoWindingDetails?.additionalFields?.[item.field] ||
