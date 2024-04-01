@@ -1,6 +1,24 @@
 "use client";
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { toggleBusSwitchValue } from "@/lib/actions/bus.actions";
+import { toggleExcitationSystemSwitchValue } from "@/lib/actions/excitationSystem.actions";
+import { toggleGeneratorSwitchValue } from "@/lib/actions/generator.actions";
+import { toggleIBRSwitchValue } from "@/lib/actions/ibr.actions";
+import { toggleLCCHVDCLinkSwitchValue } from "@/lib/actions/lccHVDCLink.actions";
+import { toggleLoadSwitchValue } from "@/lib/actions/load.actions";
+import { toggleSeriesCapacitorSwitchValue } from "@/lib/actions/seriesCapacitor.actions";
+import { toggleSeriesFactSwitchValue } from "@/lib/actions/seriesFact.actions";
+import { toggleShuntCapacitorSwitchValue } from "@/lib/actions/shuntCapacitor.actions";
+import { toggleShuntFactSwitchValue } from "@/lib/actions/shuntFact.actions";
+import { toggleShuntReactorSwitchValue } from "@/lib/actions/shuntReactor.actions";
+import { toggleSingleLineDiagramSwitchValue } from "@/lib/actions/singleLineDiagram.actions";
+import { toggleTransformersThreeWindingSwitchValue } from "@/lib/actions/transformersThreeWinding.actions";
+import { toggleTransformersTwoWindingSwitchValue } from "@/lib/actions/transformersTwoWinding.actions";
+import { toggleTransmissionLineSwitchValue } from "@/lib/actions/transmissionLines.actions";
+import { toggleTurbineGovernorSwitchValue } from "@/lib/actions/turbineGovernor.actions";
+import { toggleVSCHVDCLinkSwitchValue } from "@/lib/actions/vscHVDCLink.actions";
 import { noImageUrl } from "@/lib/constants";
 import {
   IBus,
@@ -23,35 +41,17 @@ import jsPDF from "jspdf";
 import { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { MdEdit } from "react-icons/md";
+import { PiDotsThreeVerticalBold } from "react-icons/pi";
+import { toast } from "sonner";
 import * as XLSX from "xlsx/xlsx.mjs";
 import AddColumns from "./AddColumns";
 import DeleteConfirmation from "./DeleteConfirmation";
 import TableHeading from "./TableHeading";
 import TableSkeleton from "./TableSkeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { PiDotsThreeVerticalBold } from "react-icons/pi";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useRouter } from "next/navigation";
-import { toggleGeneratorSwitchValue } from "@/lib/actions/generator.actions";
-import { toast } from "sonner";
-import { toggleBusSwitchValue } from "@/lib/actions/bus.actions";
-import { toggleExcitationSystemSwitchValue } from "@/lib/actions/excitationSystem.actions";
-import { toggleIBRSwitchValue } from "@/lib/actions/ibr.actions";
-import { toggleLCCHVDCLinkSwitchValue } from "@/lib/actions/lccHVDCLink.actions";
-import { toggleLoadSwitchValue } from "@/lib/actions/load.actions";
-import { toggleSeriesCapacitorSwitchValue } from "@/lib/actions/seriesCapacitor.actions";
-import { toggleSeriesFactSwitchValue } from "@/lib/actions/seriesFact.actions";
-import { toggleShuntCapacitorSwitchValue } from "@/lib/actions/shuntCapacitor.actions";
-import { toggleShuntFactSwitchValue } from "@/lib/actions/shuntFact.actions";
-import { toggleShuntReactorSwitchValue } from "@/lib/actions/shuntReactor.actions";
-import { toggleSingleLineDiagramSwitchValue } from "@/lib/actions/singleLineDiagram.actions";
-import { toggleTransformersThreeWindingSwitchValue } from "@/lib/actions/transformersThreeWinding.actions";
-import { toggleTransformersTwoWindingSwitchValue } from "@/lib/actions/transformersTwoWinding.actions";
-import { toggleTransmissionLineSwitchValue } from "@/lib/actions/transmissionLines.actions";
-import { toggleTurbineGovernorSwitchValue } from "@/lib/actions/turbineGovernor.actions";
-import { toggleVSCHVDCLinkSwitchValue } from "@/lib/actions/vscHVDCLink.actions";
 
 type TableProps = {
   columns: IColumn[];
@@ -114,18 +114,8 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
 
   const router = useRouter();
 
-  function getBase64Image(img: any) {
-    const canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-
-    const ctx = canvas.getContext("2d");
-    ctx!.drawImage(img, 0, 0);
-
-    return canvas.toDataURL("image/png");
-  }
-
   const downloadPDF = async (type: string) => {
+    const toastLoading = toast.loading("Processing...");
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "pt",
@@ -164,11 +154,14 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           const cell = row.insertCell();
           cell.style.border = "1px solid #000";
           cell.style.padding = "5px";
-          // if (cellData.type === "image") {
-          //   cell.innerHTML = `<img src="${encodeURIComponent(rowData[cellData.field])}" width={50} height={50} />`;
-          // } else {
-          cell.textContent = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || "null";
-          // }
+          if (cellData.type === "image") {
+            const img = document.createElement("img");
+            img.src = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || noImageUrl;
+            img.style.maxWidth = "100px";
+            cell.appendChild(img);
+          } else {
+            cell.textContent = rowData?.[cellData.field] || rowData.additionalFields?.[cellData.field] || "null";
+          }
         }
       });
     });
@@ -179,6 +172,8 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           pdf.save(`${type}.pdf`);
         },
       });
+      toast.dismiss(toastLoading);
+      toast.success("Data exported to excel successfully.");
     } catch (error) {
       console.error(error);
     }
@@ -203,13 +198,24 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
       columns.forEach((cellData) => {
         if (!cellData.isHidden) {
           const cell = row.insertCell();
-          cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
+          if (cellData.type === "image") {
+            const imageLink = document.createElement("a");
+            imageLink.href = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
+            imageLink.textContent =
+              rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] ? "Click to view image" : "null";
+            imageLink.style.color = "blue";
+            imageLink.classList.add("blue-link");
+            cell.appendChild(imageLink);
+          } else {
+            cell.textContent = rowData?.[cellData.field] || rowData?.additionalFields?.[cellData.field] || "null";
+          }
         }
       });
     });
 
     var wb = XLSX.utils.table_to_book(tempInput, { sheet: "sheet1" });
     XLSX.writeFile(wb, fn + "." + "xlsx");
+    toast.success("Data exported to excel successfully.");
   };
 
   const handleSwitchChange = async (id: string, value: boolean, column: IColumn) => {
@@ -314,12 +320,15 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
             if (column.isDefault) {
               switchValues = {
                 ...switchValues,
-                [item._id]: { [column.field]: item?.[column.field] === "ON" || false },
+                [item._id]: { ...switchValues?.[item._id], [column.field]: item?.[column.field] === "ON" },
               };
             } else
               switchValues = {
                 ...switchValues,
-                [item._id]: { [column.field]: item?.additionalFields?.[column.field] === "ON" || false },
+                [item._id]: {
+                  ...switchValues?.[item._id],
+                  [column.field]: item?.additionalFields?.[column.field] === "ON",
+                },
               };
           }
         }

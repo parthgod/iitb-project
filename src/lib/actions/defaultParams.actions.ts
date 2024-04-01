@@ -37,7 +37,6 @@ export const editSpecificDefaultParam = async (
   await connectToDatabase();
   let newColumns: any;
   const oldParams: IDefaultParamSchema[] = await DefaultParam.find();
-  // const columnFieldName = convertField(columnDetails.name);
   if (columnDetails.type === "dropdown") {
     if (columnDetails.dropdownFromExistingTable === "true") {
       newColumns = {

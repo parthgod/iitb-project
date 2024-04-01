@@ -83,8 +83,6 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
     setIsLoading(true);
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file!);
-    console.log(headersArray);
-    // return;
 
     fileReader.onload = async (e: any) => {
       const bufferArray = e?.target.result;
@@ -122,7 +120,6 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
         if (Object.keys(additionalFields).length) return { ...defaultFields, additionalFields };
         else return { ...defaultFields };
       });
-      console.log(dataToImport);
 
       if (!dataToImport.length) {
         setIsLoading(false);
@@ -396,6 +393,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
               <FaArrowLeft className="mr-2" />
               Go Back
             </Button>
+
             <Button
               className={`${progress === 3 ? "hidden" : "visible"}`}
               onClick={() => setProgress((prev) => prev + 1)}
@@ -404,6 +402,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
               Proceed
               <FaArrowRight className="ml-2" />
             </Button>
+
             <Button
               className={`${progress === 3 ? "visible" : "hidden"} bg-green-600 hover:bg-green-700`}
               onClick={handleAddToTable}

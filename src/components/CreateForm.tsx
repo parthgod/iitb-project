@@ -88,8 +88,6 @@ const generateFormSchema = (fields: IColumn[]) => {
 const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   const [files, setFiles] = useState<IFiles[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  // const [open, setOpen] = useState(false);
-  // console.log(formDetails);
 
   const [busDropdownData, setBusDropdownData] = useState<IBus[]>([]);
   const [filteredBusDropdownData, setFilteredBusDropdownData] = useState<IBus[]>([]);
@@ -139,7 +137,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
-    console.log(data);
 
     if (formDetails) {
       let duplicate = false;
@@ -166,7 +163,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     });
 
     if (files.length > 0) {
-      const images = await uploadImagesToFirebase(files);
+      const images = await uploadImagesToFirebase(files, type, session?.user.name!);
       images.map((image: any) => {
         data[image.field] = image.url;
       });
@@ -368,12 +365,6 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       }
     });
   }, [formFields]);
-
-  // useEffect(()=>{
-  //   if(searchDevice){
-
-  //   }
-  // },[searchDevice])
 
   return (
     <Form {...form}>

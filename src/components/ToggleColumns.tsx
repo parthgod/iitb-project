@@ -72,7 +72,6 @@ const ToggleColumns = ({ columns, userId }: { columns: IColumn[]; userId: string
       if (response.status === 200) {
         toast.success("Column deleted successfully.");
         router.refresh();
-        // setOpen(false);
       }
     } catch (error) {
       console.log(error);

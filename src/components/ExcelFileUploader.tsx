@@ -5,6 +5,7 @@ import { useDropzone } from "@uploadthing/react/hooks";
 import Image from "next/image";
 import { useCallback } from "react";
 import { FaRegFileExcel } from "react-icons/fa";
+import { toast } from "sonner";
 
 type ExcelFileUploaderProps = {
   file: any;
@@ -14,6 +15,10 @@ type ExcelFileUploaderProps = {
 export function ExcelFileUploader({ file, setFile }: ExcelFileUploaderProps) {
   const onDrop = useCallback(
     (acceptedFiles: any) => {
+      const extension = acceptedFiles[0]?.name.split(".").pop();
+      if (extension !== "xlsx" && extension !== "xls" && extension !== "csv") {
+        return toast.error(`.${extension} file type is not allowed. Please select appropriate file type.`);
+      }
       setFile(acceptedFiles[0]);
     },
     [setFile]
@@ -48,7 +53,7 @@ export function ExcelFileUploader({ file, setFile }: ExcelFileUploaderProps) {
             height={77}
             alt="file upload"
           />
-          <h3 className="mb-2 mt-2">Drag Excel file here</h3>
+          <h3 className="mb-2 mt-2">Upload Excel file here from your device</h3>
           <p className="p-medium-12 mb-4">.xlsx, .csv, .xls</p>
           <p className="p-medium-12 mb-4">
             Please make sure the file is in correct format and has first row as column headers

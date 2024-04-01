@@ -88,7 +88,6 @@ const AddColumns = ({
         name: columnDetails?.title,
         type: columnDetails?.type,
         dropdownFromExistingTable: "false",
-        // dropdownValues: columnDetails?.dropdownValues.map((item: string) => ({ name: item })),
       };
     }
   } else {
@@ -232,8 +231,6 @@ const AddColumns = ({
       if (response.status === 200) {
         toast.success(`Column '${columnDetails?.title}' hidden successfully`);
         router.refresh();
-        // const popoverTrigger = document.getElementById(`popover-btn-${columnIndex}`);
-        // if (popoverTrigger) popoverTrigger.click();
       }
     } catch (error) {
       console.log(error);

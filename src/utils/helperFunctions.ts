@@ -1,7 +1,7 @@
 import qs from "query-string";
 
 export const convertField = (input: string): string => {
-  const sanitizedInput = input.replaceAll("'", "Prime"); // Remove all single quotes
+  const sanitizedInput = input.replaceAll("'", "Prime");
   const tempSanitizedInput = sanitizedInput.replace(/[^a-zA-Z0-9\s']/g, "");
   const words = tempSanitizedInput.split(" ");
   const updatedWords = words.map((word) => {
