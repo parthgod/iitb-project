@@ -139,6 +139,7 @@ export type IExcitationSystem = {
 export type IGenerator = {
   _id: string;
   deviceName?: string;
+  circuitBreakerStatus: string;
   busTo?: string;
   busSectionTo?: string;
   type?: string;
@@ -164,6 +165,7 @@ export type IGenerator = {
 export type ILoad = {
   _id: string;
   deviceName?: string;
+  circuitBreakerStatus: string;
   busFrom?: string;
   busSectionFrom?: string;
   pMW?: string;
@@ -184,6 +186,7 @@ export type ISeriesCapacitor = {
 export type IShuntCapacitor = {
   _id: string;
   deviceName?: string;
+  circuitBreakerStatus: string;
   busFrom?: string;
   busSectionFrom?: string;
   kv?: string;
@@ -195,6 +198,7 @@ export type IShuntCapacitor = {
 export type IShuntReactor = {
   _id: string;
   deviceName?: string;
+  circuitBreakerStatus: string;
   busFrom?: string;
   busSectionFrom?: string;
   kv?: string;
@@ -213,6 +217,7 @@ export type ISingleLineDiagram = {
 export type ITransformersThreeWinding = {
   _id: string;
   deviceName?: string;
+  circuitBreakerStatus: string;
   busprimaryFrom?: string;
   busprimarySectionFrom?: string;
   bussecondaryTo?: string;
@@ -242,6 +247,7 @@ export type ITransformersThreeWinding = {
 export type ITransformersTwoWinding = {
   _id: string;
   deviceName?: string;
+  circuitBreakerStatus: string;
   busFrom?: string;
   busSectionFrom?: string;
   busTo?: string;
@@ -266,6 +272,7 @@ export type ITransmissionLine = {
   _id: string;
   deviceName?: string;
   type?: string;
+  circuitBreakerStatus: string;
   busFrom?: string;
   busSectionFrom?: string;
   busTo?: string;

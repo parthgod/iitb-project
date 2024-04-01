@@ -218,3 +218,36 @@ export const uploadShuntReactorFromExcel = async (data: any, userId: string) => 
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
+
+export const toggleShuntReactorSwitchValue = async (
+  id: string,
+  column: IColumn,
+  userId: string,
+  value: "ON" | "OFF"
+) => {
+  try {
+    await connectToDatabase();
+    let response;
+    if (column.isDefault) {
+      response = await ShuntReactor.findByIdAndUpdate(id, { [column.field]: value });
+    } else {
+      const originalShuntReactor = await ShuntReactor.findById(id);
+      const additionalFields = { ...originalShuntReactor.additionalFields, [column.field]: value };
+      response = await ShuntReactor.findByIdAndUpdate(id, additionalFields);
+    }
+    let modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Shunt Reactor",
+      operationType: "Update",
+      date: new Date(),
+      message: `<span style="font-weight: 610">${column.title}'s</span> switch status was set to <span style="font-weight: 610">${value}</span> for record <span style="font-weight: 610">${id}</span> in <span style="font-weight: 610">Shunt Reactor</span> table`,
+      document: {
+        documentAfterChange: response,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+    return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};

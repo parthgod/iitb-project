@@ -8,6 +8,9 @@ const transmissionLineSchema = new Schema(
     type: {
       type: String,
     },
+    circuitBreakerStatus: {
+      type: String,
+    },
     busFrom: {
       type: String,
     },

@@ -219,3 +219,31 @@ export const uploadGeneratorFromExcel = async (data: any, userId: string) => {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
+
+export const toggleGeneratorSwitchValue = async (id: string, column: IColumn, userId: string, value: "ON" | "OFF") => {
+  try {
+    await connectToDatabase();
+    let response;
+    if (column.isDefault) {
+      response = await Generator.findByIdAndUpdate(id, { [column.field]: value });
+    } else {
+      const originalGenerator = await Generator.findById(id);
+      const additionalFields = { ...originalGenerator.additionalFields, [column.field]: value };
+      response = await Generator.findByIdAndUpdate(id, additionalFields);
+    }
+    let modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Generator",
+      operationType: "Update",
+      date: new Date(),
+      message: `<span style="font-weight: 610">${column.title}'s</span> switch status was set to <span style="font-weight: 610">${value}</span> for record <span style="font-weight: 610">${id}</span> in <span style="font-weight: 610">Generator</span> table`,
+      document: {
+        documentAfterChange: response,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+    return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};

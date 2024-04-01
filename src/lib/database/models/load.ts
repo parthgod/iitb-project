@@ -5,6 +5,9 @@ const loadSchema = new Schema(
     deviceName: {
       type: String,
     },
+    circuitBreakerStatus: {
+      type: String,
+    },
     busFrom: {
       type: String,
     },

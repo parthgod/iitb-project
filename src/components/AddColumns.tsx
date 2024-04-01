@@ -364,6 +364,7 @@ const AddColumns = ({
                         <SelectItem value="number">Number</SelectItem>
                         <SelectItem value="image">Image</SelectItem>
                         <SelectItem value="dropdown">Dropdown</SelectItem>
+                        <SelectItem value="switch">Switch</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

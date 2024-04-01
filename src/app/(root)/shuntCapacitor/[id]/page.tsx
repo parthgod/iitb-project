@@ -23,9 +23,16 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
   if (Object.keys(shuntCapacitorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntCapacitorColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          shuntCapacitorDetails?.[item.field] || shuntCapacitorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = shuntCapacitorDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = shuntCapacitorDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = shuntCapacitorDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = shuntCapacitorDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = shuntCapacitorDetails._id;
     return values;
