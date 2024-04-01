@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { CardContent, CardFooter } from "./ui/card";
 import { Input } from "./ui/input";
+import Link from "next/link";
 
 interface IUserRegister {
   name: string;
@@ -146,14 +147,12 @@ export default function RequestLoginForm() {
               <Link href="/login">Login here</Link>
             </span>
           </p> */}
-        <Button
-          className="w-full active:scale-95"
-          disabled={isLoading}
-          type="button"
-          onClick={() => router.push("/login")}
+        <Link
+          href="/login"
+          className={buttonVariants() + " w-full active:scale-95"}
         >
           Go back
-        </Button>
+        </Link>
       </CardFooter>
     </form>
   );

@@ -5,6 +5,9 @@ const generatorSchema = new Schema(
     deviceName: {
       type: String,
     },
+    circuitBreakerStatus: {
+      type: String,
+    },
     busTo: {
       type: String,
     },

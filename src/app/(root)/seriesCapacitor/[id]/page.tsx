@@ -23,9 +23,16 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
   if (Object.keys(seriesCapacitorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].seriesCapacitorColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          seriesCapacitorDetails?.[item.field] || seriesCapacitorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = seriesCapacitorDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = seriesCapacitorDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = seriesCapacitorDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = seriesCapacitorDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = seriesCapacitorDetails._id;
     return values;

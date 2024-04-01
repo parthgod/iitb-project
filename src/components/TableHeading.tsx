@@ -4,7 +4,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { IColumn } from "@/utils/defaultTypes";
 import { Session } from "next-auth";
-import { useSearchParams } from "next/navigation";
 import { FaFileDownload, FaRegFileExcel, FaRegFilePdf } from "react-icons/fa";
 import ImportFromExcel from "./ImportFromExcel";
 import PaginationComponent from "./PaginationComponent";
@@ -34,7 +33,6 @@ const TableHeading = ({
   session,
   page,
 }: TableHeadingProps) => {
-  const searchParams = useSearchParams();
   const totalEntries = (Number(page) - 1) * limit + limit;
 
   return (

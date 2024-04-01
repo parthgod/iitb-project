@@ -76,7 +76,11 @@ const generateFormSchema = (fields: IColumn[]) => {
   const schema: any = {};
 
   fields.forEach((field) => {
-    if (!field.isHidden) schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
+    if (!field.isHidden) {
+      if (field.type === "switch") {
+        schema[field.field] = z.boolean().default(false);
+      } else schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
+    }
   });
   return z.object(schema);
 };
@@ -85,6 +89,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   const [files, setFiles] = useState<IFiles[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   // const [open, setOpen] = useState(false);
+  // console.log(formDetails);
 
   const [busDropdownData, setBusDropdownData] = useState<IBus[]>([]);
   const [filteredBusDropdownData, setFilteredBusDropdownData] = useState<IBus[]>([]);
@@ -134,6 +139,7 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
+    console.log(data);
 
     if (formDetails) {
       let duplicate = false;
@@ -171,9 +177,11 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     formFields.map((item) => {
       if (!item.isHidden) {
         if (item.isDefault) {
-          defaultFields[item.field] = data[item.field];
+          if (item.type === "switch") defaultFields[item.field] = data[item.field] ? "ON" : "OFF";
+          else defaultFields[item.field] = data[item.field];
         } else {
-          additionalFields[item.field] = data[item.field];
+          if (item.type === "switch") additionalFields[item.field] = data[item.field] ? "ON" : "OFF";
+          else additionalFields[item.field] = data[item.field];
         }
       }
     });
@@ -524,6 +532,31 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                               ))}
                             </SelectContent>
                           </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  );
+                } else if (item.type === "switch") {
+                  return (
+                    <FormField
+                      key={ind}
+                      control={form.control}
+                      name={item?.field}
+                      render={({ field }) => (
+                        <FormItem className="h-fit space-y-0 flex flex-col">
+                          <FormLabel>{item?.title}</FormLabel>
+                          <FormControl>
+                            <label className="rocker rocker-small">
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
+                              />
+                              <span className="switch-left">ON</span>
+                              <span className="switch-right">OFF</span>
+                            </label>
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

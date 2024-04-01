@@ -23,8 +23,16 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
   if (Object.keys(loadDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].loadsColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] = loadDetails?.[item.field] || loadDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = loadDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = loadDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = loadDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = loadDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = loadDetails._id;
     return values;

@@ -23,8 +23,15 @@ const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDe
   if (Object.keys(generatorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].generatorColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] = generatorDetails?.[item.field] || generatorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = generatorDetails?.[item.field] === "ON";
+          else values[item.field] = generatorDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch") values[item.field] = generatorDetails?.additionalFields?.[item.field] === "ON";
+          else values[item.field] = generatorDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = generatorDetails._id;
     return values;

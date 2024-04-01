@@ -23,9 +23,17 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
   if (Object.keys(transmissionLineDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].transmissionLinesColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          transmissionLineDetails?.[item.field] || transmissionLineDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch")
+            values[item.field] = transmissionLineDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = transmissionLineDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = transmissionLineDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = transmissionLineDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = transmissionLineDetails._id;
     return values;

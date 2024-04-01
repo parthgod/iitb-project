@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { CardContent, CardFooter } from "./ui/card";
 import { Input } from "./ui/input";
 
@@ -190,14 +190,12 @@ export default function LoginForm() {
             >
               {!isLoading ? "Login" : "Processing..."}
             </Button>
-            <Button
-              className="w-full bg-yellow-500 hover:bg-yellow-500/80 active:scale-95"
-              disabled={isLoading}
-              type="button"
-              onClick={() => router.push("/requestLogin")}
+            <Link
+              href="/requestLogin"
+              className={buttonVariants() + " w-full bg-yellow-500 hover:bg-yellow-500/80 active:scale-95"}
             >
               Request access
-            </Button>
+            </Link>
 
             {/* <Button
             className="w-full"

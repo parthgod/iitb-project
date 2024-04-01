@@ -1,10 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { changePassword } from "@/lib/actions/users.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -100,14 +101,12 @@ const ResetPasswordForm = ({ userId }: { userId: string }) => {
           >
             Change password
           </Button>
-          <Button
-            type="button"
-            className="w-full"
-            disabled={isLoading}
-            onClick={() => router.push("/login")}
+          <Link
+            href="/login"
+            className={buttonVariants() + " w-full"}
           >
             Back to login
-          </Button>
+          </Link>
         </div>
       </form>
     </Form>

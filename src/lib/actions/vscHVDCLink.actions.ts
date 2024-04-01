@@ -219,3 +219,36 @@ export const uploadVSCHVDCLinkFromExcel = async (data: any, userId: string) => {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
+
+export const toggleVSCHVDCLinkSwitchValue = async (
+  id: string,
+  column: IColumn,
+  userId: string,
+  value: "ON" | "OFF"
+) => {
+  try {
+    await connectToDatabase();
+    let response;
+    if (column.isDefault) {
+      response = await VSCHVDCLink.findByIdAndUpdate(id, { [column.field]: value });
+    } else {
+      const originalVSCHVDCLink = await VSCHVDCLink.findById(id);
+      const additionalFields = { ...originalVSCHVDCLink.additionalFields, [column.field]: value };
+      response = await VSCHVDCLink.findByIdAndUpdate(id, additionalFields);
+    }
+    let modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "VSC-HVDC Link",
+      operationType: "Update",
+      date: new Date(),
+      message: `<span style="font-weight: 610">${column.title}'s</span> switch status was set to <span style="font-weight: 610">${value}</span> for record <span style="font-weight: 610">${id}</span> in <span style="font-weight: 610">VSC-HVDC Link</span> table`,
+      document: {
+        documentAfterChange: response,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+    return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};

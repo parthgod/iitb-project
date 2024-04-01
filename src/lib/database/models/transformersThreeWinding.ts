@@ -5,6 +5,9 @@ const transformersThreeWindingSchema = new Schema(
     deviceName: {
       type: String,
     },
+    circuitBreakerStatus: {
+      type: String,
+    },
     busprimaryFrom: {
       type: String,
     },

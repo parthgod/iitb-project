@@ -23,8 +23,16 @@ const calculateDefaultValues = (ibrDetails: INonDefaultDatabases, defaultParams:
   if (Object.keys(ibrDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].ibrColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] = ibrDetails?.[item.field] || ibrDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = ibrDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = ibrDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = ibrDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = ibrDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = ibrDetails._id;
     return values;

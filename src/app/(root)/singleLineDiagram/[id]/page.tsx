@@ -23,9 +23,17 @@ const calculateDefaultValues = (singleLineDiagramDetails: IBus, defaultParams: I
   if (Object.keys(singleLineDiagramDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].singleLineDiagramsColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          singleLineDiagramDetails?.[item.field] || singleLineDiagramDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch")
+            values[item.field] = singleLineDiagramDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = singleLineDiagramDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = singleLineDiagramDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = singleLineDiagramDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = singleLineDiagramDetails._id;
     return values;

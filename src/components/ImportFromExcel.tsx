@@ -340,7 +340,7 @@ const ImportFromExcel = ({ columns, userId }: { columns: IColumn[]; userId: stri
                               </SelectItem>
                             )
                           )}
-                          <SelectItem value="null">Don't map to any column</SelectItem>
+                          <SelectItem value="null">Don&apos;t map to any column</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

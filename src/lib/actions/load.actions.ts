@@ -211,3 +211,31 @@ export const uploadLoadFromExcel = async (data: any, userId: string) => {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
+
+export const toggleLoadSwitchValue = async (id: string, column: IColumn, userId: string, value: "ON" | "OFF") => {
+  try {
+    await connectToDatabase();
+    let response;
+    if (column.isDefault) {
+      response = await Load.findByIdAndUpdate(id, { [column.field]: value });
+    } else {
+      const originalLoad = await Load.findById(id);
+      const additionalFields = { ...originalLoad.additionalFields, [column.field]: value };
+      response = await Load.findByIdAndUpdate(id, additionalFields);
+    }
+    let modificationHistory = {
+      userId: new ObjectId(userId),
+      databaseName: "Load",
+      operationType: "Update",
+      date: new Date(),
+      message: `<span style="font-weight: 610">${column.title}'s</span> switch status was set to <span style="font-weight: 610">${value}</span> for record <span style="font-weight: 610">${id}</span> in <span style="font-weight: 610">Load</span> table`,
+      document: {
+        documentAfterChange: response,
+      },
+    };
+    await ModificationHistory.create(modificationHistory);
+    return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};

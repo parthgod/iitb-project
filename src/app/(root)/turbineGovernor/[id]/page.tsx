@@ -23,9 +23,16 @@ const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDe
   if (Object.keys(turbineGovernorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].turbineGovernorColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          turbineGovernorDetails?.[item.field] || turbineGovernorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = turbineGovernorDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = turbineGovernorDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = turbineGovernorDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = turbineGovernorDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = turbineGovernorDetails._id;
     return values;

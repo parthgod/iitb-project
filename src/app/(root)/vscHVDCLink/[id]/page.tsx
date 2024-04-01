@@ -23,9 +23,16 @@ const calculateDefaultValues = (vscHVDCLinkDetails: INonDefaultDatabases, defaul
   if (Object.keys(vscHVDCLinkDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].vscHVDCLinkColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          vscHVDCLinkDetails?.[item.field] || vscHVDCLinkDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = vscHVDCLinkDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = vscHVDCLinkDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = vscHVDCLinkDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = vscHVDCLinkDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = vscHVDCLinkDetails._id;
     return values;

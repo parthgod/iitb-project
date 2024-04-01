@@ -23,9 +23,16 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
   if (Object.keys(shuntReactorDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].shuntReactorsColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          shuntReactorDetails?.[item.field] || shuntReactorDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch") values[item.field] = shuntReactorDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = shuntReactorDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = shuntReactorDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = shuntReactorDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = shuntReactorDetails._id;
     return values;

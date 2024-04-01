@@ -23,9 +23,17 @@ const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defa
   if (Object.keys(excitationSystemDetails).length && defaultParams.length) {
     const values: any = {};
     defaultParams?.[0].excitationSystemColumns.forEach((item) => {
-      if (!item.isHidden)
-        values[item.field] =
-          excitationSystemDetails?.[item.field] || excitationSystemDetails?.additionalFields?.[item.field] || "";
+      if (!item.isHidden) {
+        if (item.isDefault) {
+          if (item.type === "switch")
+            values[item.field] = excitationSystemDetails?.[item.field] === "ON" ? true : false;
+          else values[item.field] = excitationSystemDetails?.[item.field] || "";
+        } else {
+          if (item.type === "switch")
+            values[item.field] = excitationSystemDetails?.additionalFields?.[item.field] === "ON" ? true : false;
+          else values[item.field] = excitationSystemDetails?.additionalFields?.[item.field] || "";
+        }
+      }
     });
     values["_id"] = excitationSystemDetails._id;
     return values;

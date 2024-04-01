@@ -33,6 +33,25 @@ import TableSkeleton from "./TableSkeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
+import { toggleGeneratorSwitchValue } from "@/lib/actions/generator.actions";
+import { toast } from "sonner";
+import { toggleBusSwitchValue } from "@/lib/actions/bus.actions";
+import { toggleExcitationSystemSwitchValue } from "@/lib/actions/excitationSystem.actions";
+import { toggleIBRSwitchValue } from "@/lib/actions/ibr.actions";
+import { toggleLCCHVDCLinkSwitchValue } from "@/lib/actions/lccHVDCLink.actions";
+import { toggleLoadSwitchValue } from "@/lib/actions/load.actions";
+import { toggleSeriesCapacitorSwitchValue } from "@/lib/actions/seriesCapacitor.actions";
+import { toggleSeriesFactSwitchValue } from "@/lib/actions/seriesFact.actions";
+import { toggleShuntCapacitorSwitchValue } from "@/lib/actions/shuntCapacitor.actions";
+import { toggleShuntFactSwitchValue } from "@/lib/actions/shuntFact.actions";
+import { toggleShuntReactorSwitchValue } from "@/lib/actions/shuntReactor.actions";
+import { toggleSingleLineDiagramSwitchValue } from "@/lib/actions/singleLineDiagram.actions";
+import { toggleTransformersThreeWindingSwitchValue } from "@/lib/actions/transformersThreeWinding.actions";
+import { toggleTransformersTwoWindingSwitchValue } from "@/lib/actions/transformersTwoWinding.actions";
+import { toggleTransmissionLineSwitchValue } from "@/lib/actions/transmissionLines.actions";
+import { toggleTurbineGovernorSwitchValue } from "@/lib/actions/turbineGovernor.actions";
+import { toggleVSCHVDCLinkSwitchValue } from "@/lib/actions/vscHVDCLink.actions";
 
 type TableProps = {
   columns: IColumn[];
@@ -89,8 +108,11 @@ type TableProps = {
 
 const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session, page }: TableProps) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [switchStatus, setSwitchStatus] = useState<any>({});
 
   const tableRef = useRef<HTMLTableElement>(null);
+
+  const router = useRouter();
 
   function getBase64Image(img: any) {
     const canvas = document.createElement("canvas");
@@ -190,9 +212,121 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     XLSX.writeFile(wb, fn + "." + "xlsx");
   };
 
+  const handleSwitchChange = async (id: string, value: boolean, column: IColumn) => {
+    setSwitchStatus((prev: any) => ({ ...prev, [id]: { [column.field]: value } }));
+
+    try {
+      let response;
+      switch (type) {
+        case "Bus":
+          response = await toggleBusSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Excitation System":
+          response = await toggleExcitationSystemSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Generator":
+          response = await toggleGeneratorSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "IBR":
+          response = await toggleIBRSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "LCC - HVDC Link":
+          response = await toggleLCCHVDCLinkSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Load":
+          response = await toggleLoadSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Series Capacitor":
+          response = await toggleSeriesCapacitorSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Series Fact":
+          response = await toggleSeriesFactSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Shunt Capacitor":
+          response = await toggleShuntCapacitorSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Shunt Fact":
+          response = await toggleShuntFactSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Shunt Reactor":
+          response = await toggleShuntReactorSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Single Line Diagram":
+          response = await toggleSingleLineDiagramSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Transformers Three Winding":
+          response = await toggleTransformersThreeWindingSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Transformers Two Winding":
+          response = await toggleTransformersTwoWindingSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Transmission Line":
+          response = await toggleTransmissionLineSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "Turbine Governor":
+          response = await toggleTurbineGovernorSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        case "VSC - HVDC Link":
+          response = await toggleVSCHVDCLinkSwitchValue(id, column, session.user.id, value ? "ON" : "OFF");
+          break;
+
+        default:
+          break;
+      }
+
+      if (response?.status === 200) {
+        toast.success(response.data);
+        router.refresh();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (columns.length && data.length) {
+      let switchValues: any;
+      for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        for (let j = 0; j < columns.length; j++) {
+          let column = columns[j];
+          if (column.type === "switch") {
+            if (column.isDefault) {
+              switchValues = {
+                ...switchValues,
+                [item._id]: { [column.field]: item?.[column.field] === "ON" || false },
+              };
+            } else
+              switchValues = {
+                ...switchValues,
+                [item._id]: { [column.field]: item?.additionalFields?.[column.field] === "ON" || false },
+              };
+          }
+        }
+      }
+      setSwitchStatus(switchValues);
+    }
+  }, [columns, data]);
 
   if (!isMounted) return <TableSkeleton />;
 
@@ -294,6 +428,16 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                               height={120}
                               className="object-cover"
                             />
+                          ) : column.type === "switch" ? (
+                            <label className="rocker rocker-small">
+                              <input
+                                type="checkbox"
+                                checked={switchStatus?.[item._id]?.[column.field] || false}
+                                onChange={(e) => handleSwitchChange(item._id, e.target.checked, column)}
+                              />
+                              <span className="switch-left">ON</span>
+                              <span className="switch-right">OFF</span>
+                            </label>
                           ) : (
                             item?.[column.field] || item?.additionalFields?.[column.field] || "null"
                           )}

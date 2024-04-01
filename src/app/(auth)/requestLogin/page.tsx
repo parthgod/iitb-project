@@ -20,7 +20,6 @@ export default async function RequestLoginPage({ searchParams }: { searchParams:
               Your request to login has been sent successfully to the user. Please wait for admin&apos;s approval. You
               will receive the updated status of request in your mail. Thank you
             </CardDescription>
-            {/* <Link href="/login">Login</Link> */}
           </CardHeader>
         </Card>
       ) : (
