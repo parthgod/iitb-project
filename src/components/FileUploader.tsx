@@ -56,8 +56,8 @@ export function FileUploader({ imageUrl, onFieldChange, setFiles, field }: FileU
             height={77}
             alt="file upload"
           />
-          <h3 className="mb-2 mt-2">Drag photo here</h3>
-          <p className="p-medium-12 mb-4">SVG, PNG, JPG</p>
+          <h3 className="mb-2 mt-2">Upoad picture here from your device</h3>
+          <p className="p-medium-12 mb-4">.jpg or .jpeg or .png</p>
           <Button
             type="button"
             variant="default"
