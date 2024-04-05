@@ -11,7 +11,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateShuntReactor = async () => {
+const CreateShuntReactor = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
+  const newIndex = Number(searchParams.newIndex) || 0;
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -36,6 +37,7 @@ const CreateShuntReactor = async () => {
         <CreateForm
           formFields={defaultParams[0].shuntReactorsColumns}
           type="shuntReactor"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

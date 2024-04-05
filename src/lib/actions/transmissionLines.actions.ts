@@ -7,6 +7,8 @@ import { IColumn, ICreateUpdateParams, IDefaultParamSchema, ITransmissionLine } 
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 import DefaultParam from "../database/models/defaultParams";
+import Bus from "../database/models/bus";
+import { createBus } from "./bus.actions";
 
 export const getAllTransmissionLines = async (
   limit = 10,
@@ -57,6 +59,17 @@ export const createTransmissionLine = async (req: ICreateUpdateParams, userId: s
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const busFrom = await Bus.findOne({ busName: defaultFields.busFrom });
+    if (!busFrom) {
+      const newBusDetails = {
+        busName: defaultFields.busFrom,
+        location: defaultFields.location1,
+        nominalKV: defaultFields.kv,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const newTransmissionLine = new TransmissionLine({
       ...defaultFields,
       additionalFields,

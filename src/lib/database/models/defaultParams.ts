@@ -940,8 +940,8 @@ const defaultParamSchema = new Schema(
           isHidden: false,
         },
         {
-          field: convertField("Bus  (To)"),
-          title: "Bus  (To)",
+          field: convertField("Bus (To)"),
+          title: "Bus (To)",
           type: "dropdown",
           tableRef: "Bus",
           columnRef: "busName",
@@ -951,6 +951,13 @@ const defaultParamSchema = new Schema(
         {
           field: convertField("Bus section(To)"),
           title: "Bus section(To)",
+          type: "text",
+          isDefault: true,
+          isHidden: false,
+        },
+        {
+          field: convertField("Kv"),
+          title: "Kv",
           type: "text",
           isDefault: true,
           isHidden: false,

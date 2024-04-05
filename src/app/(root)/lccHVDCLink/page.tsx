@@ -36,7 +36,7 @@ const lccHVDCLink = async ({ searchParams }: { searchParams: { query: string; pa
           <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
             <Search />
             <div className="flex gap-5">
-              <Link href="/lccHVDCLink/create">
+              <Link href={`/lccHVDCLink/create?newIndex=${totalDocuments}`}>
                 <Button>
                   Create LCC-HVDC Link <FaPlus className="text-lg ml-2" />
                 </Button>

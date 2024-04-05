@@ -29,6 +29,9 @@ const transmissionLineSchema = new Schema(
     busSectionTo: {
       type: String,
     },
+    kv: {
+      type: String,
+    },
     positiveSequenceRohmsperunitlength: {
       type: String,
     },

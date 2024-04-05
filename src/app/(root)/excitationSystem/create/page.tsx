@@ -11,7 +11,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateExcitationSystem = async () => {
+const CreateExcitationSystem = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
+  const newIndex = Number(searchParams.newIndex) || 0;
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -36,6 +37,7 @@ const CreateExcitationSystem = async () => {
         <CreateForm
           formFields={defaultParams[0].excitationSystemColumns}
           type="excitationSystem"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>
