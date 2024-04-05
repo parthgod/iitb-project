@@ -1,6 +1,18 @@
 "use client";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createBus, getAllBuses, updateBus } from "@/lib/actions/bus.actions";
@@ -40,9 +52,10 @@ import { IoSearch } from "react-icons/io5";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FileUploader } from "./FileUploader";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
+import Link from "next/link";
 
 type IFiles = {
   field: string;
@@ -70,13 +83,14 @@ type CreateFormProps = {
     | "vscHVDCLink"
     | "seriesFact"
     | "shuntFact";
+  newIndex: number;
 };
 
 const generateFormSchema = (fields: IColumn[]) => {
   const schema: any = {};
 
   fields.forEach((field) => {
-    if (!field.isHidden) {
+    if (!field.isHidden && field.field !== "deviceName") {
       if (field.type === "switch") {
         schema[field.field] = z.boolean().default(false);
       } else schema[field.field] = z.string().min(1, { message: `${field.title} cannot be empty` });
@@ -85,9 +99,14 @@ const generateFormSchema = (fields: IColumn[]) => {
   return z.object(schema);
 };
 
-const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
+const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps) => {
   const [files, setFiles] = useState<IFiles[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [open, setOpen] = useState(false);
+
+  const [locationData, setLocationData] = useState<string[]>([]);
+  const [filteredLocationData, setFilteredLocationData] = useState<string[]>([]);
 
   const [busDropdownData, setBusDropdownData] = useState<IBus[]>([]);
   const [filteredBusDropdownData, setFilteredBusDropdownData] = useState<IBus[]>([]);
@@ -108,23 +127,27 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     defaultValues: formDetails,
   });
 
-  const filterBuses = (columnName: string, event: any) => {
-    const { value } = event.target;
+  const filterLocations = (value: string, data: string[], setData: any) => {
+    const updatedLocation = data.filter((item) => item.toLowerCase().includes(value.toLowerCase()));
+    setData(updatedLocation);
     setSearchDevice(value);
-    const filteredData = busDropdownData.filter((item) =>
-      item[columnName]?.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredBusDropdownData(filteredData);
   };
 
-  const filterGenerators = (columnName: string, event: any) => {
+  const filterDevices = (columnName: string, event: any, data: IBus[] | IGenerator[], setData: any) => {
     const { value } = event.target;
     setSearchDevice(value);
-    const filteredData = generatorDropdownData.filter((item) =>
-      item[columnName]?.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredGeneratorDropdownData(filteredData);
+    const filteredData = data.filter((item) => item[columnName]?.toLowerCase().includes(value.toLowerCase()));
+    setData(filteredData);
   };
+
+  // const filterGenerators = (columnName: string, event: any) => {
+  //   const { value } = event.target;
+  //   setSearchDevice(value);
+  //   const filteredData = generatorDropdownData.filter((item) =>
+  //     item[columnName]?.toLowerCase().includes(value.toLowerCase())
+  //   );
+  //   setFilteredGeneratorDropdownData(filteredData);
+  // };
 
   const handleChange = (item: IColumn, ind: number, field: any, value: string) => {
     form.setValue(item.field, value);
@@ -133,11 +156,10 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
     setSearchDevice("");
     setFilteredBusDropdownData(busDropdownData);
     setFilteredGeneratorDropdownData(generatorDropdownData);
+    setFilteredLocationData(locationData);
   };
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    setIsLoading(true);
-
+  const handleDeviceName = (data: z.infer<typeof FormSchema>) => {
     if (formDetails) {
       let duplicate = false;
       Object.keys(data).forEach((field) => {
@@ -146,14 +168,71 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
       if (!duplicate) {
         router.push(`/${type}`);
         router.refresh();
-        toast.success(
-          formDetails
-            ? `${reverseUnslug(type)} edited successfully`
-            : `New ${reverseUnslug(type).toLowerCase()} created successfully`
-        );
-        return;
+        return toast.success(`${reverseUnslug(type)} edited successfully`);
       }
     }
+
+    switch (type) {
+      case "generator":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_Generator_${data.mw}_${data.kv}_${newIndex}`;
+
+        if (form.getValues("busTo") === "Other") {
+          data.busTo = `${data.location.replace(/\s/g, "_")}_Generator_${data.kv}_${newIndex}`;
+        }
+        break;
+
+      case "transformersThreeWinding":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_Transformer_${data.mva}_${data.kvprimaryVoltage}/${
+          data.kvsecondaryVoltage
+        }/${data.kvtertiaryVoltage}_${newIndex}`;
+
+        if (form.getValues("busprimaryFrom") === "Other") {
+          data.busprimaryFrom = `${data.location.replace(/\s/g, "_")}_Transformer_${data.kvprimaryVoltage}_${newIndex}`;
+        }
+
+        if (form.getValues("bussecondaryTo") === "Other") {
+          data.bussecondaryTo = `${data.location.replace(/\s/g, "_")}_Transformer_${
+            data.kvsecondaryVoltage
+          }_${newIndex}`;
+        }
+
+        if (form.getValues("bustertiaryTo") === "Other") {
+          data.bustertiaryTo = `${data.location.replace(/\s/g, "_")}_Transformer_${data.kvtertiaryVoltage}_${newIndex}`;
+        }
+        break;
+
+      case "transformersTwoWinding":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_Transformer_${data.mva}_${data.kvprimary}/${
+          data.kvsecondary
+        }_${newIndex}`;
+
+        if (form.getValues("busFrom") === "Other") {
+          data.busFrom = `${data.location.replace(/\s/g, "_")}_Transformer_${data.kvprimary}_${newIndex}`;
+        }
+
+        if (form.getValues("busTo") === "Other") {
+          data.busTo = `${data.location.replace(/\s/g, "_")}_Transformer_${data.kvsecondary}_${newIndex}`;
+        }
+        break;
+
+      case "transmissionLine":
+        data.deviceName = `${data.location1.replace(/\s/g, "_")}_${data.location2.replace(
+          /\s/g,
+          "_"
+        )}_TransmissionLine_${newIndex}`;
+        break;
+
+      default:
+        break;
+    }
+
+    formFields.forEach((item) => form.setValue(item.field, data?.[item.field]));
+    setOpen(true);
+  };
+
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    setIsLoading(true);
+    console.log(data);
 
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
@@ -357,6 +436,11 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
           const response = await getAllBuses(0, 0, "", formFields);
           setBusDropdownData(response.completeData);
           setFilteredBusDropdownData(response.completeData);
+          if (item.field === "location" || item.field === "location1" || item.field === "location2") {
+            const uniqueLocations = Array.from(new Set(response.completeData.map((item) => item.location)));
+            setLocationData(uniqueLocations);
+            setFilteredLocationData(uniqueLocations);
+          }
         } else if (item.tableRef === "Generator") {
           const response = await getAllGenerators(0, 0, "", formFields);
           setGeneratorDropdownData(response.completeData);
@@ -369,14 +453,84 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleDeviceName)}
         className="flex flex-col gap-5 justify-between pr-5 h-full overflow-hidden p-4"
       >
         <div className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-5 max-h-[75vh] overflow-auto custom-scrollbar">
             {formFields.map((item, ind: number) => {
-              if (!item.isHidden) {
-                if (item.type === "text" || item.type === "number")
+              if (!item.isHidden && item.field !== "deviceName") {
+                if (
+                  (item.field === "location" || item.field === "location1" || item.field === "location2") &&
+                  type !== "bus"
+                ) {
+                  return (
+                    <FormField
+                      key={ind}
+                      control={form.control}
+                      name={item.field}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col gap-0.5">
+                          <FormLabel>{item.title}</FormLabel>
+                          <Popover>
+                            <PopoverTrigger
+                              asChild
+                              id={`${item.tableRef}-${ind}`}
+                              className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
+                            >
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  className="text-left justify-between font-normal"
+                                >
+                                  {field.value || "Select locations..."}
+                                  <ChevronsUpDown />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[40vw] p-1 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
+                              <div className="flex gap-1 items-center px-1">
+                                <IoSearch className="ml-2" />
+                                <Input
+                                  type="text"
+                                  value={searchDevice}
+                                  onChange={(e) =>
+                                    filterLocations(e.target.value, locationData, setFilteredLocationData)
+                                  }
+                                  placeholder="Search locations..."
+                                  className="border-0 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:outline-none"
+                                />
+                              </div>
+                              <Separator />
+                              <div className="max-h-[40vh] overflow-auto custom-scrollbar">
+                                {filteredLocationData.map((selectValue, index) => (
+                                  <Button
+                                    variant="ghost"
+                                    key={index}
+                                    className={`w-full justify-start font-normal ${
+                                      selectValue === field.value && "bg-gray-100"
+                                    }`}
+                                    onClick={() => handleChange(item, ind, field, selectValue)}
+                                  >
+                                    {selectValue}
+                                    <Check
+                                      className={cn(
+                                        "ml-auto h-4 w-4",
+                                        selectValue === field.value ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                  </Button>
+                                ))}
+                                {!filteredLocationData.length && <p className="px-4 py-1">No such device found</p>}
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  );
+                } else if (item.type === "text" || item.type === "number")
                   return (
                     <FormField
                       key={ind}
@@ -431,9 +585,14 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                                     type="text"
                                     value={searchDevice}
                                     onChange={(e) =>
-                                      item.tableRef === "Bus"
-                                        ? filterBuses(item.columnRef!, e)
-                                        : filterGenerators(item.columnRef!, e)
+                                      filterDevices(
+                                        item.columnRef!,
+                                        e,
+                                        item.tableRef === "Bus" ? busDropdownData : generatorDropdownData,
+                                        item.tableRef === "Bus"
+                                          ? setFilteredBusDropdownData
+                                          : setFilteredGeneratorDropdownData
+                                      )
                                     }
                                     placeholder="Search device..."
                                     className="border-0 focus-visible:ring-offset-0 focus-visible:ring-transparent focus:outline-none"
@@ -441,6 +600,24 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
                                 </div>
                                 <Separator />
                                 <div className="max-h-[40vh] overflow-auto custom-scrollbar">
+                                  {type !== "transmissionLine" && (
+                                    <Button
+                                      variant="ghost"
+                                      key={ind}
+                                      className={`w-full justify-start italic text-gray-500 font-normal ${
+                                        "Other" === field.value && "bg-gray-100"
+                                      }`}
+                                      onClick={() => handleChange(item, ind, field, "Other")}
+                                    >
+                                      Other
+                                      <Check
+                                        className={cn(
+                                          "ml-auto h-4 w-4",
+                                          "Other" === field.value ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
+                                    </Button>
+                                  )}
                                   {item.tableRef === "Bus" &&
                                     filteredBusDropdownData.map((selectValue, index) => (
                                       <Button
@@ -585,14 +762,55 @@ const CreateForm = ({ formFields, formDetails, type }: CreateFormProps) => {
             >
               Submit
             </Button>
-            <Button
-              type="button"
-              className="w-1/5"
-              variant="destructive"
-              onClick={() => router.back()}
+            <AlertDialog
+              open={open}
+              onOpenChange={setOpen}
+            >
+              <AlertDialogTrigger asChild></AlertDialogTrigger>
+              <AlertDialogContent className="bg-white max-w-2xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <p>This will create a new {reverseUnslug(type)} with following details:</p>
+                    <p>
+                      {reverseUnslug(type)} device name: {form.getValues("deviceName")}
+                    </p>
+                    {type === "generator" ? (
+                      <p>Bus to name: {form.getValues("busTo")}</p>
+                    ) : type === "transformersThreeWinding" ? (
+                      <p>Primary bus from name: {form.getValues("busprimaryFrom")}</p>
+                    ) : type === "transformersTwoWinding" ? (
+                      <p>Bus from name: {form.getValues("busFrom")}</p>
+                    ) : (
+                      ""
+                    )}
+                    {type === "transformersThreeWinding" ? (
+                      <p>Secondary bus to name: {form.getValues("bussecondaryTo")}</p>
+                    ) : type === "transformersTwoWinding" ? (
+                      <p>Bus to name: {form.getValues("busTo")}</p>
+                    ) : (
+                      ""
+                    )}
+                    {type === "transformersThreeWinding" ? (
+                      <p>Tertiary bus to name: {form.getValues("bustertiaryTo")}</p>
+                    ) : (
+                      ""
+                    )}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onSubmit(form.watch())}>Submit</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <Link
+              href={`/${type}`}
+              className={buttonVariants({ variant: "destructive" }) + " w-1/5"}
             >
               Cancel
-            </Button>
+            </Link>
           </div>
         </div>
       </form>

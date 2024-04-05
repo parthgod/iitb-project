@@ -76,9 +76,7 @@ export const createIBR = async (req: ICreateUpdateParams, userId: string) => {
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createIBRWithId = await IBR.findByIdAndUpdate(newIBR._id, { id: newIBR._id.toString() });
-
-    return { data: JSON.parse(JSON.stringify(createIBRWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newIBR)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

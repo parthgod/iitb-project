@@ -76,11 +76,7 @@ export const createVSCHVDCLink = async (req: ICreateUpdateParams, userId: string
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createVSCHVDCLinkWithId = await VSCHVDCLink.findByIdAndUpdate(newVSCHVDCLink._id, {
-      id: newVSCHVDCLink._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createVSCHVDCLinkWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newVSCHVDCLink)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

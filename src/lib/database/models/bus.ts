@@ -5,6 +5,9 @@ const busSchema = new Schema(
     busName: {
       type: String,
     },
+    location: {
+      type: String,
+    },
     nominalKV: {
       type: String,
     },

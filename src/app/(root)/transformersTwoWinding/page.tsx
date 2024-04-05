@@ -47,7 +47,7 @@ const TransformersTwoWinding = async ({
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href="/transformersTwoWinding/create">
+          <Link href={`/transformersTwoWinding/create?newIndex=${totalDocuments}`}>
             <Button>
               Create transformers two winding <FaPlus className="text-lg ml-2" />
             </Button>

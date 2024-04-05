@@ -76,11 +76,7 @@ export const createShuntFact = async (req: ICreateUpdateParams, userId: string) 
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createShuntFactWithId = await ShuntFact.findByIdAndUpdate(newShuntFact._id, {
-      id: newShuntFact._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createShuntFactWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newShuntFact)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

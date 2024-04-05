@@ -76,11 +76,7 @@ export const createSeriesFact = async (req: ICreateUpdateParams, userId: string)
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createSeriesFactWithId = await SeriesFact.findByIdAndUpdate(newSeriesFact._id, {
-      id: newSeriesFact._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createSeriesFactWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newSeriesFact)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

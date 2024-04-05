@@ -7,6 +7,8 @@ import { IColumn, ICreateUpdateParams, IDefaultParamSchema, IGenerator } from ".
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 import DefaultParam from "../database/models/defaultParams";
+import Bus from "../database/models/bus";
+import { createBus } from "./bus.actions";
 
 export const getAllGenerators = async (
   limit = 10,
@@ -57,6 +59,17 @@ export const createGenerator = async (req: ICreateUpdateParams, userId: string) 
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const existingBus = await Bus.findOne({ busName: defaultFields.busTo });
+    if (!existingBus) {
+      const newBusDetails = {
+        busName: defaultFields.busTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kv,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const newGenerator = new Generator({
       ...defaultFields,
       additionalFields,
@@ -76,11 +89,7 @@ export const createGenerator = async (req: ICreateUpdateParams, userId: string) 
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createGeneratorWithId = await Generator.findByIdAndUpdate(newGenerator._id, {
-      id: newGenerator._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createGeneratorWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newGenerator)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

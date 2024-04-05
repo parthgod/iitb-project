@@ -7,6 +7,8 @@ import { IColumn, ICreateUpdateParams, IDefaultParamSchema, ITransformersThreeWi
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 import DefaultParam from "../database/models/defaultParams";
+import Bus from "../database/models/bus";
+import { createBus } from "./bus.actions";
 
 export const getAllTransformersThreeWindings = async (
   limit = 10,
@@ -57,6 +59,37 @@ export const createTransformersThreeWinding = async (req: ICreateUpdateParams, u
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const primaryBus = await Bus.findOne({ busName: defaultFields.busprimaryFrom });
+    if (!primaryBus) {
+      const newBusDetails = {
+        busName: defaultFields.busprimaryFrom,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvprimaryVoltage,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
+    const secondaryBus = await Bus.findOne({ busName: defaultFields.bussecondaryTo });
+    if (!secondaryBus) {
+      const newBusDetails = {
+        busName: defaultFields.bussecondaryTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvsecondaryVoltage,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
+    const tertiaryBus = await Bus.findOne({ busName: defaultFields.bustertiaryTo });
+    if (!tertiaryBus) {
+      const newBusDetails = {
+        busName: defaultFields.bustertiaryTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvtertiaryVoltage,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const newTransformersThreeWinding = new TransformersThreeWinding({
       ...defaultFields,
       additionalFields,
@@ -76,14 +109,7 @@ export const createTransformersThreeWinding = async (req: ICreateUpdateParams, u
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createTransformersThreeWindingWithId = await TransformersThreeWinding.findByIdAndUpdate(
-      newTransformersThreeWinding._id,
-      {
-        id: newTransformersThreeWinding._id.toString(),
-      }
-    );
-
-    return { data: JSON.parse(JSON.stringify(createTransformersThreeWindingWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newTransformersThreeWinding)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

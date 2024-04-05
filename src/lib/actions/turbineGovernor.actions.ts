@@ -76,11 +76,7 @@ export const createTurbineGovernor = async (req: ICreateUpdateParams, userId: st
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createTurbineGovernorWithId = await TurbineGovernor.findByIdAndUpdate(newTurbineGovernor._id, {
-      id: newTurbineGovernor._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createTurbineGovernorWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newTurbineGovernor)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

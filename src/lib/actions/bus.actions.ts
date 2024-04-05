@@ -69,9 +69,7 @@ export const createBus = async (req: ICreateUpdateParams, userId: string) => {
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createBusWithId = await Bus.findByIdAndUpdate(newBus._id, { id: newBus._id.toString() });
-
-    return { data: JSON.parse(JSON.stringify(createBusWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newBus)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

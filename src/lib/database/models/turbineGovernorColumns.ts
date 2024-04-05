@@ -5,6 +5,9 @@ const turbineGovernorSchema = new Schema(
     deviceName: {
       type: String,
     },
+    location: {
+      type: String,
+    },
     turbineType: {
       type: String,
     },

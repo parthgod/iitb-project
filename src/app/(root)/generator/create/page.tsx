@@ -11,7 +11,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateGenerator = async () => {
+const CreateGenerator = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
+  const newIndex = Number(searchParams.newIndex) || 0;
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -36,6 +37,7 @@ const CreateGenerator = async () => {
         <CreateForm
           formFields={defaultParams[0].generatorColumns}
           type="generator"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

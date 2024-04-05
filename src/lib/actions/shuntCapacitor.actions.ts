@@ -76,11 +76,7 @@ export const createShuntCapacitor = async (req: ICreateUpdateParams, userId: str
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createShuntCapacitorWithId = await ShuntCapacitor.findByIdAndUpdate(newShuntCapacitor._id, {
-      id: newShuntCapacitor._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createShuntCapacitorWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newShuntCapacitor)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

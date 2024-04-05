@@ -5,6 +5,12 @@ const transmissionLineSchema = new Schema(
     deviceName: {
       type: String,
     },
+    location1: {
+      type: String,
+    },
+    location2: {
+      type: String,
+    },
     type: {
       type: String,
     },
