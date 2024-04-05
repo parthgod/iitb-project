@@ -1,16 +1,5 @@
 "use client";
 
-import { ILoginRequest } from "@/utils/defaultTypes";
-import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { pfp } from "@/lib/constants";
-import { convertDate } from "@/utils/helperFunctions";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { deleteLoginRequest, updateLoginRequestStatus } from "@/lib/actions/loginRequest.actions";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,8 +11,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FaXmark } from "react-icons/fa6";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { deleteLoginRequest, updateLoginRequestStatus } from "@/lib/actions/loginRequest.actions";
+import { pfp } from "@/lib/constants";
+import { ILoginRequest } from "@/utils/defaultTypes";
+import { convertDate } from "@/utils/helperFunctions";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 type IPrintLoginRequests = {
   data: ILoginRequest[];
@@ -105,7 +104,7 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                     asChild
                     id={`popover-btn-${item._id}`}
                   >
-                    <Button variant="outline">Account actions</Button>
+                    <Button variant="outline">Request actions</Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-56 p-5 flex flex-col gap-2 justify-between items-center shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
                     {item.status !== "Rejected" && (
@@ -175,8 +174,8 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                         <AlertDialogTrigger asChild>
                           <Button
                             disabled={isLoading}
-                            variant="destructive"
-                            className="w-48"
+                            variant="outline"
+                            className="border-red-600 w-48 text-red-600 hover:bg-red-50 hover:text-red-700"
                           >
                             Delete request permanently
                           </Button>
