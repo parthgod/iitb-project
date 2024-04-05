@@ -44,7 +44,7 @@ const ExcitationSystem = async ({
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href="/excitationSystem/create">
+          <Link href={`/excitationSystem/create?newIndex=${totalDocuments}`}>
             <Button>
               Create Excitation System <FaPlus className="text-lg ml-2" />
             </Button>

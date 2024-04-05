@@ -44,7 +44,7 @@ const SingleLineDiagram = async ({
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href="/singleLineDiagram/create">
+          <Link href={`/singleLineDiagram/create?newIndex=${totalDocuments}`}>
             <Button>
               Create single line diagram <FaPlus className="text-lg ml-2" />
             </Button>

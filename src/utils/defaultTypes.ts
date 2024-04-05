@@ -275,6 +275,7 @@ export type ITransmissionLine = {
   circuitBreakerStatus: string;
   busFrom?: string;
   busSectionFrom?: string;
+  kv: string;
   busTo?: string;
   busSectionTo?: string;
   positiveSequence?: any;

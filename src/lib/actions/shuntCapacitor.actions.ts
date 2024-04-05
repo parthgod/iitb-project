@@ -7,6 +7,8 @@ import { IColumn, ICreateUpdateParams, IDefaultParamSchema, IShuntCapacitor } fr
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 import DefaultParam from "../database/models/defaultParams";
+import Bus from "../database/models/bus";
+import { createBus } from "./bus.actions";
 
 export const getAllShuntCapacitors = async (
   limit = 10,
@@ -57,6 +59,17 @@ export const createShuntCapacitor = async (req: ICreateUpdateParams, userId: str
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const busFrom = await Bus.findOne({ busName: defaultFields.busFrom });
+    if (!busFrom) {
+      const newBusDetails = {
+        busName: defaultFields.busFrom,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kv,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const newShuntCapacitor = new ShuntCapacitor({
       ...defaultFields,
       additionalFields,

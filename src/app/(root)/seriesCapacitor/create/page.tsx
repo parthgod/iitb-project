@@ -11,7 +11,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateSeriesCapacitor = async () => {
+const CreateSeriesCapacitor = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
+  const newIndex = Number(searchParams.newIndex) || 0;
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -36,6 +37,7 @@ const CreateSeriesCapacitor = async () => {
         <CreateForm
           formFields={defaultParams[0].seriesCapacitorColumns}
           type="seriesCapacitor"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

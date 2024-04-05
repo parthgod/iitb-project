@@ -11,7 +11,8 @@ import {
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
 
-const CreateIBR = async () => {
+const CreateIBR = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
+  const newIndex = Number(searchParams.newIndex) || 0;
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -36,6 +37,7 @@ const CreateIBR = async () => {
         <CreateForm
           formFields={defaultParams[0].ibrColumns}
           type="ibr"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

@@ -11,7 +11,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateShuntCapacitor = async () => {
+const CreateShuntCapacitor = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
+  const newIndex = Number(searchParams.newIndex) || 0;
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -36,6 +37,7 @@ const CreateShuntCapacitor = async () => {
         <CreateForm
           formFields={defaultParams[0].shuntCapacitorColumns}
           type="shuntCapacitor"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

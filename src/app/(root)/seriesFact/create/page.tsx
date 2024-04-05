@@ -11,7 +11,8 @@ import {
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
 
-const CreateSeriesFact = async () => {
+const CreateSeriesFact = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
+  const newIndex = Number(searchParams.newIndex) || 0;
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -36,6 +37,7 @@ const CreateSeriesFact = async () => {
         <CreateForm
           formFields={defaultParams[0].seriesFactsColumns}
           type="seriesFact"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

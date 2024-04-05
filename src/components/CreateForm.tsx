@@ -173,11 +173,43 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
     }
 
     switch (type) {
+      case "excitationSystem":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_ExcitationSystem_${newIndex}`;
+        break;
+
       case "generator":
         data.deviceName = `${data.location.replace(/\s/g, "_")}_Generator_${data.mw}_${data.kv}_${newIndex}`;
 
         if (form.getValues("busTo") === "Other") {
           data.busTo = `${data.location.replace(/\s/g, "_")}_Generator_${data.kv}_${newIndex}`;
+        }
+        break;
+
+      case "load":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_Load_${data.pMW}_${data.qMvar}_${newIndex}`;
+
+        // if (form.getValues("busFrom") === "Other") {
+        //   data.busFrom = `${data.location.replace(/\s/g, "_")}_Load_${data.qMvar}_${newIndex}`;
+        // }
+        break;
+
+      case "seriesCapacitor":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_SeriesCapacitor_${data.mvar}_${newIndex}`;
+        break;
+
+      case "shuntCapacitor":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_ShuntCapacitor_${data.mva}_${newIndex}`;
+
+        if (form.getValues("busFrom") === "Other") {
+          data.busFrom = `${data.location.replace(/\s/g, "_")}_ShuntCapacitor_${data.kv}_${newIndex}`;
+        }
+        break;
+
+      case "shuntReactor":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_ShuntReactor_${data.mva}_${newIndex}`;
+
+        if (form.getValues("busFrom") === "Other") {
+          data.busFrom = `${data.location.replace(/\s/g, "_")}_ShuntReactor_${data.kv}_${newIndex}`;
         }
         break;
 
@@ -220,6 +252,14 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
           /\s/g,
           "_"
         )}_TransmissionLine_${newIndex}`;
+
+        if (form.getValues("busFrom") === "Other") {
+          data.busFrom = `${data.location1.replace(/\s/g, "_")}_TransmissionLine_${data.kv}_${newIndex}`;
+        }
+        break;
+
+      case "turbineGovernor":
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_TurbineGovernor_${newIndex}`;
         break;
 
       default:
@@ -453,7 +493,7 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleDeviceName)}
+        onSubmit={form.handleSubmit(type === "singleLineDiagram" ? onSubmit : handleDeviceName)}
         className="flex flex-col gap-5 justify-between pr-5 h-full overflow-hidden p-4"
       >
         <div className="flex flex-col gap-5">
@@ -600,7 +640,11 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
                                 </div>
                                 <Separator />
                                 <div className="max-h-[40vh] overflow-auto custom-scrollbar">
-                                  {type !== "transmissionLine" && (
+                                  {(type === "transmissionLine" && item.field === "busTo") ||
+                                  item.tableRef === "Generator" ||
+                                  (type === "load" && item.field === "busFrom") ? (
+                                    ""
+                                  ) : (
                                     <Button
                                       variant="ghost"
                                       key={ind}
@@ -771,31 +815,37 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    <p>This will create a new {reverseUnslug(type)} with following details:</p>
-                    <p>
-                      {reverseUnslug(type)} device name: {form.getValues("deviceName")}
-                    </p>
-                    {type === "generator" ? (
-                      <p>Bus to name: {form.getValues("busTo")}</p>
-                    ) : type === "transformersThreeWinding" ? (
-                      <p>Primary bus from name: {form.getValues("busprimaryFrom")}</p>
-                    ) : type === "transformersTwoWinding" ? (
-                      <p>Bus from name: {form.getValues("busFrom")}</p>
-                    ) : (
-                      ""
-                    )}
-                    {type === "transformersThreeWinding" ? (
-                      <p>Secondary bus to name: {form.getValues("bussecondaryTo")}</p>
-                    ) : type === "transformersTwoWinding" ? (
-                      <p>Bus to name: {form.getValues("busTo")}</p>
-                    ) : (
-                      ""
-                    )}
-                    {type === "transformersThreeWinding" ? (
-                      <p>Tertiary bus to name: {form.getValues("bustertiaryTo")}</p>
-                    ) : (
-                      ""
-                    )}
+                    <div>
+                      <p className="mb-2">This will create a new {reverseUnslug(type)} with following details:</p>
+                      <p className="font-semibold">
+                        {reverseUnslug(type)} device name: {form.getValues("deviceName")}
+                      </p>
+                      {type === "generator" ? (
+                        <p className="font-semibold">Bus to name: {form.getValues("busTo")}</p>
+                      ) : type === "transformersThreeWinding" ? (
+                        <p className="font-semibold">Primary bus from name: {form.getValues("busprimaryFrom")}</p>
+                      ) : type === "transformersTwoWinding" ||
+                        type === "transmissionLine" ||
+                        type === "load" ||
+                        type === "shuntCapacitor" ||
+                        type === "shuntReactor" ? (
+                        <p className="font-semibold">Bus from name: {form.getValues("busFrom")}</p>
+                      ) : (
+                        ""
+                      )}
+                      {type === "transformersThreeWinding" ? (
+                        <p className="font-semibold">Secondary bus to name: {form.getValues("bussecondaryTo")}</p>
+                      ) : type === "transformersTwoWinding" ? (
+                        <p className="font-semibold">Bus to name: {form.getValues("busTo")}</p>
+                      ) : (
+                        ""
+                      )}
+                      {type === "transformersThreeWinding" ? (
+                        <p className="font-semibold">Tertiary bus to name: {form.getValues("bustertiaryTo")}</p>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
