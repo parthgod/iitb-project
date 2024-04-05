@@ -76,11 +76,7 @@ export const createSingleLineDiagram = async (req: ICreateUpdateParams, userId: 
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createSingleLineDiagramWithId = await SingleLineDiagram.findByIdAndUpdate(newSingleLineDiagram._id, {
-      id: newSingleLineDiagram._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createSingleLineDiagramWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newSingleLineDiagram)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

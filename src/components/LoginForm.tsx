@@ -197,19 +197,13 @@ export default function LoginForm() {
               Request access
             </Link>
 
-            {/* <Button
-            className="w-full"
-            variant="destructive"
-            onClick={handleAddAdmin}
-          >
-            Login admin
-          </Button> */}
-            {/* <p className="text-gray-200">
-              Don&apos;t have an account?
-              <span className="text-[#25226f] underline ml-1.5">
-                <Link href="/requestLogin">Request access</Link>
-              </span>
-            </p> */}
+            <Button
+              className="w-full"
+              variant="destructive"
+              onClick={handleAddAdmin}
+            >
+              Login admin
+            </Button>
           </CardFooter>
         </>
       )}

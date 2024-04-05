@@ -76,11 +76,7 @@ export const createShuntReactor = async (req: ICreateUpdateParams, userId: strin
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createShuntReactorWithId = await ShuntReactor.findByIdAndUpdate(newShuntReactor._id, {
-      id: newShuntReactor._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createShuntReactorWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newShuntReactor)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

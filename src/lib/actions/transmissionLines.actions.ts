@@ -76,11 +76,7 @@ export const createTransmissionLine = async (req: ICreateUpdateParams, userId: s
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createTransmissionLineWithId = await TransmissionLine.findByIdAndUpdate(newTransmissionLine._id, {
-      id: newTransmissionLine._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createTransmissionLineWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newTransmissionLine)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

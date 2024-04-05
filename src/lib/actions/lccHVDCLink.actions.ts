@@ -76,11 +76,7 @@ export const createLCCHVDCLink = async (req: ICreateUpdateParams, userId: string
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createLCCHVDCLinkWithId = await LCCHVDCLink.findByIdAndUpdate(newLCCHVDCLink._id, {
-      id: newLCCHVDCLink._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createLCCHVDCLinkWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newLCCHVDCLink)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

@@ -5,6 +5,9 @@ const seriesCapacitorSchema = new Schema(
     deviceName: {
       type: String,
     },
+    location: {
+      type: String,
+    },
     mvar: {
       type: String,
     },

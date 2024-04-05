@@ -5,6 +5,9 @@ const shuntCapacitorSchema = new Schema(
     deviceName: {
       type: String,
     },
+    location: {
+      type: String,
+    },
     circuitBreakerStatus: {
       type: String,
     },

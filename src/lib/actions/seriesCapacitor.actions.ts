@@ -76,11 +76,7 @@ export const createSeriesCapacitor = async (req: ICreateUpdateParams, userId: st
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createSeriesCapacitorWithId = await SeriesCapacitor.findByIdAndUpdate(newSeriesCapacitor._id, {
-      id: newSeriesCapacitor._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createSeriesCapacitorWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newSeriesCapacitor)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

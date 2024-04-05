@@ -76,11 +76,7 @@ export const createExcitationSystem = async (req: ICreateUpdateParams, userId: s
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createExcitationSystemWithId = await ExcitationSystem.findByIdAndUpdate(newExcitationSystem._id, {
-      id: newExcitationSystem._id.toString(),
-    });
-
-    return { data: JSON.parse(JSON.stringify(createExcitationSystemWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newExcitationSystem)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

@@ -5,6 +5,9 @@ const excitationSystemSchema = new Schema(
     deviceName: {
       type: String,
     },
+    location: {
+      type: String,
+    },
     automaticVoltageRegulatorAVRType: {
       type: String,
     },

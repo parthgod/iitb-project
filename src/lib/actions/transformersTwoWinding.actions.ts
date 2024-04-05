@@ -7,6 +7,8 @@ import { IColumn, ICreateUpdateParams, IDefaultParamSchema, ITransformersTwoWind
 import { ObjectId } from "mongodb";
 import ModificationHistory from "../database/models/modificationHistory";
 import DefaultParam from "../database/models/defaultParams";
+import Bus from "../database/models/bus";
+import { createBus } from "./bus.actions";
 
 export const getAllTransformersTwoWindings = async (
   limit = 10,
@@ -57,6 +59,27 @@ export const createTransformersTwoWinding = async (req: ICreateUpdateParams, use
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const busFrom = await Bus.findOne({ busName: defaultFields.busFrom });
+    if (!busFrom) {
+      const newBusDetails = {
+        busName: defaultFields.busFrom,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvprimary,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
+    const busTo = await Bus.findOne({ busName: defaultFields.busTo });
+    if (!busTo) {
+      const newBusDetails = {
+        busName: defaultFields.busTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvsecondary,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const newTransformersTwoWinding = new TransformersTwoWinding({
       ...defaultFields,
       additionalFields,
@@ -76,14 +99,7 @@ export const createTransformersTwoWinding = async (req: ICreateUpdateParams, use
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createTransformersTwoWindingWithId = await TransformersTwoWinding.findByIdAndUpdate(
-      newTransformersTwoWinding._id,
-      {
-        id: newTransformersTwoWinding._id.toString(),
-      }
-    );
-
-    return { data: JSON.parse(JSON.stringify(createTransformersTwoWindingWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newTransformersTwoWinding)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

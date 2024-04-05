@@ -70,9 +70,7 @@ export const createLoad = async (req: ICreateUpdateParams, userId: string) => {
     };
     await ModificationHistory.create(modificationHistory);
 
-    const createLoadWithId = await Load.findByIdAndUpdate(newLoad._id, { id: newLoad._id.toString() });
-
-    return { data: JSON.parse(JSON.stringify(createLoadWithId)), status: 200 };
+    return { data: JSON.parse(JSON.stringify(newLoad)), status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

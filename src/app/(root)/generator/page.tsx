@@ -40,7 +40,7 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href="/generator/create">
+          <Link href={`/generator/create?newIndex=${totalDocuments}`}>
             <Button>
               Create generator <FaPlus className="text-lg ml-2" />
             </Button>
