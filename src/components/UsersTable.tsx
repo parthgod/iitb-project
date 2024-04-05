@@ -266,8 +266,8 @@ const UsersTable = ({ users }: { users: IUser[] }) => {
                         <AlertDialogTrigger asChild>
                           <Button
                             disabled={isLoading}
-                            variant="destructive"
-                            className="w-48"
+                            variant="outline"
+                            className="border-red-600 w-48 text-red-600 hover:bg-red-50 hover:text-red-700"
                           >
                             Remove user permanently
                           </Button>
