@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditGeneratorProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDefaultParamSchema[]) => {
@@ -39,8 +38,9 @@ const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDe
   return {};
 };
 
-const EditGenerator = async ({ params }: EditGeneratorProps) => {
+const EditGenerator = async ({ params, searchParams }: EditGeneratorProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: generatorDetails } = await getGeneratorById(id);
@@ -70,6 +70,7 @@ const EditGenerator = async ({ params }: EditGeneratorProps) => {
           formFields={defaultParams[0].generatorColumns}
           formDetails={defaultValues}
           type="generator"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

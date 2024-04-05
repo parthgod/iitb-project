@@ -14,9 +14,8 @@ import { IDefaultParamSchema, INonDefaultDatabases } from "@/utils/defaultTypes"
 import { Suspense } from "react";
 
 interface EditLccHvdcLinkProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (lccHVDCLinkDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (lccHVDCLinkDetails: INonDefaultDatabases, defaul
   return {};
 };
 
-const EditLccHvdcLink = async ({ params }: EditLccHvdcLinkProps) => {
+const EditLccHvdcLink = async ({ params, searchParams }: EditLccHvdcLinkProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: lccHVDCLinkDetails } = await getLCCHVDCLinkById(id);
@@ -71,6 +71,7 @@ const EditLccHvdcLink = async ({ params }: EditLccHvdcLinkProps) => {
           formFields={defaultParams[0].lccHVDCLinkColumns}
           formDetails={defaultValues}
           type="lccHVDCLink"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

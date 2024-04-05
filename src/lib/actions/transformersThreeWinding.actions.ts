@@ -130,6 +130,37 @@ export const updateTransformersThreeWinding = async (req: ICreateUpdateParams, i
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const primaryBus = await Bus.findOne({ busName: defaultFields.busprimaryFrom });
+    if (!primaryBus) {
+      const newBusDetails = {
+        busName: defaultFields.busprimaryFrom,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvprimaryVoltage,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
+    const secondaryBus = await Bus.findOne({ busName: defaultFields.bussecondaryTo });
+    if (!secondaryBus) {
+      const newBusDetails = {
+        busName: defaultFields.bussecondaryTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvsecondaryVoltage,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
+    const tertiaryBus = await Bus.findOne({ busName: defaultFields.bustertiaryTo });
+    if (!tertiaryBus) {
+      const newBusDetails = {
+        busName: defaultFields.bustertiaryTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvtertiaryVoltage,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const response = await TransformersThreeWinding.findByIdAndUpdate(id, {
       ...defaultFields,
       additionalFields,

@@ -2,6 +2,8 @@ import PaginationComponent from "@/components/PaginationComponent";
 import UsersFilter from "@/components/UsersFilter";
 import UsersTable from "@/components/UsersTable";
 import { getAllUsers } from "@/lib/actions/users.actions";
+import { authOptions } from "@/lib/authOptions";
+import { getServerSession } from "next-auth";
 
 const UsersPage = async ({
   searchParams,
@@ -13,7 +15,12 @@ const UsersPage = async ({
   const page = searchParams?.page || 1;
   const limit = searchParams?.limit || 10;
   const totalEntries = (Number(page) - 1) * limit + limit;
-  const { data: users, totalPages, totalDocuments } = await getAllUsers({ query, status, limit, page });
+  const session = await getServerSession(authOptions);
+  const {
+    data: users,
+    totalPages,
+    totalDocuments,
+  } = await getAllUsers({ query, status, limit, page, userId: session?.user.id! });
 
   return (
     <div className="flex flex-col gap-1">

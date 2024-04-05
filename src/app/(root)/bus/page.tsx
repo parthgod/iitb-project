@@ -30,7 +30,7 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href="/bus/create">
+          <Link href={`/bus/create?newIndex=${totalDocuments}`}>
             <Button>
               Create bus <FaPlus className="text-lg ml-2" />
             </Button>

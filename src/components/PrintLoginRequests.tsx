@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FaXmark } from "react-icons/fa6";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type IPrintLoginRequests = {
   data: ILoginRequest[];
@@ -38,6 +39,8 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
     try {
       const response = await updateLoginRequestStatus(status, id);
       if (response.status === 200) {
+        const popoverBtn = document.getElementById(`popover-btn-${id}`);
+        if (popoverBtn) popoverBtn.click();
         toast.dismiss(toastLoading);
         toast.success(response.data);
         setIsLoading(false);
@@ -54,6 +57,8 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
     try {
       const response = await deleteLoginRequest(id);
       if (response.status === 200) {
+        const popoverBtn = document.getElementById(`popover-btn-${id}`);
+        if (popoverBtn) popoverBtn.click();
         toast.dismiss(toastLoading);
         toast.success(response.data);
         setIsLoading(false);
@@ -95,15 +100,21 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                 <Badge className={`${item.status === "Pending" ? "bg-purple-600" : "bg-red-600"}`}>{item.status}</Badge>
               </TableCell>
               <TableCell>
-                <div className="flex justify-between items-center w-full">
-                  <div className="flex items-center gap-2">
+                <Popover>
+                  <PopoverTrigger
+                    asChild
+                    id={`popover-btn-${item._id}`}
+                  >
+                    <Button variant="outline">Account actions</Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-5 flex flex-col gap-2 justify-between items-center shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
                     {item.status !== "Rejected" && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             disabled={isLoading}
                             variant="outline"
-                            className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-700"
+                            className="border-red-600 w-48 text-red-600 hover:bg-red-50 hover:text-red-700"
                           >
                             Reject request
                           </Button>
@@ -133,7 +144,7 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                         <Button
                           disabled={isLoading}
                           variant="outline"
-                          className="border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
+                          className="border-green-600 w-48 text-green-600 hover:bg-green-50 hover:text-green-700"
                         >
                           Accept request
                         </Button>
@@ -159,44 +170,42 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-                  </div>
-                  {!isLoading ? (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <div
-                          title="Delete permanently"
-                          className="rounded-full p-2 hover:bg-gray-300 cursor-pointer opacity-0 group-hover:opacity-100"
-                        >
-                          <FaXmark
-                            title="Delete permanently"
-                            className="text-lg"
-                          />
-                        </div>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="bg-white">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            <span className="font-semibold">This action cannot be undone</span>. This will permanently
-                            remove user <span className="font-semibold">{item.name}&apos;s</span> login request. The
-                            user will have to once again request for access.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-red-500 hover:bg-red-700"
-                            onClick={() => handleRemoveRequest(item._id)}
+                    {!isLoading ? (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            disabled={isLoading}
+                            variant="destructive"
+                            className="w-48"
                           >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  ) : (
-                    ""
-                  )}
-                </div>
+                            Delete request permanently
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-white">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              <span className="font-semibold">This action cannot be undone</span>. This will permanently
+                              remove user <span className="font-semibold">{item.name}&apos;s</span> login request. The
+                              user will have to once again request for access.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-500 hover:bg-red-700"
+                              onClick={() => handleRemoveRequest(item._id)}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    ) : (
+                      ""
+                    )}
+                  </PopoverContent>
+                </Popover>
               </TableCell>
             </TableRow>
           ))}

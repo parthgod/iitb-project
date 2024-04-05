@@ -172,14 +172,16 @@ export default function LoginForm() {
                 className="focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_33px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none"
                 {...register("password")}
               />
-              <Link
-                href="/resetPassword"
-                className={`text-sm underline text-gray-200 text-right ${
-                  isLoading && "pointer-events-none cursor-not-allowed text-gray-400"
-                } `}
-              >
-                Forgot password?
-              </Link>
+              <div className="flex justify-end">
+                <Link
+                  href="/resetPassword"
+                  className={`text-sm underline text-gray-200 ${
+                    isLoading && "pointer-events-none cursor-not-allowed text-gray-400"
+                  } `}
+                >
+                  Forgot password?
+                </Link>
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex gap-5 px-6">
@@ -197,13 +199,13 @@ export default function LoginForm() {
               Request access
             </Link>
 
-            <Button
+            {/* <Button
               className="w-full"
               variant="destructive"
               onClick={handleAddAdmin}
             >
               Login admin
-            </Button>
+            </Button> */}
           </CardFooter>
         </>
       )}

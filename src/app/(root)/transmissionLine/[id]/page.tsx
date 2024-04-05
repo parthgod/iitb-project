@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditTransmissionLineProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -41,8 +40,9 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
   return {};
 };
 
-const EditTransmissionLine = async ({ params }: EditTransmissionLineProps) => {
+const EditTransmissionLine = async ({ params, searchParams }: EditTransmissionLineProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: transmissionLineDetails } = await getTransmissionLineById(id);
@@ -72,6 +72,7 @@ const EditTransmissionLine = async ({ params }: EditTransmissionLineProps) => {
           formFields={defaultParams[0].transmissionLinesColumns}
           formDetails={defaultValues}
           type="transmissionLine"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

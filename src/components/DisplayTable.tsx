@@ -460,7 +460,13 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                           <TooltipProvider>
                             <Tooltip delayDuration={0}>
                               <TooltipTrigger>
-                                <Link href={`/${convertField(type)}/${item._id}`}>
+                                <Link
+                                  href={`/${convertField(type)}/${item._id}${
+                                    type === "Bus" || type === "Single Line Diagram"
+                                      ? ""
+                                      : `?newIndex=${item?.deviceName.charAt(item?.deviceName.length - 1)}`
+                                  }`}
+                                >
                                   <div
                                     title="Edit"
                                     className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"

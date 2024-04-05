@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defaultParams: IDefaultParamSchema[]) => {
@@ -41,8 +40,9 @@ const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defa
   return {};
 };
 
-const EditExcitationSystem = async ({ params }: EditProps) => {
+const EditExcitationSystem = async ({ params, searchParams }: EditProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: excitationSystemDetails } = await getExcitationSystemById(id);
@@ -72,6 +72,7 @@ const EditExcitationSystem = async ({ params }: EditProps) => {
           formFields={defaultParams[0].excitationSystemColumns}
           formDetails={defaultValues}
           type="excitationSystem"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

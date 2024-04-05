@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditSeriesCapacitorProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
   return {};
 };
 
-const EditSeriesCapacitor = async ({ params }: EditSeriesCapacitorProps) => {
+const EditSeriesCapacitor = async ({ params, searchParams }: EditSeriesCapacitorProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: seriesCapacitorDetails } = await getSeriesCapacitorById(id);
@@ -71,6 +71,7 @@ const EditSeriesCapacitor = async ({ params }: EditSeriesCapacitorProps) => {
           formFields={defaultParams[0].seriesCapacitorColumns}
           formDetails={defaultValues}
           type="seriesCapacitor"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

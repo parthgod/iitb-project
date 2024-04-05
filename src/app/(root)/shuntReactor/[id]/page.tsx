@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditShuntReactorProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
   return {};
 };
 
-const EditShuntReactor = async ({ params }: EditShuntReactorProps) => {
+const EditShuntReactor = async ({ params, searchParams }: EditShuntReactorProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: shuntReactorDetails } = await getShuntReactorById(id);
@@ -71,6 +71,7 @@ const EditShuntReactor = async ({ params }: EditShuntReactorProps) => {
           formFields={defaultParams[0].shuntReactorsColumns}
           formDetails={defaultValues}
           type="shuntReactor"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>
