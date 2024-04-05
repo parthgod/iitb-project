@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditTransformersThreeWindingProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -42,8 +41,9 @@ const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultPa
   return {};
 };
 
-const EditTransformersThreeWinding = async ({ params }: EditTransformersThreeWindingProps) => {
+const EditTransformersThreeWinding = async ({ params, searchParams }: EditTransformersThreeWindingProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: transformersThreeWindingDetails } = await getTransformersThreeWindingById(id);
@@ -73,6 +73,7 @@ const EditTransformersThreeWinding = async ({ params }: EditTransformersThreeWin
           formFields={defaultParams[0].transformersThreeWindingColumns}
           formDetails={defaultValues}
           type="transformersThreeWinding"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

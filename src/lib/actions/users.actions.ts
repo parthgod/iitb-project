@@ -64,11 +64,13 @@ export const getAllUsers = async ({
   status,
   limit = 10,
   page = 1,
+  userId,
 }: {
   query: string;
   status: string;
   limit: number;
   page: number;
+  userId: string;
 }): Promise<{ data: IUser[]; status: number; totalPages: number; totalDocuments: number }> => {
   try {
     await connectToDatabase();
@@ -86,10 +88,10 @@ export const getAllUsers = async ({
     if (conditions.length) searchConditions.$or = [...conditions];
 
     const skipAmount = (Number(page) - 1) * limit;
-    const users = await User.find({ ...searchConditions, isAdmin: false })
+    const users = await User.find({ ...searchConditions, _id: { $ne: userId } })
       .skip(skipAmount)
       .limit(limit);
-    const totalDocuments = await User.countDocuments({ ...searchConditions, isAdmin: false });
+    const totalDocuments = await User.countDocuments({ ...searchConditions, _id: { $ne: userId } });
 
     return {
       data: JSON.parse(JSON.stringify(users)),
@@ -186,6 +188,19 @@ export const getUserById = async (id: string): Promise<{ data: IUser | null; sta
     if (!user) return { data: null, status: 404 };
 
     return { data: JSON.parse(JSON.stringify(user)), status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const toggleUserAdminStatus = async (id: string, adminStatus: boolean) => {
+  try {
+    await connectToDatabase();
+    const user = await User.findByIdAndUpdate(id, { isAdmin: adminStatus });
+    return {
+      data: adminStatus ? `User ${user.name} is now an admin.` : `User ${user.name} is no longer an admin.`,
+      status: 200,
+    };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

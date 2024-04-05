@@ -110,6 +110,17 @@ export const updateTransmissionLine = async (req: ICreateUpdateParams, id: strin
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const busFrom = await Bus.findOne({ busName: defaultFields.busFrom });
+    if (!busFrom) {
+      const newBusDetails = {
+        busName: defaultFields.busFrom,
+        location: defaultFields.location1,
+        nominalKV: defaultFields.kv,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const response = await TransmissionLine.findByIdAndUpdate(id, {
       ...defaultFields,
       additionalFields,

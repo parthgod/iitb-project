@@ -14,9 +14,8 @@ import { IDefaultParamSchema, INonDefaultDatabases } from "@/utils/defaultTypes"
 import { Suspense } from "react";
 
 interface EditShuntFactProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (shuntFactDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (shuntFactDetails: INonDefaultDatabases, defaultP
   return {};
 };
 
-const EditShuntFact = async ({ params }: EditShuntFactProps) => {
+const EditShuntFact = async ({ params, searchParams }: EditShuntFactProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: shuntFactDetails } = await getShuntFactById(id);
@@ -71,6 +71,7 @@ const EditShuntFact = async ({ params }: EditShuntFactProps) => {
           formFields={defaultParams[0].shuntFactColumns}
           formDetails={defaultValues}
           type="shuntFact"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

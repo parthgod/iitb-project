@@ -139,7 +139,7 @@ const Sidebar = () => {
           {session?.user.isAdmin && (
             <Link
               href="/users"
-              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-3 items-center rounded-lg ${
                 pathname === "/users"
                   ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
                   : "hover:bg-[#d7d7d7]"
@@ -152,7 +152,7 @@ const Sidebar = () => {
 
           <Link
             href="/historyLog"
-            className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+            className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-3 items-center rounded-lg ${
               pathname === "/historyLog"
                 ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
                 : "hover:bg-[#d7d7d7]"
@@ -165,7 +165,7 @@ const Sidebar = () => {
           {session?.user.isAdmin ? (
             <Accordion
               type="single"
-              className="flex w-full justify-between gap-3 p-2 pl-5 items-center rounded-lg"
+              className="flex w-full justify-between gap-3 p-2 pl-3 pr-0 items-center rounded-lg"
               collapsible
             >
               <AccordionItem
@@ -216,7 +216,7 @@ const Sidebar = () => {
           ) : (
             <Link
               href="/dataRequests"
-              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-5 items-center rounded-lg ${
+              className={`flex transition-colors duration-300 ease-in-out w-full justify-start gap-3 p-2 pl-3 items-center rounded-lg ${
                 pathname === "/dataRequests"
                   ? "bg-white text-blue-600 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]"
                   : "hover:bg-[#d7d7d7]"
@@ -229,7 +229,7 @@ const Sidebar = () => {
 
           <Accordion
             type="single"
-            className="flex w-full justify-between gap-3 p-2 pl-5 items-center rounded-lg"
+            className="flex w-full justify-between gap-3 p-2 pl-3 pr-0 items-center rounded-lg"
             collapsible
           >
             <AccordionItem

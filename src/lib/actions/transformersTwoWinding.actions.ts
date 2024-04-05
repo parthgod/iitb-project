@@ -120,6 +120,27 @@ export const updateTransformersTwoWinding = async (req: ICreateUpdateParams, id:
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const busFrom = await Bus.findOne({ busName: defaultFields.busFrom });
+    if (!busFrom) {
+      const newBusDetails = {
+        busName: defaultFields.busFrom,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvprimary,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
+    const busTo = await Bus.findOne({ busName: defaultFields.busTo });
+    if (!busTo) {
+      const newBusDetails = {
+        busName: defaultFields.busTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kvsecondary,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const response = await TransformersTwoWinding.findByIdAndUpdate(id, {
       ...defaultFields,
       additionalFields,

@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditLoadProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
   return {};
 };
 
-const EditLoad = async ({ params }: EditLoadProps) => {
+const EditLoad = async ({ params, searchParams }: EditLoadProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: loadDetails } = await getLoadById(id);
@@ -71,6 +71,7 @@ const EditLoad = async ({ params }: EditLoadProps) => {
           formFields={defaultParams[0].loadsColumns}
           formDetails={defaultValues}
           type="load"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

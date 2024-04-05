@@ -110,6 +110,17 @@ export const updateShuntCapacitor = async (req: ICreateUpdateParams, id: string,
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const busFrom = await Bus.findOne({ busName: defaultFields.busFrom });
+    if (!busFrom) {
+      const newBusDetails = {
+        busName: defaultFields.busFrom,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kv,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const response = await ShuntCapacitor.findByIdAndUpdate(id, {
       ...defaultFields,
       additionalFields,

@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditShuntCapacitorProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
   return {};
 };
 
-const EditShuntCapacitor = async ({ params }: EditShuntCapacitorProps) => {
+const EditShuntCapacitor = async ({ params, searchParams }: EditShuntCapacitorProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: shuntCapacitorDetails } = await getShuntCapacitorById(id);
@@ -71,6 +71,7 @@ const EditShuntCapacitor = async ({ params }: EditShuntCapacitorProps) => {
           formFields={defaultParams[0].shuntCapacitorColumns}
           formDetails={defaultValues}
           type="shuntCapacitor"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

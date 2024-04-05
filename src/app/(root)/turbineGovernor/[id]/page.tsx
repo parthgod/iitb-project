@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 
 interface EditTurbineGovernorProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDe
   return {};
 };
 
-const EditTurbineGovernor = async ({ params }: EditTurbineGovernorProps) => {
+const EditTurbineGovernor = async ({ params, searchParams }: EditTurbineGovernorProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: turbineGovernorDetails } = await getTurbineGovernorById(id);
@@ -71,6 +71,7 @@ const EditTurbineGovernor = async ({ params }: EditTurbineGovernorProps) => {
           formFields={defaultParams[0].turbineGovernorColumns}
           formDetails={defaultValues}
           type="turbineGovernor"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

@@ -110,6 +110,17 @@ export const updateGenerator = async (req: ICreateUpdateParams, id: string, user
   const { defaultFields, additionalFields } = req;
   try {
     await connectToDatabase();
+
+    const existingBus = await Bus.findOne({ busName: defaultFields.busTo });
+    if (!existingBus) {
+      const newBusDetails = {
+        busName: defaultFields.busTo,
+        location: defaultFields.location,
+        nominalKV: defaultFields.kv,
+      };
+      await createBus({ defaultFields: newBusDetails, additionalFields: {} }, userId);
+    }
+
     const response = await Generator.findByIdAndUpdate(id, {
       ...defaultFields,
       additionalFields,

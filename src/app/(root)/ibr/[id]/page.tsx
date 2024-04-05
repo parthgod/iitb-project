@@ -14,9 +14,8 @@ import { IDefaultParamSchema, INonDefaultDatabases } from "@/utils/defaultTypes"
 import { Suspense } from "react";
 
 interface EditIBRProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
+  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (ibrDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
@@ -40,8 +39,9 @@ const calculateDefaultValues = (ibrDetails: INonDefaultDatabases, defaultParams:
   return {};
 };
 
-const EditIBR = async ({ params }: EditIBRProps) => {
+const EditIBR = async ({ params, searchParams }: EditIBRProps) => {
   const { id } = params;
+  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: ibrDetails } = await getIBRById(id);
@@ -71,6 +71,7 @@ const EditIBR = async ({ params }: EditIBRProps) => {
           formFields={defaultParams[0].ibrColumns}
           formDetails={defaultValues}
           type="ibr"
+          newIndex={newIndex}
         />
       </Suspense>
     </div>

@@ -83,7 +83,7 @@ type CreateFormProps = {
     | "vscHVDCLink"
     | "seriesFact"
     | "shuntFact";
-  newIndex: number;
+  newIndex?: number;
 };
 
 const generateFormSchema = (fields: IColumn[]) => {
@@ -140,16 +140,7 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
     setData(filteredData);
   };
 
-  // const filterGenerators = (columnName: string, event: any) => {
-  //   const { value } = event.target;
-  //   setSearchDevice(value);
-  //   const filteredData = generatorDropdownData.filter((item) =>
-  //     item[columnName]?.toLowerCase().includes(value.toLowerCase())
-  //   );
-  //   setFilteredGeneratorDropdownData(filteredData);
-  // };
-
-  const handleChange = (item: IColumn, ind: number, field: any, value: string) => {
+  const handleChange = (item: IColumn, ind: number, value: string) => {
     form.setValue(item.field, value);
     const trigger = document.getElementById(`${item.tableRef}-${ind}`);
     if (trigger) trigger.click();
@@ -272,7 +263,7 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
-    console.log(data);
+    // console.log(data);
 
     let uploadedImageUrl: any = {};
     formFields.map((item) => {
@@ -490,10 +481,61 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
     });
   }, [formFields]);
 
+  useEffect(() => {
+    if (!open && form && busDropdownData.length) {
+      let isOtherBus;
+      switch (type) {
+        case "generator":
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("busTo"));
+          if (!isOtherBus) form.setValue("busTo", "Other");
+          break;
+
+        case "shuntCapacitor":
+          isOtherBus = busDropdownData.find(
+            (item) => item.busName?.toString() === form.getValues("busFrom").toString()
+          );
+          if (!isOtherBus) form.setValue("busFrom", "Other");
+          break;
+
+        case "shuntReactor":
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("busFrom"));
+          if (!isOtherBus) form.setValue("busFrom", "Other");
+          break;
+
+        case "transformersThreeWinding":
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("busprimaryFrom"));
+          if (!isOtherBus) form.setValue("busprimaryFrom", "Other");
+
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("bussecondaryTo"));
+          if (!isOtherBus) form.setValue("bussecondaryTo", "Other");
+
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("bustertiaryTo"));
+          if (!isOtherBus) form.setValue("bustertiaryTo", "Other");
+          break;
+
+        case "transformersTwoWinding":
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("busFrom"));
+          if (!isOtherBus) form.setValue("busFrom", "Other");
+
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("busTo"));
+          if (!isOtherBus) form.setValue("busTo", "Other");
+          break;
+
+        case "transmissionLine":
+          isOtherBus = busDropdownData.find((item) => item.busName === form.getValues("busFrom"));
+          if (!isOtherBus) form.setValue("busFrom", "Other");
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, [open, form, busDropdownData]);
+
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(type === "singleLineDiagram" ? onSubmit : handleDeviceName)}
+        onSubmit={form.handleSubmit(type === "singleLineDiagram" || type === "bus" ? onSubmit : handleDeviceName)}
         className="flex flex-col gap-5 justify-between pr-5 h-full overflow-hidden p-4"
       >
         <div className="flex flex-col gap-5">
@@ -550,7 +592,7 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
                                     className={`w-full justify-start font-normal ${
                                       selectValue === field.value && "bg-gray-100"
                                     }`}
-                                    onClick={() => handleChange(item, ind, field, selectValue)}
+                                    onClick={() => handleChange(item, ind, selectValue)}
                                   >
                                     {selectValue}
                                     <Check
@@ -651,7 +693,7 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
                                       className={`w-full justify-start italic text-gray-500 font-normal ${
                                         "Other" === field.value && "bg-gray-100"
                                       }`}
-                                      onClick={() => handleChange(item, ind, field, "Other")}
+                                      onClick={() => handleChange(item, ind, "Other")}
                                     >
                                       Other
                                       <Check
@@ -670,7 +712,7 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
                                         className={`w-full justify-start font-normal ${
                                           selectValue[item.columnRef!] === field.value && "bg-gray-100"
                                         }`}
-                                        onClick={() => handleChange(item, ind, field, selectValue[item.columnRef!])}
+                                        onClick={() => handleChange(item, ind, selectValue[item.columnRef!])}
                                       >
                                         {selectValue[item.columnRef!]}
                                         <Check
@@ -692,7 +734,7 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
                                         className={`w-full justify-start font-normal ${
                                           selectValue[item.columnRef!] === field.value && "bg-gray-100"
                                         }`}
-                                        onClick={() => handleChange(item, ind, field, selectValue[item.columnRef!])}
+                                        onClick={() => handleChange(item, ind, selectValue[item.columnRef!])}
                                       >
                                         {selectValue[item.columnRef!]}
                                         <Check
@@ -816,7 +858,11 @@ const CreateForm = ({ formFields, formDetails, type, newIndex }: CreateFormProps
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
                     <div>
-                      <p className="mb-2">This will create a new {reverseUnslug(type)} with following details:</p>
+                      <p className="mb-2">
+                        This will {formDetails ? "edit the" : "create a new"} {reverseUnslug(type)} with following{" "}
+                        {formDetails ? "new " : ""}
+                        details:
+                      </p>
                       <p className="font-semibold">
                         {reverseUnslug(type)} device name: {form.getValues("deviceName")}
                       </p>

@@ -68,7 +68,7 @@ export const loginAcceptEmailHTML = ({ email }: { email: string }): string => {
               </div>
               <p>Click the button below to log in:</p>
               <a href="http://localhost:3000/login" class="button">Login Now</a>
-              <p class='important'>Please change your password after logging in by clicking on your icon and going to 'Profile' page.</p>
+              <p class='important'>Please change your password after logging in by clicking on your icon/avatar and going to 'Profile' page.</p>
               <p>If you have any questions or concerns, feel free to contact us.</p>
               <p>Thank you!</p>
           </div>
