@@ -18,7 +18,7 @@ const ResetPasswordForUserPage = async ({
 }) => {
   const session = await getServerSession();
   if (session) {
-    redirect("/");
+    redirect("/bus");
   }
 
   const { id } = params;

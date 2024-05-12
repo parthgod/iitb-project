@@ -8,7 +8,7 @@ export default async function RequestLoginPage({ searchParams }: { searchParams:
   const status = searchParams.status || "";
   const session = await getServerSession();
   if (session) {
-    redirect("/");
+    redirect("/buss");
   }
   return (
     <div className="flex h-screen items-center justify-center pr-10">

@@ -6,7 +6,7 @@ import ForgotPasswordEmailForm from "@/components/ForgotPasswordEmailForm";
 const ResetPasswordPage = async ({ searchParams }: { searchParams: { status: string } }) => {
   const session = await getServerSession();
   if (session) {
-    redirect("/");
+    redirect("/bus");
   }
 
   const status = searchParams.status;
