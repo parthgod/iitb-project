@@ -7,7 +7,7 @@ export const middleware = async (req: NextRequest) => {
   const token = await getToken({
     req: req,
     secret: process?.env?.NEXTAUTH_SECRET,
-    cookieName: "next-auth.session-token",
+    cookieName: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
   });
 
   if (!token) return NextResponse.redirect(new URL("/login", req.url));
