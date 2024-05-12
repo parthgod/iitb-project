@@ -34,28 +34,6 @@ const ProfilePage = async () => {
         </div>
       </div>
       <Separator className="mt-5" />
-      {modifications.length ? (
-        <div className="py-2">
-          <div className="flex justify-between items-center mt-2">
-            <h1 className="text-2xl font-bold mb-3">Recent actions performed by you:</h1>
-            <Link
-              href={`/historyLog?query=${session?.user.name!}`}
-              className="text-lg text-gray-500"
-            >
-              See all &rarr;
-            </Link>
-          </div>
-          <div className="flex flex-col gap-4">
-            <PrintModificationHistory
-              modificationHistory={modifications.slice(0, 3)}
-              isAdmin={session?.user.isAdmin!}
-            />
-          </div>
-          <Separator className="mt-5" />
-        </div>
-      ) : (
-        ""
-      )}
       {requests.length ? (
         <div className="py-2">
           <div className="flex justify-between items-center">

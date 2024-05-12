@@ -11,8 +11,7 @@ import {
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
 
-const CreateBus = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
-  const newIndex = Number(searchParams.newIndex) || 0;
+const CreateBus = async () => {
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateBus = async ({ searchParams }: { searchParams: { newIndex: string } 
         <CreateForm
           formFields={defaultParams[0].busColumns}
           type="bus"
-          newIndex={newIndex}
         />
       </Suspense>
     </div>

@@ -11,8 +11,7 @@ import {
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
 
-const CreateLCCHVDCLink = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
-  const newIndex = Number(searchParams.newIndex) || 0;
+const CreateLCCHVDCLink = async () => {
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateLCCHVDCLink = async ({ searchParams }: { searchParams: { newIndex: s
         <CreateForm
           formFields={defaultParams[0].lccHVDCLinkColumns}
           type="lccHVDCLink"
-          newIndex={newIndex}
         />
       </Suspense>
     </div>

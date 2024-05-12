@@ -72,6 +72,7 @@ const EditSingleLineDiagram = async ({ params }: EditSingleLineDiagramProps) => 
           formFields={defaultParams[0].singleLineDiagramsColumns}
           formDetails={defaultValues}
           type="singleLineDiagram"
+          id={id}
         />
       </Suspense>
     </div>

@@ -9,7 +9,7 @@ import { ObjectId } from "mongodb";
 export const getAllDataRequests = async ({
   query,
   status,
-  limit = 10,
+  limit = 20,
   page = 1,
 }: {
   query: string;

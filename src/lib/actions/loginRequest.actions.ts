@@ -11,7 +11,7 @@ import { createNewUser } from "./users.actions";
 export const getAllLoginRequests = async ({
   query,
   status,
-  limit = 10,
+  limit = 20,
   page = 1,
 }: {
   query: string;

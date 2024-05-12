@@ -501,20 +501,18 @@ const AddColumns = ({
                         onClick={() => removeDropDownValues(index)}
                         type="button"
                         disabled={dropdownValues.length <= 1}
-                        className={`bg-transparent rounded-full text-3xl ${
-                          dropdownValues.length <= 1
-                            ? "cursor-not-allowed text-gray-300"
-                            : "cursor-pointer hover:bg-transparent hover:text-black text-gray-500"
-                        }`}
+                        className={`bg-transparent rounded-full text-3xl ${dropdownValues.length <= 1
+                          ? "cursor-not-allowed text-gray-300"
+                          : "cursor-pointer hover:bg-transparent hover:text-black text-gray-500"
+                          }`}
                       >
                         <CiCircleMinus />
                       </button>
                       <button
                         onClick={addDropDownValues}
                         type="button"
-                        className={`bg-transparent rounded-full text-3xl cursor-pointer hover:bg-transparent hover:text-black text-gray-500 ${
-                          index === dropdownValues.length - 1 ? "visible" : "hidden"
-                        }`}
+                        className={`bg-transparent rounded-full text-3xl cursor-pointer hover:bg-transparent hover:text-black text-gray-500 ${index === dropdownValues.length - 1 ? "visible" : "hidden"
+                          }`}
                       >
                         <CiCirclePlus />
                       </button>

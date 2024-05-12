@@ -42,7 +42,6 @@ const calculateDefaultValues = (transformersTwoWindingDetails: IBus, defaultPara
 
 const EditTransformersTwoWinding = async ({ params, searchParams }: EditTransformersTwoWindingProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: transformersTwoWindingDetails } = await getTransformersTwoWindingById(id);
@@ -72,7 +71,7 @@ const EditTransformersTwoWinding = async ({ params, searchParams }: EditTransfor
           formFields={defaultParams[0].transformersTwoWindingColumns}
           formDetails={defaultValues}
           type="transformersTwoWinding"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

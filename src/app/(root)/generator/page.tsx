@@ -13,7 +13,7 @@ import { FaPlus } from "react-icons/fa6";
 const Generators = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
   const {
     data: generators,
@@ -26,12 +26,12 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
 
   const filteredGenerators = searchTerm
     ? generators.filter((item) => {
-        return JSON.stringify(item)
-          .replace("additionalFields", "")
-          .replace(new RegExp(defaultParams[0].generatorColumns.map((item) => item.field).join("|"), "g"), "")
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
+      return JSON.stringify(item)
+        .replace("additionalFields", "")
+        .replace(new RegExp(defaultParams[0].generatorColumns.map((item) => item.field).join("|"), "g"), "")
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    })
     : generators;
 
   return (
@@ -40,7 +40,7 @@ const Generators = async ({ searchParams }: { searchParams: { query: string; pag
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href={`/generator/create?newIndex=${totalDocuments}`}>
+          <Link href={`/generator/create`}>
             <Button>
               Create generator <FaPlus className="text-lg ml-2" />
             </Button>

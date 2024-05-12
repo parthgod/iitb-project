@@ -11,8 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateTransformersTwoWinding = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
-  const newIndex = Number(searchParams.newIndex) || 0;
+const CreateTransformersTwoWinding = async () => {
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateTransformersTwoWinding = async ({ searchParams }: { searchParams: { 
         <CreateForm
           formFields={defaultParams[0].transformersTwoWindingColumns}
           type="transformersTwoWinding"
-          newIndex={newIndex}
         />
       </Suspense>
     </div>

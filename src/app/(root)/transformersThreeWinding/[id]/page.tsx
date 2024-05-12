@@ -43,7 +43,6 @@ const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultPa
 
 const EditTransformersThreeWinding = async ({ params, searchParams }: EditTransformersThreeWindingProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: transformersThreeWindingDetails } = await getTransformersThreeWindingById(id);
@@ -73,7 +72,7 @@ const EditTransformersThreeWinding = async ({ params, searchParams }: EditTransf
           formFields={defaultParams[0].transformersThreeWindingColumns}
           formDetails={defaultValues}
           type="transformersThreeWinding"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

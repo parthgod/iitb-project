@@ -41,7 +41,6 @@ const calculateDefaultValues = (shuntFactDetails: INonDefaultDatabases, defaultP
 
 const EditShuntFact = async ({ params, searchParams }: EditShuntFactProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: shuntFactDetails } = await getShuntFactById(id);
@@ -71,7 +70,7 @@ const EditShuntFact = async ({ params, searchParams }: EditShuntFactProps) => {
           formFields={defaultParams[0].shuntFactColumns}
           formDetails={defaultValues}
           type="shuntFact"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

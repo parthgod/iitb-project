@@ -42,7 +42,6 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
 
 const EditTransmissionLine = async ({ params, searchParams }: EditTransmissionLineProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: transmissionLineDetails } = await getTransmissionLineById(id);
@@ -72,7 +71,7 @@ const EditTransmissionLine = async ({ params, searchParams }: EditTransmissionLi
           formFields={defaultParams[0].transmissionLinesColumns}
           formDetails={defaultValues}
           type="transmissionLine"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

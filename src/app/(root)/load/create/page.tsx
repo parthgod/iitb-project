@@ -11,8 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateLoad = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
-  const newIndex = Number(searchParams.newIndex) || 0;
+const CreateLoad = async () => {
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateLoad = async ({ searchParams }: { searchParams: { newIndex: string }
         <CreateForm
           formFields={defaultParams[0].loadsColumns}
           type="load"
-          newIndex={newIndex}
         />
       </Suspense>
     </div>

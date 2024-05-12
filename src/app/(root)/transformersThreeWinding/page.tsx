@@ -17,7 +17,7 @@ const TransformersThreeWinding = async ({
 }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
   const {
     data: transformersThreeWindings,
@@ -30,15 +30,15 @@ const TransformersThreeWinding = async ({
 
   const filteredTransformersThreeWindings = searchTerm
     ? transformersThreeWindings.filter((item) => {
-        return JSON.stringify(item)
-          .replace("additionalFields", "")
-          .replace(
-            new RegExp(defaultParams[0].transformersThreeWindingColumns.map((item) => item.field).join("|"), "g"),
-            ""
-          )
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
+      return JSON.stringify(item)
+        .replace("additionalFields", "")
+        .replace(
+          new RegExp(defaultParams[0].transformersThreeWindingColumns.map((item) => item.field).join("|"), "g"),
+          ""
+        )
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    })
     : transformersThreeWindings;
 
   return (
@@ -47,7 +47,7 @@ const TransformersThreeWinding = async ({
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href={`/transformersThreeWinding/create?newIndex=${totalDocuments}`}>
+          <Link href={`/transformersThreeWinding/create`}>
             <Button>
               Create transformers three winding <FaPlus className="text-lg ml-2" />
             </Button>

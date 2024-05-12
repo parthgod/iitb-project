@@ -11,8 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateTurbineGovernor = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
-  const newIndex = Number(searchParams.newIndex) || 0;
+const CreateTurbineGovernor = async () => {
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateTurbineGovernor = async ({ searchParams }: { searchParams: { newInde
         <CreateForm
           formFields={defaultParams[0].turbineGovernorColumns}
           type="turbineGovernor"
-          newIndex={newIndex}
         />
       </Suspense>
     </div>

@@ -41,7 +41,6 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
 
 const EditSeriesCapacitor = async ({ params, searchParams }: EditSeriesCapacitorProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: seriesCapacitorDetails } = await getSeriesCapacitorById(id);
@@ -71,7 +70,7 @@ const EditSeriesCapacitor = async ({ params, searchParams }: EditSeriesCapacitor
           formFields={defaultParams[0].seriesCapacitorColumns}
           formDetails={defaultValues}
           type="seriesCapacitor"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

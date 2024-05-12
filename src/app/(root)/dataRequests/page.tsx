@@ -14,7 +14,7 @@ const RequestsPage = async ({
   const query = searchParams.query || "";
   const status = searchParams.status || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const totalEntries = (Number(page) - 1) * limit + limit;
   const {
     data: requests,

@@ -41,7 +41,6 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
 
 const EditShuntCapacitor = async ({ params, searchParams }: EditShuntCapacitorProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: shuntCapacitorDetails } = await getShuntCapacitorById(id);
@@ -71,7 +70,7 @@ const EditShuntCapacitor = async ({ params, searchParams }: EditShuntCapacitorPr
           formFields={defaultParams[0].shuntCapacitorColumns}
           formDetails={defaultValues}
           type="shuntCapacitor"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

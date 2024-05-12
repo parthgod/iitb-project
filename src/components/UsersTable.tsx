@@ -130,7 +130,7 @@ const UsersTable = ({ users }: { users: IUser[] }) => {
                     asChild
                     id={`popover-btn-${user._id}`}
                   >
-                    <Button variant="outline">Account actions</Button>
+                    <Button variant="outline" className="h-8">Account actions</Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-56 p-5 flex flex-col gap-2 justify-between items-center shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
                     {!user.disabled ? (

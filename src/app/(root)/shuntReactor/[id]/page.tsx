@@ -41,7 +41,6 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
 
 const EditShuntReactor = async ({ params, searchParams }: EditShuntReactorProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: shuntReactorDetails } = await getShuntReactorById(id);
@@ -71,7 +70,7 @@ const EditShuntReactor = async ({ params, searchParams }: EditShuntReactorProps)
           formFields={defaultParams[0].shuntReactorsColumns}
           formDetails={defaultValues}
           type="shuntReactor"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

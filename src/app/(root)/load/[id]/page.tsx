@@ -41,7 +41,6 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
 
 const EditLoad = async ({ params, searchParams }: EditLoadProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: loadDetails } = await getLoadById(id);
@@ -71,7 +70,7 @@ const EditLoad = async ({ params, searchParams }: EditLoadProps) => {
           formFields={defaultParams[0].loadsColumns}
           formDetails={defaultValues}
           type="load"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

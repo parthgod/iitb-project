@@ -17,7 +17,7 @@ const TransmissionLines = async ({
 }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
   const {
     data: transmissionLines,
@@ -30,12 +30,12 @@ const TransmissionLines = async ({
 
   const filteredTransmissionLines = searchTerm
     ? transmissionLines.filter((item) => {
-        return JSON.stringify(item)
-          .replace("additionalFields", "")
-          .replace(new RegExp(defaultParams[0].transmissionLinesColumns.map((item) => item.field).join("|"), "g"), "")
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
+      return JSON.stringify(item)
+        .replace("additionalFields", "")
+        .replace(new RegExp(defaultParams[0].transmissionLinesColumns.map((item) => item.field).join("|"), "g"), "")
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    })
     : transmissionLines;
 
   return (
@@ -44,7 +44,7 @@ const TransmissionLines = async ({
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href={`/transmissionLine/create?newIndex=${totalDocuments}`}>
+          <Link href={`/transmissionLine/create`}>
             <Button>
               Create transmission line <FaPlus className="text-lg ml-2" />
             </Button>

@@ -17,7 +17,7 @@ const ExcitationSystem = async ({
 }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
   const {
     data: excitationSystems,
@@ -30,12 +30,12 @@ const ExcitationSystem = async ({
 
   const filteredExcitationSystems = searchTerm
     ? excitationSystems.filter((item) => {
-        return JSON.stringify(item)
-          .replace("additionalFields", "")
-          .replace(new RegExp(defaultParams[0].excitationSystemColumns.map((item) => item.field).join("|"), "g"), "")
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
+      return JSON.stringify(item)
+        .replace("additionalFields", "")
+        .replace(new RegExp(defaultParams[0].excitationSystemColumns.map((item) => item.field).join("|"), "g"), "")
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    })
     : excitationSystems;
 
   return (
@@ -44,7 +44,7 @@ const ExcitationSystem = async ({
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href={`/excitationSystem/create?newIndex=${totalDocuments}`}>
+          <Link href={`/excitationSystem/create`}>
             <Button>
               Create Excitation System <FaPlus className="text-lg ml-2" />
             </Button>

@@ -41,7 +41,6 @@ const calculateDefaultValues = (ibrDetails: INonDefaultDatabases, defaultParams:
 
 const EditIBR = async ({ params, searchParams }: EditIBRProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: ibrDetails } = await getIBRById(id);
@@ -71,7 +70,7 @@ const EditIBR = async ({ params, searchParams }: EditIBRProps) => {
           formFields={defaultParams[0].ibrColumns}
           formDetails={defaultValues}
           type="ibr"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

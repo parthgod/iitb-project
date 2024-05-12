@@ -14,12 +14,13 @@ const HistoryPage = async ({
   const databaseName = searchParams.databaseName || "";
   const query = searchParams.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const totalEntries = (Number(page) - 1) * limit + limit;
   const {
     data: modificationHistory,
     totalDocuments,
     totalPages,
+    completeData
   } = await getAllModificationsHistory({
     type: type,
     databaseName: databaseName,
@@ -31,34 +32,25 @@ const HistoryPage = async ({
 
   return (
     <div className="flex flex-col gap-1">
-      <h1 className="text-4xl font-bold p-3">Edit history</h1>
+      <h1 className="text-4xl font-bold p-1.5">Edit history</h1>
       <FilteredHistory />
-      <div className="flex px-4 justify-between items-center mt-3 mb-1">
-        {totalDocuments ? (
-          <p className="font-semibold whitespace-nowrap">
-            Showing {(Number(page) - 1) * limit + 1} - {totalEntries > totalDocuments ? totalDocuments : totalEntries}{" "}
-            of {totalDocuments} records
-          </p>
-        ) : (
-          <p className="font-semibold whitespace-nowrap">No records to display</p>
-        )}
-        <PaginationComponent
-          limit={limit}
-          totalDocuments={totalDocuments}
-          totalPages={totalPages}
-        />
-      </div>
       {modificationHistory.length ? (
         <>
-          <div className="flex flex-col gap-4 h-[77vh] overflow-auto custom-scrollbar px-3 pr-4 pb-2">
+          <div>
             <PrintModificationHistory
               modificationHistory={modificationHistory}
               isAdmin={session?.user.isAdmin!}
+              limit={limit}
+              page={page}
+              totalDocuments={totalDocuments}
+              totalEntries={totalEntries}
+              totalPages={totalPages}
+              completeData={completeData}
             />
           </div>
         </>
       ) : (
-        ""
+        <p className="font-semibold whitespace-nowrap p-2">No records to display</p>
       )}
     </div>
   );
