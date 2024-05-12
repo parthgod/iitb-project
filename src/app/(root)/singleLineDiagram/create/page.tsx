@@ -11,8 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-const CreateSingleLineDiagram = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
-  const newIndex = Number(searchParams.newIndex) || 0;
+const CreateSingleLineDiagram = async () => {
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateSingleLineDiagram = async ({ searchParams }: { searchParams: { newIn
         <CreateForm
           formFields={defaultParams[0].singleLineDiagramsColumns}
           type="singleLineDiagram"
-          newIndex={newIndex}
         />
       </Suspense>
     </div>

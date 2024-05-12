@@ -62,7 +62,7 @@ export const changePassword = async (req: {
 export const getAllUsers = async ({
   query,
   status,
-  limit = 10,
+  limit = 20,
   page = 1,
   userId,
 }: {
@@ -130,7 +130,7 @@ export const deleteUser = async (id: string) => {
   try {
     await connectToDatabase();
     const response = await User.findByIdAndDelete(id);
-    return { data: `User '${response.name}' removed permanently from application.`, status: 200 };
+    return { data: `User '${response.name}' has been permanently removed from the application.`, status: 200 };
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

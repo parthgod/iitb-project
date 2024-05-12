@@ -9,7 +9,7 @@ import ModificationHistory from "../database/models/modificationHistory";
 import DefaultParam from "../database/models/defaultParams";
 
 export const getAllSeriesCapacitors = async (
-  limit = 10,
+  limit = 20,
   page = 1,
   query = "",
   columns: IColumn[]
@@ -244,6 +244,35 @@ export const toggleSeriesCapacitorSwitchValue = async (
     };
     await ModificationHistory.create(modificationHistory);
     return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const deleteManySeriesCapacitor = async (recordsToDelete: string[], userId: string, path: string) => {
+  try {
+    await connectToDatabase();
+
+    const response = await SeriesCapacitor.deleteMany({ _id: { $in: recordsToDelete } });
+    if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Series Capacitor",
+        operationType: "Delete",
+        date: new Date(),
+        message: `<span style="font-weight: 610">${recordsToDelete.length}</span> records were deleted from <span style="font-weight: 610">Series Capacitor</span>.`,
+        document: {
+          documentAfterChange: `${recordsToDelete.length}`,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
+      revalidatePath(path);
+      return {
+        data: `${recordsToDelete.length} records were deleted successfully from Series Capacitor.`,
+        status: 200,
+      };
+    }
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

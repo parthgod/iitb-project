@@ -175,9 +175,8 @@ export default function LoginForm() {
               <div className="flex justify-end">
                 <Link
                   href="/resetPassword"
-                  className={`text-sm underline text-gray-200 ${
-                    isLoading && "pointer-events-none cursor-not-allowed text-gray-400"
-                  } `}
+                  className={`text-sm underline text-gray-200 ${isLoading && "pointer-events-none cursor-not-allowed text-gray-400"
+                    } `}
                 >
                   Forgot password?
                 </Link>

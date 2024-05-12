@@ -17,7 +17,7 @@ const SeriesCapacitor = async ({
 }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
   const {
     data: seriesCapacitors,
@@ -30,12 +30,12 @@ const SeriesCapacitor = async ({
 
   const filteredSeriesCapacitors = searchTerm
     ? seriesCapacitors.filter((item) => {
-        return JSON.stringify(item)
-          .replace("additionalFields", "")
-          .replace(new RegExp(defaultParams[0].seriesCapacitorColumns.map((item) => item.field).join("|"), "g"), "")
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
+      return JSON.stringify(item)
+        .replace("additionalFields", "")
+        .replace(new RegExp(defaultParams[0].seriesCapacitorColumns.map((item) => item.field).join("|"), "g"), "")
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    })
     : seriesCapacitors;
 
   return (
@@ -44,7 +44,7 @@ const SeriesCapacitor = async ({
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href={`/seriesCapacitor/create?newIndex=${totalDocuments}`}>
+          <Link href={`/seriesCapacitor/create`}>
             <Button>
               Create series capacitor <FaPlus className="text-lg ml-2" />
             </Button>

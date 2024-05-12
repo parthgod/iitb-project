@@ -56,50 +56,50 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 type TableProps = {
   columns: IColumn[];
   data:
-    | IBus[]
-    | IExcitationSystem[]
-    | IGenerator[]
-    | ILoad[]
-    | ISeriesCapacitor[]
-    | IShuntCapacitor[]
-    | IShuntReactor[]
-    | ISingleLineDiagram[]
-    | ITransformersThreeWinding[]
-    | ITransformersTwoWinding[]
-    | ITransmissionLine[]
-    | ITurbineGovernor[];
+  | IBus[]
+  | IExcitationSystem[]
+  | IGenerator[]
+  | ILoad[]
+  | ISeriesCapacitor[]
+  | IShuntCapacitor[]
+  | IShuntReactor[]
+  | ISingleLineDiagram[]
+  | ITransformersThreeWinding[]
+  | ITransformersTwoWinding[]
+  | ITransmissionLine[]
+  | ITurbineGovernor[];
   completeData:
-    | IBus[]
-    | IExcitationSystem[]
-    | IGenerator[]
-    | ILoad[]
-    | ISeriesCapacitor[]
-    | IShuntCapacitor[]
-    | IShuntReactor[]
-    | ISingleLineDiagram[]
-    | ITransformersThreeWinding[]
-    | ITransformersTwoWinding[]
-    | ITransmissionLine[]
-    | ITurbineGovernor[]
-    | INonDefaultDatabases[];
+  | IBus[]
+  | IExcitationSystem[]
+  | IGenerator[]
+  | ILoad[]
+  | ISeriesCapacitor[]
+  | IShuntCapacitor[]
+  | IShuntReactor[]
+  | ISingleLineDiagram[]
+  | ITransformersThreeWinding[]
+  | ITransformersTwoWinding[]
+  | ITransmissionLine[]
+  | ITurbineGovernor[]
+  | INonDefaultDatabases[];
   type:
-    | "Excitation System"
-    | "Bus"
-    | "Generator"
-    | "Load"
-    | "Series Capacitor"
-    | "Shunt Capacitor"
-    | "Shunt Reactor"
-    | "Single Line Diagram"
-    | "Transformers Three Winding"
-    | "Transformers Two Winding"
-    | "Transmission Line"
-    | "Turbine Governor"
-    | "IBR"
-    | "LCC - HVDC Link"
-    | "VSC - HVDC Link"
-    | "Series Fact"
-    | "Shunt Fact";
+  | "Excitation System"
+  | "Bus"
+  | "Generator"
+  | "Load"
+  | "Series Capacitor"
+  | "Shunt Capacitor"
+  | "Shunt Reactor"
+  | "Single Line Diagram"
+  | "Transformers Three Winding"
+  | "Transformers Two Winding"
+  | "Transmission Line"
+  | "Turbine Governor"
+  | "IBR"
+  | "LCC - HVDC Link"
+  | "VSC - HVDC Link"
+  | "Series Fact"
+  | "Shunt Fact";
   totalPages: number;
   totalDocuments: number;
   session: Session;
@@ -109,6 +109,8 @@ type TableProps = {
 const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, completeData, session, page }: TableProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [switchStatus, setSwitchStatus] = useState<any>({});
+
+  const [recordsToDelete, setRecordsToDelete] = useState<string[]>([])
 
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -305,6 +307,17 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
     }
   };
 
+  const handleRecordsToDelete = (e: any, id: string) => {
+    const isChecked = e.target.checked;
+    setRecordsToDelete((prevSelectedIds) => {
+      if (isChecked) {
+        return [...prevSelectedIds, id];
+      } else {
+        return prevSelectedIds.filter((selectedId) => selectedId !== id);
+      }
+    });
+  }
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -340,7 +353,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
   if (!isMounted) return <TableSkeleton />;
 
   return (
-    <div className="p-4 pb-2">
+    <div className="p-2 pb-2">
       <div className="shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-xl">
         <TableHeading
           totalPages={totalPages}
@@ -351,8 +364,12 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
           columns={columns}
           session={session}
           page={page}
+          recordsToDelete={recordsToDelete}
+          setRecordsToDelete={setRecordsToDelete}
+          completeData={completeData}
+          data={data}
         />
-        <div className="relative flex items-start justify-start w-full overflow-auto custom-scrollbar max-h-[67vh]">
+        <div className="relative flex items-start justify-start w-full overflow-auto custom-scrollbar max-h-[73vh]">
           <Table
             ref={tableRef}
             id="tbl_exporttable_to_xls"
@@ -362,6 +379,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
             </TableCaption>
             <TableHeader>
               <TableRow className="bg-slate-100">
+                {session.user.isAdmin && <TableHead className="border-[1px] border-gray-300 group min-w-7"></TableHead>}
                 <TableHead className="border-[1px] border-gray-300 group max-w-10">ID</TableHead>
                 {columns.map((item, ind: number) =>
                   item.isHidden ? (
@@ -417,7 +435,15 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
             <TableBody>
               {data.map((item, ind: number) => {
                 return (
-                  <TableRow key={ind}>
+                  <TableRow key={ind} className={`${recordsToDelete.includes(item._id) ? 'bg-[#ececec]' : ''}`}>
+                    {session.user.isAdmin && <TableCell className="border-[1px] border-gray-300 max-w-2 p-1 m-auto text-center">
+                      <input
+                        type="checkbox"
+                        className="scale-125 cursor-pointer"
+                        onChange={(e) => handleRecordsToDelete(e, item._id)}
+                        checked={recordsToDelete.includes(item._id)}
+                      />
+                    </TableCell>}
                     <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
                     {columns.map((column, i: number) =>
                       column.isHidden ? (
@@ -425,9 +451,8 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                       ) : (
                         <TableCell
                           key={i}
-                          className={`border-[1px] border-gray-300 ${
-                            !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400 italic"
-                          }`}
+                          className={`border-[1px] ${!session.user.isAdmin && 'py-1.5'} border-gray-300 ${!item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400 italic"
+                            }`}
                         >
                           {column.type === "image" ? (
                             <Image
@@ -461,11 +486,10 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                             <Tooltip delayDuration={0}>
                               <TooltipTrigger>
                                 <Link
-                                  href={`/${convertField(type)}/${item._id}${
-                                    type === "Bus" || type === "Single Line Diagram"
-                                      ? ""
-                                      : `?newIndex=${item?.deviceName.charAt(item?.deviceName.length - 1)}`
-                                  }`}
+                                  href={`/${convertField(type)}/${item._id}${type === "Bus" || type === "Single Line Diagram"
+                                    ? ""
+                                    : `?newIndex=${item?.deviceName.charAt(item?.deviceName.length - 1)}`
+                                    }`}
                                 >
                                   <div
                                     title="Edit"

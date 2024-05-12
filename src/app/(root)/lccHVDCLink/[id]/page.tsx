@@ -41,7 +41,6 @@ const calculateDefaultValues = (lccHVDCLinkDetails: INonDefaultDatabases, defaul
 
 const EditLccHvdcLink = async ({ params, searchParams }: EditLccHvdcLinkProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: lccHVDCLinkDetails } = await getLCCHVDCLinkById(id);
@@ -71,7 +70,7 @@ const EditLccHvdcLink = async ({ params, searchParams }: EditLccHvdcLinkProps) =
           formFields={defaultParams[0].lccHVDCLinkColumns}
           formDetails={defaultValues}
           type="lccHVDCLink"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

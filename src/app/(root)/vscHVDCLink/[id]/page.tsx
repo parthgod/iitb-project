@@ -41,7 +41,6 @@ const calculateDefaultValues = (vscHVDCLinkDetails: INonDefaultDatabases, defaul
 
 const EditVscHvdcLink = async ({ params, searchParams }: EditVscHvdcLinkProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: vscHVDCLinkDetails } = await getVSCHVDCLinkById(id);
@@ -71,7 +70,7 @@ const EditVscHvdcLink = async ({ params, searchParams }: EditVscHvdcLinkProps) =
           formFields={defaultParams[0].vscHVDCLinkColumns}
           formDetails={defaultValues}
           type="vscHVDCLink"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

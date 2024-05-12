@@ -9,7 +9,7 @@ import ModificationHistory from "../database/models/modificationHistory";
 import DefaultParam from "../database/models/defaultParams";
 
 export const getAllBuses = async (
-  limit = 10,
+  limit = 20,
   page = 1,
   query = "",
   columns: IColumn[]
@@ -194,7 +194,7 @@ export const uploadBusFromExcel = async (data: any, userId: string) => {
         databaseName: "Bus",
         operationType: "Create",
         date: new Date(),
-        message: `<span style="font-weight: 610">${data.length}</span> records were added to <span style="font-weight: 610">Bus</span from an excel file.`,
+        message: `<span style="font-weight: 610">${data.length}</span> records were added to <span style="font-weight: 610">Bus</span> from an excel file.`,
         document: {
           documentAfterChange: `${data.length}`,
         },
@@ -230,6 +230,32 @@ export const toggleBusSwitchValue = async (id: string, column: IColumn, userId: 
     };
     await ModificationHistory.create(modificationHistory);
     return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const deleteManyBus = async (recordsToDelete: string[], userId: string, path: string) => {
+  try {
+    await connectToDatabase();
+
+    const response = await Bus.deleteMany({ _id: { $in: recordsToDelete } });
+    if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Bus",
+        operationType: "Delete",
+        date: new Date(),
+        message: `<span style="font-weight: 610">${recordsToDelete.length}</span> records were deleted from <span style="font-weight: 610">Bus</span>.`,
+        document: {
+          documentAfterChange: `${recordsToDelete.length}`,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
+      revalidatePath(path);
+      return { data: `${recordsToDelete.length} records were deleted successfully from Bus.`, status: 200 };
+    }
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

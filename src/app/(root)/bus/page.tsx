@@ -13,24 +13,24 @@ import { FaPlus } from "react-icons/fa6";
 const Bus = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
-  const {
-    data: buses,
-    totalPages,
-    totalDocuments,
-    completeData,
-  } = await getAllBuses(limit, page, searchTerm, defaultParams[0]?.busColumns);
+  const { data: buses, totalPages, totalDocuments, completeData } = await getAllBuses(
+    limit,
+    page,
+    searchTerm,
+    defaultParams[0]?.busColumns
+  );
 
   const session = await getServerSession(authOptions);
 
   return (
     <main className="flex flex-col w-full">
-      <h1 className="text-4xl font-bold p-3">Bus</h1>
-      <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
+      <h1 className="text-4xl font-bold p-1">Bus</h1>
+      <div className="flex justify-between items-center gap-5 px-2 py-1 mt-1">
         <Search />
         <div className="flex gap-5">
-          <Link href={`/bus/create?newIndex=${totalDocuments}`}>
+          <Link href={`/bus/create`}>
             <Button>
               Create bus <FaPlus className="text-lg ml-2" />
             </Button>

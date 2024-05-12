@@ -40,7 +40,7 @@ const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDe
 
 const EditGenerator = async ({ params, searchParams }: EditGeneratorProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
+
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: generatorDetails } = await getGeneratorById(id);
@@ -70,7 +70,7 @@ const EditGenerator = async ({ params, searchParams }: EditGeneratorProps) => {
           formFields={defaultParams[0].generatorColumns}
           formDetails={defaultValues}
           type="generator"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

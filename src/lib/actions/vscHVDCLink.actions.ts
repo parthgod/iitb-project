@@ -9,7 +9,7 @@ import VSCHVDCLink from "../database/models/vscHVDCLink";
 import DefaultParam from "../database/models/defaultParams";
 
 export const getAllVSCHVDCLinks = async (
-  limit = 10,
+  limit = 20,
   page = 1,
   query = "",
   columns: IColumn[]
@@ -244,6 +244,32 @@ export const toggleVSCHVDCLinkSwitchValue = async (
     };
     await ModificationHistory.create(modificationHistory);
     return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const deleteManyVSCHVDCLink = async (recordsToDelete: string[], userId: string, path: string) => {
+  try {
+    await connectToDatabase();
+
+    const response = await VSCHVDCLink.deleteMany({ _id: { $in: recordsToDelete } });
+    if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "VSC-HVDC Link",
+        operationType: "Delete",
+        date: new Date(),
+        message: `<span style="font-weight: 610">${recordsToDelete.length}</span> records were deleted from <span style="font-weight: 610">VSC-HVDC Link</span>.`,
+        document: {
+          documentAfterChange: `${recordsToDelete.length}`,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
+      revalidatePath(path);
+      return { data: `${recordsToDelete.length} records were deleted successfully from VSC-HVDC Link.`, status: 200 };
+    }
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }

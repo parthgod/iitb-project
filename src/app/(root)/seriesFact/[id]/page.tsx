@@ -41,7 +41,6 @@ const calculateDefaultValues = (seriesFactDetails: INonDefaultDatabases, default
 
 const EditSeriesFact = async ({ params, searchParams }: EditSeriesFactProps) => {
   const { id } = params;
-  const newIndex = Number(searchParams.newIndex) || 0;
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: seriesFactDetails } = await getSeriesFactById(id);
@@ -71,7 +70,7 @@ const EditSeriesFact = async ({ params, searchParams }: EditSeriesFactProps) => 
           formFields={defaultParams[0].seriesFactColumns}
           formDetails={defaultValues}
           type="seriesFact"
-          newIndex={newIndex}
+          id={id}
         />
       </Suspense>
     </div>

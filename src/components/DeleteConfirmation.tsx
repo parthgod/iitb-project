@@ -35,23 +35,23 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 type DeleteConfirmationProps = {
   id: string;
   type:
-    | "Excitation System"
-    | "Bus"
-    | "Generator"
-    | "Load"
-    | "Series Capacitor"
-    | "Shunt Capacitor"
-    | "Shunt Reactor"
-    | "Single Line Diagram"
-    | "Transformers Three Winding"
-    | "Transformers Two Winding"
-    | "Transmission Line"
-    | "Turbine Governor"
-    | "IBR"
-    | "LCC - HVDC Link"
-    | "VSC - HVDC Link"
-    | "Series Fact"
-    | "Shunt Fact";
+  | "Excitation System"
+  | "Bus"
+  | "Generator"
+  | "Load"
+  | "Series Capacitor"
+  | "Shunt Capacitor"
+  | "Shunt Reactor"
+  | "Single Line Diagram"
+  | "Transformers Three Winding"
+  | "Transformers Two Winding"
+  | "Transmission Line"
+  | "Turbine Governor"
+  | "IBR"
+  | "LCC - HVDC Link"
+  | "VSC - HVDC Link"
+  | "Series Fact"
+  | "Shunt Fact";
   userId: string;
 };
 
@@ -92,6 +92,7 @@ const DeleteConfirmation = ({ id, type, userId }: DeleteConfirmationProps) => {
                   case "Bus":
                     await deleteBus(id, pathname, userId);
                     break;
+
                   case "Excitation System":
                     await deleteExcitationSystem(id, pathname, userId);
                     break;

@@ -11,8 +11,7 @@ import {
 import { getDefaultParams } from "@/lib/actions/defaultParams.actions";
 import { Suspense } from "react";
 
-const CreateShuntFact = async ({ searchParams }: { searchParams: { newIndex: string } }) => {
-  const newIndex = Number(searchParams.newIndex) || 0;
+const CreateShuntFact = async () => {
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateShuntFact = async ({ searchParams }: { searchParams: { newIndex: str
         <CreateForm
           formFields={defaultParams[0].shuntFactsColumns}
           type="shuntFact"
-          newIndex={newIndex}
         />
       </Suspense>
     </div>

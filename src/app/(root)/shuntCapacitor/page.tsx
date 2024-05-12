@@ -13,7 +13,7 @@ import { FaPlus } from "react-icons/fa6";
 const ShuntCapacitor = async ({ searchParams }: { searchParams: { query: string; page?: number; limit?: number } }) => {
   const searchTerm = searchParams?.query || "";
   const page = searchParams?.page || 1;
-  const limit = searchParams?.limit || 10;
+  const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
   const {
     data: shuntCapacitors,
@@ -26,12 +26,12 @@ const ShuntCapacitor = async ({ searchParams }: { searchParams: { query: string;
 
   const filteredShuntCapacitors = searchTerm
     ? shuntCapacitors.filter((item) => {
-        return JSON.stringify(item)
-          .replace("additionalFields", "")
-          .replace(new RegExp(defaultParams[0].shuntCapacitorColumns.map((item) => item.field).join("|"), "g"), "")
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
+      return JSON.stringify(item)
+        .replace("additionalFields", "")
+        .replace(new RegExp(defaultParams[0].shuntCapacitorColumns.map((item) => item.field).join("|"), "g"), "")
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    })
     : shuntCapacitors;
 
   return (
@@ -40,7 +40,7 @@ const ShuntCapacitor = async ({ searchParams }: { searchParams: { query: string;
       <div className="flex justify-between items-center gap-5 px-4 py-2 mt-2">
         <Search />
         <div className="flex gap-5">
-          <Link href={`/shuntCapacitor/create?newIndex=${totalDocuments}`}>
+          <Link href={`/shuntCapacitor/create`}>
             <Button>
               Create shunt capacitor <FaPlus className="text-lg ml-2" />
             </Button>

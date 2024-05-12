@@ -11,7 +11,7 @@ import Bus from "../database/models/bus";
 import { createBus } from "./bus.actions";
 
 export const getAllShuntReactors = async (
-  limit = 10,
+  limit = 20,
   page = 1,
   query = "",
   columns: IColumn[]
@@ -267,6 +267,32 @@ export const toggleShuntReactorSwitchValue = async (
     };
     await ModificationHistory.create(modificationHistory);
     return { data: "Status changed successfully.", status: 200 };
+  } catch (error) {
+    throw new Error(typeof error === "string" ? error : JSON.stringify(error));
+  }
+};
+
+export const deleteManyShuntReactor = async (recordsToDelete: string[], userId: string, path: string) => {
+  try {
+    await connectToDatabase();
+
+    const response = await ShuntReactor.deleteMany({ _id: { $in: recordsToDelete } });
+    if (response) {
+      let modificationHistory: any;
+      modificationHistory = {
+        userId: new ObjectId(userId),
+        databaseName: "Shunt Reactor",
+        operationType: "Delete",
+        date: new Date(),
+        message: `<span style="font-weight: 610">${recordsToDelete.length}</span> records were deleted from <span style="font-weight: 610">Shunt Reactor</span>.`,
+        document: {
+          documentAfterChange: `${recordsToDelete.length}`,
+        },
+      };
+      await ModificationHistory.create(modificationHistory);
+      revalidatePath(path);
+      return { data: `${recordsToDelete.length} records were deleted successfully from Shunt Reactor.`, status: 200 };
+    }
   } catch (error) {
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
