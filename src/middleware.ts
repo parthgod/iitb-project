@@ -55,7 +55,7 @@ export const middleware = async (req: NextRequest) => {
       pathname === "/dataRequests"
     )
       return NextResponse.next();
-    else return NextResponse.redirect(new URL("/", req.url));
+    else return NextResponse.redirect(new URL("/bus", req.url));
   }
 
   return NextResponse.next();

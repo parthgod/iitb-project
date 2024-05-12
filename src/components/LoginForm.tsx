@@ -70,8 +70,8 @@ export default function LoginForm() {
 
       toast.dismiss(toastLoading);
       toast.success("Successfully signed in");
-      setIsSuccess(true);
       router.push("/bus");
+      setIsSuccess(true);
     } catch (error) {
       console.log(error);
       toast.error("Failed!");
