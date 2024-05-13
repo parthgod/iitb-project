@@ -82,10 +82,7 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
         </TableHeader>
         <TableBody>
           {data.map((item, ind) => (
-            <TableRow
-              key={ind}
-              className="group"
-            >
+            <TableRow key={ind} className="group">
               <TableCell className="flex items-center gap-2">
                 <Avatar className="scale-75">
                   <AvatarImage src={item.image || pfp} />
@@ -100,11 +97,10 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
               </TableCell>
               <TableCell>
                 <Popover>
-                  <PopoverTrigger
-                    asChild
-                    id={`popover-btn-${item._id}`}
-                  >
-                    <Button variant="outline">Request actions</Button>
+                  <PopoverTrigger asChild id={`popover-btn-${item._id}`}>
+                    <Button variant="outline" className="h-8">
+                      Request actions
+                    </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-56 p-5 flex flex-col gap-2 justify-between items-center shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]">
                     {item.status !== "Rejected" && (
