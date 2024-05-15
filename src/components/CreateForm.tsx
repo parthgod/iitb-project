@@ -873,7 +873,6 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
     } catch (error) {
       console.log(error);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
