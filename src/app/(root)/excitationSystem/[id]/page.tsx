@@ -15,7 +15,6 @@ import {
 
 interface EditProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defaultParams: IDefaultParamSchema[]) => {
@@ -40,7 +39,7 @@ const calculateDefaultValues = (excitationSystemDetails: IExcitationSystem, defa
   return {};
 };
 
-const EditExcitationSystem = async ({ params, searchParams }: EditProps) => {
+const EditExcitationSystem = async ({ params }: EditProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

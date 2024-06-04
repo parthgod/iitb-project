@@ -15,7 +15,6 @@ import { Suspense } from "react";
 
 interface EditSeriesFactProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (seriesFactDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (seriesFactDetails: INonDefaultDatabases, default
   return {};
 };
 
-const EditSeriesFact = async ({ params, searchParams }: EditSeriesFactProps) => {
+const EditSeriesFact = async ({ params }: EditSeriesFactProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

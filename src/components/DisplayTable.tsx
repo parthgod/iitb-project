@@ -56,50 +56,50 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 type TableProps = {
   columns: IColumn[];
   data:
-  | IBus[]
-  | IExcitationSystem[]
-  | IGenerator[]
-  | ILoad[]
-  | ISeriesCapacitor[]
-  | IShuntCapacitor[]
-  | IShuntReactor[]
-  | ISingleLineDiagram[]
-  | ITransformersThreeWinding[]
-  | ITransformersTwoWinding[]
-  | ITransmissionLine[]
-  | ITurbineGovernor[];
+    | IBus[]
+    | IExcitationSystem[]
+    | IGenerator[]
+    | ILoad[]
+    | ISeriesCapacitor[]
+    | IShuntCapacitor[]
+    | IShuntReactor[]
+    | ISingleLineDiagram[]
+    | ITransformersThreeWinding[]
+    | ITransformersTwoWinding[]
+    | ITransmissionLine[]
+    | ITurbineGovernor[];
   completeData:
-  | IBus[]
-  | IExcitationSystem[]
-  | IGenerator[]
-  | ILoad[]
-  | ISeriesCapacitor[]
-  | IShuntCapacitor[]
-  | IShuntReactor[]
-  | ISingleLineDiagram[]
-  | ITransformersThreeWinding[]
-  | ITransformersTwoWinding[]
-  | ITransmissionLine[]
-  | ITurbineGovernor[]
-  | INonDefaultDatabases[];
+    | IBus[]
+    | IExcitationSystem[]
+    | IGenerator[]
+    | ILoad[]
+    | ISeriesCapacitor[]
+    | IShuntCapacitor[]
+    | IShuntReactor[]
+    | ISingleLineDiagram[]
+    | ITransformersThreeWinding[]
+    | ITransformersTwoWinding[]
+    | ITransmissionLine[]
+    | ITurbineGovernor[]
+    | INonDefaultDatabases[];
   type:
-  | "Excitation System"
-  | "Bus"
-  | "Generator"
-  | "Load"
-  | "Series Capacitor"
-  | "Shunt Capacitor"
-  | "Shunt Reactor"
-  | "Single Line Diagram"
-  | "Transformers Three Winding"
-  | "Transformers Two Winding"
-  | "Transmission Line"
-  | "Turbine Governor"
-  | "IBR"
-  | "LCC - HVDC Link"
-  | "VSC - HVDC Link"
-  | "Series Fact"
-  | "Shunt Fact";
+    | "Excitation System"
+    | "Bus"
+    | "Generator"
+    | "Load"
+    | "Series Capacitor"
+    | "Shunt Capacitor"
+    | "Shunt Reactor"
+    | "Single Line Diagram"
+    | "Transformers Three Winding"
+    | "Transformers Two Winding"
+    | "Transmission Line"
+    | "Turbine Governor"
+    | "IBR"
+    | "LCC - HVDC Link"
+    | "VSC - HVDC Link"
+    | "Series Fact"
+    | "Shunt Fact";
   totalPages: number;
   totalDocuments: number;
   session: Session;
@@ -110,7 +110,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
   const [isMounted, setIsMounted] = useState(false);
   const [switchStatus, setSwitchStatus] = useState<any>({});
 
-  const [recordsToDelete, setRecordsToDelete] = useState<string[]>([])
+  const [recordsToDelete, setRecordsToDelete] = useState<string[]>([]);
 
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -316,7 +316,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
         return prevSelectedIds.filter((selectedId) => selectedId !== id);
       }
     });
-  }
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -435,15 +435,20 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
             <TableBody>
               {data.map((item, ind: number) => {
                 return (
-                  <TableRow key={ind} className={`${recordsToDelete.includes(item._id) ? 'bg-[#ececec]' : ''}`}>
-                    {session.user.isAdmin && <TableCell className="border-[1px] border-gray-300 max-w-2 p-1 m-auto text-center">
-                      <input
-                        type="checkbox"
-                        className="scale-125 cursor-pointer"
-                        onChange={(e) => handleRecordsToDelete(e, item._id)}
-                        checked={recordsToDelete.includes(item._id)}
-                      />
-                    </TableCell>}
+                  <TableRow
+                    key={ind}
+                    className={`${recordsToDelete.includes(item._id) ? "bg-[#ececec]" : ""}`}
+                  >
+                    {session.user.isAdmin && (
+                      <TableCell className="border-[1px] border-gray-300 max-w-2 p-1 m-auto text-center">
+                        <input
+                          type="checkbox"
+                          className="scale-125 cursor-pointer"
+                          onChange={(e) => handleRecordsToDelete(e, item._id)}
+                          checked={recordsToDelete.includes(item._id)}
+                        />
+                      </TableCell>
+                    )}
                     <TableCell className="border-[1px] border-gray-300">{item._id}</TableCell>
                     {columns.map((column, i: number) =>
                       column.isHidden ? (
@@ -451,8 +456,9 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                       ) : (
                         <TableCell
                           key={i}
-                          className={`border-[1px] ${!session.user.isAdmin && 'py-1.5'} border-gray-300 ${!item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400 italic"
-                            }`}
+                          className={`border-[1px] ${!session.user.isAdmin && "py-1.5"} border-gray-300 ${
+                            !item?.[column.field] && !item?.additionalFields?.[column.field] && "text-gray-400 italic"
+                          }`}
                         >
                           {column.type === "image" ? (
                             <Image
@@ -485,12 +491,7 @@ const DisplayTable = ({ columns, data, type, totalPages, totalDocuments, complet
                           <TooltipProvider>
                             <Tooltip delayDuration={0}>
                               <TooltipTrigger>
-                                <Link
-                                  href={`/${convertField(type)}/${item._id}${type === "Bus" || type === "Single Line Diagram"
-                                    ? ""
-                                    : `?newIndex=${item?.deviceName.charAt(item?.deviceName.length - 1)}`
-                                    }`}
-                                >
+                                <Link href={`/${convertField(type)}/${item._id}`}>
                                   <div
                                     title="Edit"
                                     className="text-gray-500 rounded-full hover:bg-gray-200 p-1.5"

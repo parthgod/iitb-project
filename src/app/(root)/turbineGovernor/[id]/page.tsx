@@ -15,7 +15,6 @@ import {
 
 interface EditTurbineGovernorProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (turbineGovernorDetails: IBus, defaultParams: IDe
   return {};
 };
 
-const EditTurbineGovernor = async ({ params, searchParams }: EditTurbineGovernorProps) => {
+const EditTurbineGovernor = async ({ params }: EditTurbineGovernorProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

@@ -15,7 +15,6 @@ import {
 
 interface EditShuntReactorProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (shuntReactorDetails: IBus, defaultParams: IDefau
   return {};
 };
 
-const EditShuntReactor = async ({ params, searchParams }: EditShuntReactorProps) => {
+const EditShuntReactor = async ({ params }: EditShuntReactorProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

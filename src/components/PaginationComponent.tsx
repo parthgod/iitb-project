@@ -17,18 +17,24 @@ type IPaginationComponent = {
   limit: number;
   totalPages: number;
   totalDocuments: number;
-  setRecordsToDelete?: any
-  recordsToDelete?: string[]
+  setRecordsToDelete?: any;
+  recordsToDelete?: string[];
 };
 
-const PaginationComponent = ({ limit, totalPages, totalDocuments, recordsToDelete, setRecordsToDelete }: IPaginationComponent) => {
+const PaginationComponent = ({
+  limit,
+  totalPages,
+  totalDocuments,
+  recordsToDelete,
+  setRecordsToDelete,
+}: IPaginationComponent) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const [page, setPage] = useState(Number(searchParams.get("page") || 1));
 
   useEffect(() => {
-    if (recordsToDelete?.length !== totalDocuments && setRecordsToDelete) setRecordsToDelete([])
+    if (recordsToDelete?.length !== totalDocuments && setRecordsToDelete) setRecordsToDelete([]);
     let newUrl = "";
     if (page > 1) {
       if (page > totalPages) {
@@ -97,8 +103,9 @@ const PaginationComponent = ({ limit, totalPages, totalDocuments, recordsToDelet
                 aria-disabled={page >= totalPages}
                 tabIndex={page >= totalPages ? -1 : undefined}
                 onClick={() => page < totalPages && setPage(page + 1)}
-                className={`${page >= totalPages ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"
-                  }`}
+                className={`${
+                  page >= totalPages ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"
+                }`}
               />
             </PaginationItem>
           </PaginationContent>

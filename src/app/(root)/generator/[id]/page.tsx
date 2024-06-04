@@ -15,7 +15,6 @@ import {
 
 interface EditGeneratorProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDefaultParamSchema[]) => {
@@ -38,9 +37,8 @@ const calculateDefaultValues = (generatorDetails: IGenerator, defaultParams: IDe
   return {};
 };
 
-const EditGenerator = async ({ params, searchParams }: EditGeneratorProps) => {
+const EditGenerator = async ({ params }: EditGeneratorProps) => {
   const { id } = params;
-
 
   const { data: defaultParams } = await getDefaultParams();
   const { data: generatorDetails } = await getGeneratorById(id);

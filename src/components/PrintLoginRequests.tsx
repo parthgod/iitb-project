@@ -82,7 +82,10 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
         </TableHeader>
         <TableBody>
           {data.map((item, ind) => (
-            <TableRow key={ind} className="group">
+            <TableRow
+              key={ind}
+              className="group"
+            >
               <TableCell className="flex items-center gap-2">
                 <Avatar className="scale-75">
                   <AvatarImage src={item.image || pfp} />
@@ -97,8 +100,14 @@ const PrintLoginRequests = ({ data }: IPrintLoginRequests) => {
               </TableCell>
               <TableCell>
                 <Popover>
-                  <PopoverTrigger asChild id={`popover-btn-${item._id}`}>
-                    <Button variant="outline" className="h-8">
+                  <PopoverTrigger
+                    asChild
+                    id={`popover-btn-${item._id}`}
+                  >
+                    <Button
+                      variant="outline"
+                      className="h-8"
+                    >
                       Request actions
                     </Button>
                   </PopoverTrigger>

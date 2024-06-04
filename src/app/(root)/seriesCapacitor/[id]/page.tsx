@@ -15,7 +15,6 @@ import {
 
 interface EditSeriesCapacitorProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (seriesCapacitorDetails: IBus, defaultParams: IDe
   return {};
 };
 
-const EditSeriesCapacitor = async ({ params, searchParams }: EditSeriesCapacitorProps) => {
+const EditSeriesCapacitor = async ({ params }: EditSeriesCapacitorProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();
