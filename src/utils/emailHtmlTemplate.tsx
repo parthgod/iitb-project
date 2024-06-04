@@ -1,5 +1,5 @@
 export const loginAcceptEmailHTML = ({ email }: { email: string }): string => {
-    return `
+  return `
       <!DOCTYPE html>
       <html lang="en">
       
@@ -79,7 +79,7 @@ export const loginAcceptEmailHTML = ({ email }: { email: string }): string => {
 };
 
 export const passwordResetEmail = (resetLink: string) => {
-    return `
+  return `
   <!DOCTYPE html>
       <html lang="en">
       

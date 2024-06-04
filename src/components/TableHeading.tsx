@@ -61,23 +61,23 @@ type TableHeadingProps = {
   totalPages: number;
   totalDocuments: number;
   type:
-  | "Excitation System"
-  | "Bus"
-  | "Generator"
-  | "Load"
-  | "Series Capacitor"
-  | "Shunt Capacitor"
-  | "Shunt Reactor"
-  | "Single Line Diagram"
-  | "Transformers Three Winding"
-  | "Transformers Two Winding"
-  | "Transmission Line"
-  | "Turbine Governor"
-  | "IBR"
-  | "LCC - HVDC Link"
-  | "VSC - HVDC Link"
-  | "Series Fact"
-  | "Shunt Fact";
+    | "Excitation System"
+    | "Bus"
+    | "Generator"
+    | "Load"
+    | "Series Capacitor"
+    | "Shunt Capacitor"
+    | "Shunt Reactor"
+    | "Single Line Diagram"
+    | "Transformers Three Winding"
+    | "Transformers Two Winding"
+    | "Transmission Line"
+    | "Turbine Governor"
+    | "IBR"
+    | "LCC - HVDC Link"
+    | "VSC - HVDC Link"
+    | "Series Fact"
+    | "Shunt Fact";
   fnExportToExcel: any;
   downloadPDF: any;
   limit?: number;
@@ -87,32 +87,32 @@ type TableHeadingProps = {
   recordsToDelete: string[];
   setRecordsToDelete: any;
   completeData:
-  | IBus[]
-  | IExcitationSystem[]
-  | IGenerator[]
-  | ILoad[]
-  | ISeriesCapacitor[]
-  | IShuntCapacitor[]
-  | IShuntReactor[]
-  | ISingleLineDiagram[]
-  | ITransformersThreeWinding[]
-  | ITransformersTwoWinding[]
-  | ITransmissionLine[]
-  | ITurbineGovernor[]
-  | INonDefaultDatabases[];
+    | IBus[]
+    | IExcitationSystem[]
+    | IGenerator[]
+    | ILoad[]
+    | ISeriesCapacitor[]
+    | IShuntCapacitor[]
+    | IShuntReactor[]
+    | ISingleLineDiagram[]
+    | ITransformersThreeWinding[]
+    | ITransformersTwoWinding[]
+    | ITransmissionLine[]
+    | ITurbineGovernor[]
+    | INonDefaultDatabases[];
   data:
-  | IBus[]
-  | IExcitationSystem[]
-  | IGenerator[]
-  | ILoad[]
-  | ISeriesCapacitor[]
-  | IShuntCapacitor[]
-  | IShuntReactor[]
-  | ISingleLineDiagram[]
-  | ITransformersThreeWinding[]
-  | ITransformersTwoWinding[]
-  | ITransmissionLine[]
-  | ITurbineGovernor[];
+    | IBus[]
+    | IExcitationSystem[]
+    | IGenerator[]
+    | ILoad[]
+    | ISeriesCapacitor[]
+    | IShuntCapacitor[]
+    | IShuntReactor[]
+    | ISingleLineDiagram[]
+    | ITransformersThreeWinding[]
+    | ITransformersTwoWinding[]
+    | ITransmissionLine[]
+    | ITurbineGovernor[];
 };
 
 const TableHeading = ({
@@ -139,20 +139,22 @@ const TableHeading = ({
     <div className="p-3 py-1.5 flex items-center justify-between border-b-[1px] border-b-gray-300">
       {totalDocuments ? (
         <p className="font-semibold whitespace-nowrap flex">
-          {session.user.isAdmin && <input
-            type="checkbox"
-            className="scale-125 cursor-pointer mr-2"
-            checked={recordsToDelete.length >= limit || recordsToDelete.length === data.length}
-            onChange={(e) => {
-              if (e.target.checked)
-                data.map(
-                  (item) =>
-                    !recordsToDelete.includes(item._id) &&
-                    setRecordsToDelete((prevSelectedIds: string[]) => [...prevSelectedIds, item._id])
-                );
-              else setRecordsToDelete([]);
-            }}
-          />}
+          {session.user.isAdmin && (
+            <input
+              type="checkbox"
+              className="scale-125 cursor-pointer mr-2"
+              checked={recordsToDelete.length >= limit || recordsToDelete.length === data.length}
+              onChange={(e) => {
+                if (e.target.checked)
+                  data.map(
+                    (item) =>
+                      !recordsToDelete.includes(item._id) &&
+                      setRecordsToDelete((prevSelectedIds: string[]) => [...prevSelectedIds, item._id])
+                  );
+                else setRecordsToDelete([]);
+              }}
+            />
+          )}
           {recordsToDelete.length ? (
             <span className="flex items-center">
               {recordsToDelete.length} record{recordsToDelete.length > 1 ? <>s</> : ""} selected{" "}
@@ -256,7 +258,11 @@ const TableHeading = ({
                               break;
 
                             case "Transformers Three Winding":
-                              res = await deleteManyTransformersThreeWinding(recordsToDelete, session.user.id, pathname);
+                              res = await deleteManyTransformersThreeWinding(
+                                recordsToDelete,
+                                session.user.id,
+                                pathname
+                              );
                               break;
 
                             case "Transformers Two Winding":
@@ -276,7 +282,7 @@ const TableHeading = ({
                               break;
 
                             default:
-                              break
+                              break;
                           }
 
                           toast.success(res?.data);

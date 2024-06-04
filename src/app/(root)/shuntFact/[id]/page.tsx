@@ -15,7 +15,6 @@ import { Suspense } from "react";
 
 interface EditShuntFactProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (shuntFactDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (shuntFactDetails: INonDefaultDatabases, defaultP
   return {};
 };
 
-const EditShuntFact = async ({ params, searchParams }: EditShuntFactProps) => {
+const EditShuntFact = async ({ params }: EditShuntFactProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

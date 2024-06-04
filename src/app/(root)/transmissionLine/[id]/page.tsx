@@ -15,7 +15,6 @@ import {
 
 interface EditTransmissionLineProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -40,7 +39,7 @@ const calculateDefaultValues = (transmissionLineDetails: IBus, defaultParams: ID
   return {};
 };
 
-const EditTransmissionLine = async ({ params, searchParams }: EditTransmissionLineProps) => {
+const EditTransmissionLine = async ({ params }: EditTransmissionLineProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

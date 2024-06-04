@@ -15,7 +15,6 @@ import {
 
 interface EditLoadProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (loadDetails: IBus, defaultParams: IDefaultParamS
   return {};
 };
 
-const EditLoad = async ({ params, searchParams }: EditLoadProps) => {
+const EditLoad = async ({ params }: EditLoadProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

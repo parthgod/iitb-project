@@ -15,7 +15,6 @@ import {
 
 interface EditShuntCapacitorProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (shuntCapacitorDetails: IBus, defaultParams: IDef
   return {};
 };
 
-const EditShuntCapacitor = async ({ params, searchParams }: EditShuntCapacitorProps) => {
+const EditShuntCapacitor = async ({ params }: EditShuntCapacitorProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/breadcrumb";
 
 const CreateExcitationSystem = async () => {
-
   const { data: defaultParams } = await getDefaultParams();
 
   return (
@@ -37,7 +36,6 @@ const CreateExcitationSystem = async () => {
         <CreateForm
           formFields={defaultParams[0].excitationSystemColumns}
           type="excitationSystem"
-
         />
       </Suspense>
     </div>

@@ -15,7 +15,6 @@ import {
 
 interface EditTransformersTwoWindingProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (transformersTwoWindingDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -40,7 +39,7 @@ const calculateDefaultValues = (transformersTwoWindingDetails: IBus, defaultPara
   return {};
 };
 
-const EditTransformersTwoWinding = async ({ params, searchParams }: EditTransformersTwoWindingProps) => {
+const EditTransformersTwoWinding = async ({ params }: EditTransformersTwoWindingProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

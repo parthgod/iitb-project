@@ -15,7 +15,6 @@ import { Suspense } from "react";
 
 interface EditLccHvdcLinkProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (lccHVDCLinkDetails: INonDefaultDatabases, defaultParams: IDefaultParamSchema[]) => {
@@ -39,7 +38,7 @@ const calculateDefaultValues = (lccHVDCLinkDetails: INonDefaultDatabases, defaul
   return {};
 };
 
-const EditLccHvdcLink = async ({ params, searchParams }: EditLccHvdcLinkProps) => {
+const EditLccHvdcLink = async ({ params }: EditLccHvdcLinkProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

@@ -92,23 +92,23 @@ type CreateFormProps = {
   formFields: IColumn[];
   formDetails?: any;
   type:
-  | "excitationSystem"
-  | "bus"
-  | "generator"
-  | "load"
-  | "seriesCapacitor"
-  | "shuntCapacitor"
-  | "shuntReactor"
-  | "singleLineDiagram"
-  | "transformersThreeWinding"
-  | "transformersTwoWinding"
-  | "transmissionLine"
-  | "turbineGovernor"
-  | "ibr"
-  | "lccHVDCLink"
-  | "vscHVDCLink"
-  | "seriesFact"
-  | "shuntFact";
+    | "excitationSystem"
+    | "bus"
+    | "generator"
+    | "load"
+    | "seriesCapacitor"
+    | "shuntCapacitor"
+    | "shuntReactor"
+    | "singleLineDiagram"
+    | "transformersThreeWinding"
+    | "transformersTwoWinding"
+    | "transmissionLine"
+    | "turbineGovernor"
+    | "ibr"
+    | "lccHVDCLink"
+    | "vscHVDCLink"
+    | "seriesFact"
+    | "shuntFact";
   id?: string;
 };
 
@@ -312,8 +312,9 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
         break;
 
       case "transformersThreeWinding":
-        data.deviceName = `${data.location.replace(/\s/g, "_")}_Transformer_${data.mva}_${data.kvprimaryVoltage}/${data.kvsecondaryVoltage
-          }/${data.kvtertiaryVoltage}`;
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_Transformer_${data.mva}_${data.kvprimaryVoltage}/${
+          data.kvsecondaryVoltage
+        }/${data.kvtertiaryVoltage}`;
         if (formDetails) {
           const parts = formDetails.deviceName.split("_");
           const index = parts.pop();
@@ -328,24 +329,28 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
         ({ totalDocuments } = await getAllTransformersThreeWindings(100, 1, data.deviceName, formFields));
         data.deviceName = data.deviceName + `_${totalDocuments}`;
         if (form.getValues("busprimaryFrom") === "Other") {
-          data.busprimaryFrom = `${data.location.replace(/\s/g, "_")}_Transformer_${data.kvprimaryVoltage
-            }_${totalDocuments}`;
+          data.busprimaryFrom = `${data.location.replace(/\s/g, "_")}_Transformer_${
+            data.kvprimaryVoltage
+          }_${totalDocuments}`;
         }
 
         if (form.getValues("bussecondaryTo") === "Other") {
-          data.bussecondaryTo = `${data.location.replace(/\s/g, "_")}_Transformer_${data.kvsecondaryVoltage
-            }_${totalDocuments}`;
+          data.bussecondaryTo = `${data.location.replace(/\s/g, "_")}_Transformer_${
+            data.kvsecondaryVoltage
+          }_${totalDocuments}`;
         }
 
         if (form.getValues("bustertiaryTo") === "Other") {
-          data.bustertiaryTo = `${data.location.replace(/\s/g, "_")}_Transformer_${data.kvtertiaryVoltage
-            }_${totalDocuments}`;
+          data.bustertiaryTo = `${data.location.replace(/\s/g, "_")}_Transformer_${
+            data.kvtertiaryVoltage
+          }_${totalDocuments}`;
         }
         break;
 
       case "transformersTwoWinding":
-        data.deviceName = `${data.location.replace(/\s/g, "_")}_Transformer_${data.mva}_${data.kvprimary}/${data.kvsecondary
-          }`;
+        data.deviceName = `${data.location.replace(/\s/g, "_")}_Transformer_${data.mva}_${data.kvprimary}/${
+          data.kvsecondary
+        }`;
         if (formDetails) {
           const parts = formDetails.deviceName.split("_");
           const index = parts.pop();
@@ -978,8 +983,9 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
                               <PopoverTrigger
                                 asChild
                                 id={`${item.tableRef}-${ind}`}
-                                className={`focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none ${otherLocation[item.field as keyof typeof otherLocation] ? "w-[20%]" : "w-full"
-                                  }`}
+                                className={`focus-visible:ring-offset-0 focus-visible:ring-transparent focus:shadow-blue-500 focus:shadow-[0px_2px_20px_-10px_rgba(0,0,0,0.75)] focus:border-blue-500 focus:outline-none ${
+                                  otherLocation[item.field as keyof typeof otherLocation] ? "w-[20%]" : "w-full"
+                                }`}
                               >
                                 <FormControl>
                                   <Button
@@ -1011,8 +1017,9 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
                                   <Button
                                     variant="ghost"
                                     key={ind}
-                                    className={`w-full justify-start italic text-gray-500 font-normal ${"Other" === field.value && "bg-gray-100"
-                                      }`}
+                                    className={`w-full justify-start italic text-gray-500 font-normal ${
+                                      "Other" === field.value && "bg-gray-100"
+                                    }`}
                                     onClick={() => {
                                       setOtherLocation((prev) => ({ ...prev, [item.field]: true }));
                                       form.setValue(item.field, "");
@@ -1032,8 +1039,9 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
                                     <Button
                                       variant="ghost"
                                       key={index}
-                                      className={`w-full justify-start font-normal ${selectValue === field.value && "bg-gray-100"
-                                        }`}
+                                      className={`w-full justify-start font-normal ${
+                                        selectValue === field.value && "bg-gray-100"
+                                      }`}
                                       onClick={() => handleChange(item, ind, selectValue)}
                                     >
                                       {selectValue}
@@ -1134,15 +1142,16 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
                                 <Separator />
                                 <div className="max-h-[40vh] overflow-auto custom-scrollbar">
                                   {(type === "transmissionLine" && item.field === "busTo") ||
-                                    item.tableRef === "Generator" ||
-                                    (type === "load" && item.field === "busFrom") ? (
+                                  item.tableRef === "Generator" ||
+                                  (type === "load" && item.field === "busFrom") ? (
                                     ""
                                   ) : (
                                     <Button
                                       variant="ghost"
                                       key={ind}
-                                      className={`w-full justify-start italic text-gray-500 font-normal ${"Other" === field.value && "bg-gray-100"
-                                        }`}
+                                      className={`w-full justify-start italic text-gray-500 font-normal ${
+                                        "Other" === field.value && "bg-gray-100"
+                                      }`}
                                       onClick={() => handleChange(item, ind, "Other")}
                                     >
                                       Other
@@ -1159,8 +1168,9 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
                                       <Button
                                         variant="ghost"
                                         key={index}
-                                        className={`w-full justify-start font-normal ${selectValue[item.columnRef!] === field.value && "bg-gray-100"
-                                          }`}
+                                        className={`w-full justify-start font-normal ${
+                                          selectValue[item.columnRef!] === field.value && "bg-gray-100"
+                                        }`}
                                         onClick={() => handleChange(item, ind, selectValue[item.columnRef!])}
                                       >
                                         {selectValue[item.columnRef!]}
@@ -1180,8 +1190,9 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
                                       <Button
                                         variant="ghost"
                                         key={index}
-                                        className={`w-full justify-start font-normal ${selectValue[item.columnRef!] === field.value && "bg-gray-100"
-                                          }`}
+                                        className={`w-full justify-start font-normal ${
+                                          selectValue[item.columnRef!] === field.value && "bg-gray-100"
+                                        }`}
                                         onClick={() => handleChange(item, ind, selectValue[item.columnRef!])}
                                       >
                                         {selectValue[item.columnRef!]}

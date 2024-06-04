@@ -15,7 +15,6 @@ import {
 
 interface EditTransformersThreeWindingProps {
   params: { id: string };
-  searchParams: { newIndex: string };
 }
 
 const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultParams: IDefaultParamSchema[]) => {
@@ -41,7 +40,7 @@ const calculateDefaultValues = (transformersThreeWindingDetails: IBus, defaultPa
   return {};
 };
 
-const EditTransformersThreeWinding = async ({ params, searchParams }: EditTransformersThreeWindingProps) => {
+const EditTransformersThreeWinding = async ({ params }: EditTransformersThreeWindingProps) => {
   const { id } = params;
 
   const { data: defaultParams } = await getDefaultParams();

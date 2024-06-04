@@ -15,12 +15,12 @@ const Bus = async ({ searchParams }: { searchParams: { query: string; page?: num
   const page = searchParams?.page || 1;
   const limit = searchParams?.limit || 20;
   const { data: defaultParams } = await getDefaultParams();
-  const { data: buses, totalPages, totalDocuments, completeData } = await getAllBuses(
-    limit,
-    page,
-    searchTerm,
-    defaultParams[0]?.busColumns
-  );
+  const {
+    data: buses,
+    totalPages,
+    totalDocuments,
+    completeData,
+  } = await getAllBuses(limit, page, searchTerm, defaultParams[0]?.busColumns);
 
   const session = await getServerSession(authOptions);
 
