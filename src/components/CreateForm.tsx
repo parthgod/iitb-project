@@ -462,12 +462,16 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
       };
 
       if (formDetails) {
-        let parts = formDetails.deviceName.split("_");
-        parts.pop();
-        const oldDeviceName = parts.join("_");
-        parts = data.deviceName.split("_");
-        parts.pop();
-        const newDeviceName = parts.join("_");
+        let oldDeviceName: string = "";
+        let newDeviceName: string = "";
+        if(type!=="bus"){
+          let parts = formDetails.deviceName.split("_");
+          parts.pop();
+          oldDeviceName = parts.join("_");
+          parts = data.deviceName.split("_");
+          parts.pop();
+          newDeviceName = parts.join("_");
+        }
 
         let totalDocuments, completeData;
         switch (type) {
@@ -878,7 +882,6 @@ const CreateForm = ({ formFields, formDetails, type, id }: CreateFormProps) => {
     } catch (error) {
       console.log(error);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
