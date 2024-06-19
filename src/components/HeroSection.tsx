@@ -27,18 +27,12 @@ const HeroSection = () => {
     }, 2200);
   }, []);
 
-  const subText = `Seamlessly organize and manage critical data for your power systems including buses, generators, transformers,
-  and more. Simplify grid operations and optimize efficiency with our intuitive platform. Let's power up your
-  infrastructure together!`;
-
   return (
     <div className="w-[70vw] flex flex-col gap-0 px-10 items-center">
       <TypewriterEffectSmooth words={words} />
       {isMounted ? (
         <p className="animate-slideup text-lg text-white text-center">
-          Seamlessly organize and manage critical data for your power systems including buses, generators, transformers,
-          and more. Simplify grid operations and optimize efficiency with our intuitive platform. Let&apos;s power up
-          your infrastructure together!
+          Database for efficient power system data management!
         </p>
       ) : (
         <div className="h-[3.5rem]" />

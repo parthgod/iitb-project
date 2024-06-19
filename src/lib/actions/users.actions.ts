@@ -156,13 +156,13 @@ export const resetPassword = async (email: string) => {
       port: 587,
       secure: false,
       auth: {
-        user: "parthgenius.gps@gmail.com",
-        pass: "szktlhaxuvxzehco",
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.NODEMAILER_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: "VoltVault <parthgenius.gps@gmail.com>",
+      from: `VoltVault <${process.env.NODEMAILER_EMAIL}>`,
       to: user.email,
       subject: "Reset your password",
       text: "Email content",

@@ -10,7 +10,23 @@ const Navbar = () => {
         width={200}
         height={200}
       />
-      <p className="text-white">User manual</p>
+      <div className="flex justify-between gap-5">
+        <a
+          href="https://drive.google.com/file/d/1pEiNQ9-XFeCBnL-c7BAYGX6i3oIgrqMJ/view?usp=sharing"
+          target="_blank"
+          className="text-white underline"
+        >
+          User manual
+        </a>
+
+        <a
+          href="https://voltvault-docs.vercel.app"
+          target="_blank"
+          className="text-white underline"
+        >
+          Developer&apos;s documentation
+        </a>
+      </div>
     </div>
   );
 };
