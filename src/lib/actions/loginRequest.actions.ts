@@ -89,13 +89,13 @@ export const updateLoginRequestStatus = async (status: string, id: string) => {
         port: 587,
         secure: false,
         auth: {
-          user: "parthgenius.gps@gmail.com",
-          pass: "szktlhaxuvxzehco",
+          user: process.env.NODEMAILER_EMAIL,
+          pass: process.env.NODEMAILER_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: "VoltVault <parthgenius.gps@gmail.com>",
+        from: `VoltVault <${process.env.NODEMAILER_EMAIL}>`,
         to: user.email,
         subject: "Login Request approved",
         text: "Email content",
@@ -107,6 +107,7 @@ export const updateLoginRequestStatus = async (status: string, id: string) => {
       return { data: `${user.name} can now access the database.`, status: 200 };
     }
   } catch (error) {
+    console.log(error);
     throw new Error(typeof error === "string" ? error : JSON.stringify(error));
   }
 };
